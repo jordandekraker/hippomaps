@@ -1,3 +1,4 @@
 .ipynb_checkpoints
-sourcedata
-checkpoints
+sourcedata/*
+checkpoints/*
+
