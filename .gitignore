@@ -2,3 +2,4 @@
 sourcedata/*
 checkpoints/*
 notebooks/img_*
+notebooks/tmp_*
