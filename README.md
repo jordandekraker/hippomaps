@@ -9,5 +9,7 @@ Tutorials are shown in `notebooks/`, but it is also recommended that you take a 
 `sourcedata/` and `hippunfold/` are currently unavailable, but will eventually host the original data (in BIDS format) and HippUnfold outputs for all subjects. 
 
 ## Dependencies
+
 https://github.com/Bradley-Karat/Hippo_Spin_Testing
+
 https://github.com/jordandekraker/hippunfold_toolbox
