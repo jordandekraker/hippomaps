@@ -7,3 +7,9 @@ HippoMaps contains a set of results and tools for mapping data to the folded and
 Tutorials are shown in `notebooks/`, but it is also recommended that you take a look at the HippUnfold_toolbox tutorials for things like learning how to load nifti/gifti data and use some of the plotting functions. This project also relies heavily on neuroimaging toolboxes [wb_command](https://www.humanconnectome.org/software/workbench-command/) and [ANTs](http://stnava.github.io/ANTs/). 
 
 `sourcedata/` and `hippunfold/` are currently unavailable, but will eventually host the original data (in BIDS format) and HippUnfold outputs for all subjects. 
+
+## Dependencies
+
+https://github.com/Bradley-Karat/Hippo_Spin_Testing
+
+https://github.com/jordandekraker/hippunfold_toolbox
