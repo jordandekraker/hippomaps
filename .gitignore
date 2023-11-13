@@ -1,5 +1,6 @@
 .ipynb_checkpoints
-sourcedata/*
-checkpoints/*
+sourcedata/
+checkpoints/
 notebooks/img_*
 notebooks/tmp_*
+maps/
