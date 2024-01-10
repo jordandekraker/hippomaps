@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GIFTI xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://brainvis.wustl.edu/caret6/xml_schemas/GIFTI_Caret.xsd"
+       Version="1"
+       NumberOfDataArrays="1">
+   <MetaData>
+      <MD>
+         <Name><![CDATA[AnatomicalStructurePrimary]]></Name>
+         <Value><![CDATA[Invalid]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[ProgramProvenance]]></Name>
+         <Value><![CDATA[Connectome Workbench
+Type: Command Line Application
+Version: 1.4.2
+Qt Compiled Version: 5.7.0
+Qt Runtime Version: 5.7.0
+Commit: 092b7f2f7dfab0f9ea7cbb6c1db2e5dffd2c1045
+Commit Date: 2020-01-07 17:24:23 -0600
+Compiled with OpenMP: YES
+Compiler: g++ (/home/caret/gcc/install/gcc-4.8.5/bin)
+Compiler Version: 4.8.5
+Compiled Debug: NO
+Operating System: Linux
+]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[Provenance]]></Name>
+         <Value><![CDATA[/data/mica1/01_programs/workbench-1.4.2/bin_linux64/../exe_linux64/wb_command -surface-vertex-areas /export03/data/opt/hippunfold_toolbox/resources/canonical_surfs/tpl-avg_space-canonical_den-2mm_label-dentate_midthickness.surf.gii /export03/data/opt/hippunfold_toolbox/resources/canonical_surfs/tpl-avg_space-canonical_den-2mm_label-dentate_surfarea.shape.gii]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[WorkingDirectory]]></Name>
+         <Value><![CDATA[/export03/data/opt/hippunfold_toolbox/notebooks]]></Value>
+      </MD>
+   </MetaData>
+   <LabelTable>
+      <Label Key="0" Red="1" Green="1" Blue="1" Alpha="0"><![CDATA[???]]></Label>
+   </LabelTable>
+<DataArray Intent="NIFTI_INTENT_NORMAL"
+           DataType="NIFTI_TYPE_FLOAT32"
+           ArrayIndexingOrder="RowMajorOrder"
+           Dimensionality="1"
+           Dim0="64"
+           Encoding="GZipBase64Binary"
+           Endian="LittleEndian"
+           ExternalFileName=""
+           ExternalFileOffset="0">
+   <MetaData>
+      <MD>
+         <Name><![CDATA[Name]]></Name>
+         <Value><![CDATA[vertex areas]]></Value>
+      </MD>
+   </MetaData>
+   <Data>eJwBAAH//v2kyj+b20JAj7bMPzErEz9G05JAAN1CQKkSrj63Gbc/ygUZQB9g10C5JpI//liIPwfcTj+tNGU/C+srPrkAkT92BHNAUr+TQKWiJUBiFlNAYpoaQNTMtkDMNTBArnJlQNA67D/xEJY/A0ooQBjJrz+QM8I/0oV6QANGeEB0uxdADuXPQAFf3UCCFUNA90SAP3p4BECnftU/0fYUPw7TgT9iBdQ/lomPQC00i0AAfQNA3G0tQMJphkCU1TE/PFJUP9IvyD/IgQRAwveyPxwqmz9KnsI/DlftPohm4D9opcY/Z06zP7Lwvz2oPRQ/hX8rQGrKLj83mhs/y2NtP/j0VT9xyWtQ</Data>
+</DataArray>
+</GIFTI>
