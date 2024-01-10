@@ -4,3 +4,5 @@ checkpoints/
 notebooks/img_*
 notebooks/tmp_*
 maps/
+HippoMaps.egg-info/
+hippomaps/__pycache__
