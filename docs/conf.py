@@ -51,30 +51,12 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx',
-    # 'sphinx.ext.autosectionlabel',
-    'sphinx.ext.doctest',
-    'sphinx_gallery.gen_gallery',
-    # 'sphinxcontrib.apidoc',
-]
-
+    'sphinx.ext.viewcode',]
 # apidoc_module_dir = '../brainspace'
 # apidoc_output_dir = 'api_python'
 # # apidoc_excluded_paths = ['mesh/io_support']
 # apidoc_separate_modules = True
 
-napoleon_google_docstring = False
-napoleon_numpy_docstring = True
-napoleon_include_init_with_doc = False
-napoleon_include_special_with_doc = False
-napoleon_use_param = True
-napoleon_use_ivar = True
-napoleon_use_rtype = False
-
-napoleon_include_private_with_doc = False
-# napoleon_include_special_with_doc = False
 
 autodoc_default_options = {
     'members': None,
