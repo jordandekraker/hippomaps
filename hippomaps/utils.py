@@ -17,7 +17,22 @@ import pygeodesic.geodesic as geodesic
 resourcesdir=str(Path(__file__).parents[1]) + '/resources'
 
 def avg_neighbours(invar):
-    '''Averages vertex-wise data at vertex n with its neighbouring vertices. F, cdat, n should be passed as a tuple (for easier parallel).'''
+    """
+    Averages vertex-wise data at vertex n with its neighboring vertices.
+    #original Averages vertex-wise data at vertex n with its neighbouring vertices. F, cdat, n should be passed as a tuple (for easier parallel)
+    Parameters
+    ----------
+    invar : tuple
+        A tuple containing the following elements:
+        - F: tuple
+        - cdat: tuple
+        - n: int
+            Vertex index for which the data will be averaged with its neighboring vertices.
+    Returns
+    -------
+    float
+        The average value of the vertex-wise data at vertex n and its neighboring vertices.
+    """
     F,cdat,n = invar
     frows = np.where(F==n)[0]
     v = np.unique(F[frows,:])
@@ -27,8 +42,23 @@ def avg_neighbours(invar):
     return out
 
 def surfdat_smooth(F, cdata, iters=1, cores=8):
-    '''Smoothes surface data across neighbouring vertices. This assumes that vertices are evenly spaced and evenly connected.
-    TODO: convert to mm vis calibration curves in https://github.com/MELDProject/meld_classifier/blob/9d3d364de86dc207d3a1e5ec11dcab3ef012ebcb/meld_classifier/mesh_tools.py#L17'''
+    """
+       Smooths surface data across neighboring vertices.
+       #originalSmoothes surface data across neighbouring vertices. This assumes that vertices are evenly spaced and evenly connected.
+       TODO: convert to mm vis calibration curves in https://github.com/MELDProject/meld_classifier/blob/9d3d364de86dc207d3a1e5ec11dcab3ef012ebcb/meld_classifier/mesh_tools.py#L17'''
+       This function assumes that vertices are evenly spaced and evenly connected.
+
+       Parameters
+       ----------
+       F : numpy.ndarray
+       cdata : numpy.ndarray
+       iters : int, optional
+       cores : int, optional
+       Returns
+       -------
+       numpy.ndarray
+           Smoothed surface data across neighboring vertices.
+       """
     cdat = copy.deepcopy(cdata)
     for i in range(iters):
         cdat = Parallel(n_jobs=cores)(delayed(avg_neighbours)((F,cdat,n)) for n in range(len(cdat)))
@@ -38,17 +68,29 @@ def surfdat_smooth(F, cdata, iters=1, cores=8):
 
 
 def profile_align(P,V,F, patchdist=None, maxroll=5):
-    """    
-    Aligns microstructural profiles in the depth direction across a set of surfaces.
-
-    :param P: a VxD matrix of intensities (vertices x depths) 
-    :param V: the midthickness surface vertices
-    :param F: the midthickness surface faces 
-    :param patchdist: radius (in mm) of geodesic distance to compute the average profile. If None then all profiles are used. Default is None. 
-    :param maxroll:  maximum shift
-
-    :return: a matrix the same size as P pads profiles by maxroll, then rolls them by +/- maxroll until maximum overlap with the patch average is achieved
     """
+       Aligns microstructural profiles in the depth direction across a set of surfaces.
+
+       Parameters
+       ----------
+       P : A VxD matrix of intensities (vertices x depths).
+       V : The midthickness surface vertices.
+       F : The midthickness surface faces.
+       patchdist : Radius (in mm) of geodesic distance to compute the average profile.
+           If None, then all profiles are used. Default is None.
+       maxroll : int
+           Maximum shift.
+       Returns
+       -------
+       A matrix the same size as P, pads profiles by maxroll, then rolls them by +/- maxroll until maximum overlap
+           with the patch average is achieved.
+
+       Notes
+       -----
+       - If patchdist is None, the function aligns profiles based on the mean profile across all vertices.
+       - If patchdist is specified, the function aligns profiles based on the mean profile within a geodesic patch around each vertex.
+       - The alignment is performed by rolling the profiles to achieve maximum correlation with the reference profile.
+       """
     P = np.pad(P,((0,0),(maxroll,maxroll)),mode='edge')
     Paligned = np.ones(P.shape)*np.nan
 
@@ -81,16 +123,23 @@ def profile_align(P,V,F, patchdist=None, maxroll=5):
       
 
 def Laplace_solver(faces,init,maxiters=1e4,conv=1e-6,cores=8):
-    '''Solves Laplace equation along vertices of a surface.
-      inputs:
-        faces: faces of a surface mesh
-        init: initial vertex-wise values. Source(s) should have a value of 0, Sink(s) should have a value of 1. NaN values will be masked. Time required scales with the number of unmasked vertices.
-        maxiters: maximum iterations to run
-        conv: convergence criterion
-        cores: cores to use (per iteration)
-      outputs:
-        LP: Laplace solution (vertex-wise)
-        change: sum of absolute changes per iteration (should converge towards 0)'''
+    """
+    Solves the Laplace equation along vertices of a surface.
+    Parameters
+    ----------
+    faces : Faces of a surface mesh.
+    init : Initial vertex-wise values. Source(s) should have a value of 0, Sink(s) should have a value of 1. NaN values will be masked. Time required scales with the number of unmasked vertices.
+    maxiters : int, optional
+        Maximum iterations to run. Default is 1e4.
+    conv : float, optional
+        Convergence criterion. Default is 1e-6.
+    cores : int, optional
+        Number of CPU cores to use (per iteration). Default is 8.
+    Returns
+    -------
+    LP : Laplace solution (vertex-wise).
+    change : sum of absolute changes per iteration (should converge towards 0)
+    """
     ind_start = np.where(init==0)[0]
     ind_end = np.where(init==1)[0]
     mask = np.where(np.isnan(init))[0]
@@ -112,7 +161,18 @@ def Laplace_solver(faces,init,maxiters=1e4,conv=1e-6,cores=8):
 
 
 def fillnanvertices(F,V):
-    '''Fills NaNs by iteratively nanmean nearest neighbours until no NaNs remain. Can be used to fill missing vertices OR missing vertex cdata.'''
+    """
+       Fills NaNs by iteratively computing the nanmean of nearest neighbors until no NaNs remain.
+       Can be used to fill missing vertices OR missing vertex cdata.
+       Parameters
+       ----------
+       F : Faces of a surface mesh.
+       V : Vertex coordinates or vertex-wise data with potential NaN values.
+
+       Returns
+       -------
+       The array with NaN values filled by the nanmean of nearest neighbors.
+       """
     Vold = copy.deepcopy(V)
     Vnew = copy.deepcopy(V)
     while np.isnan(np.sum(Vnew)):
@@ -131,18 +191,28 @@ def fillnanvertices(F,V):
 
 
 def density_interp(indensity, outdensity, cdata, label, method='linear', resourcesdir=resourcesdir):
-    '''interpolates data from one surface density onto another via unfolded space
-    Inputs:
-      indensity: one of '0p5mm', '1mm', '2mm', or 'unfoldiso
-      outdensity: one of '0p5mm', '1mm', '2mm', or 'unfoldiso
-      cdata: data to be interpolated (same number of vertices, N, as indensity)
-      label: 'hipp' or 'dentate'
-      method: 'nearest', 'linear', or 'cubic'. 
-      resourcesdir: path to hippunfold resources folder
-    Outputs: 
-      interp: interpolated data
-      faces: face connectivity from new surface density'''
-    
+         """
+       Interpolates data from one surface density onto another via unfolded space.
+       Parameters
+       ----------
+       indensity : str
+           One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+       outdensity : str
+           One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+       cdata : numpy.ndarray (true)
+           Data to be interpolated (same number of vertices, N, as indensity).
+       label : str
+           'hipp' or 'dentate'.
+       method : str, optional
+           Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'linear'. (true?)
+       resourcesdir : str, optional
+           Path to the hippunfold resources folder.
+
+       Returns
+       -------
+       interp : interpolated data
+       faces: face connectivity from new surface density
+       """
     VALID_STATUS = {'0p5mm', '1mm', '2mm', 'unfoldiso'}
     if indensity not in VALID_STATUS:
         raise ValueError("results: indensity must be one of %r." % VALID_STATUS)
@@ -164,10 +234,26 @@ def density_interp(indensity, outdensity, cdata, label, method='linear', resourc
 
 
 def area_rescale(vertices,den,label,APaxis=1):
-    '''Most of the time, in unfolded space the anterior and psoterior are overrepresented. This function compresses these regions proportionally to the surface areas of a cononical example'''
+        """
+         Rescales unfolded surface vertices to account for overrepresentation of anterior and posterior regions.
+        #original Most of the time, in unfolded space the anterior and psoterior are overrepresented. This function compresses these regions proportionally to the surface areas of a cononical example
+         Parameters
+         ----------
+         vertices : Unfolded surface vertices.
+         den : str
+             Density of the unfolded space. One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+         label : str
+             Surface label. Either 'hipp' or 'dentate'.
+         APaxis : int, optional
+             Axis along the anterior-posterior direction. Default is 1.
+         Returns
+         -------
+         numpy.ndarray
+             Rescaled unfolded surface vertices.
+         """
     w = 126 if label=='hipp' else 30 # width of unfolded space
     s=15 # surf area smoothing (sigma)
-    Pold = vertices[:,APaxis] 
+    Pold = vertices[:,APaxis]
 
     # compute rescaling from surface areas
     surfarea = nib.load(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-{label}_surfarea.shape.gii').darrays[0].data
@@ -183,18 +269,44 @@ def area_rescale(vertices,den,label,APaxis=1):
 
     rescalefactor = repmat(rescalefactor,w,1)
     rescalefactor,_,_ = density_interp('unfoldiso', den, rescalefactor.flatten(), label)
-    
+
     Pnew = Pold * rescalefactor
     vertices[:,APaxis] = Pnew
     return vertices
 
 
 def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, space='*', label='hipp', save_out_name=None, method='nearest'):
-    # from https://github.com/khanlab/hippunfold/blob/master/hippunfold/workflow/scripts/label_subfields_from_vol_coords.py
-
-    # this function labels voxels using data on a folded/unfolded surface (midthickness or any), and native space coords (ap, pd) images
-    # TODO: consider trying to simplify inputs specifying the coords paths?
-
+        """
+           Labels voxels using data on a folded/unfolded surface and native space coordinates images.
+            from https://github.com/khanlab/hippunfold/blob/master/hippunfold/workflow/scripts/label_subfields_from_vol_coords.py
+            this function labels voxels using data on a folded/unfolded surface (midthickness or any), and native space coords (ap, pd) images
+            TODO: consider trying to simplify inputs specifying the coords paths?
+           Parameters
+           ----------
+           surf_data : Data on the folded/unfolded surface (midthickness or any).
+           indensity : str
+               Density of the unfolded space. One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+           hippunfold_dir : str
+               Directory path to the HippUnfold output.
+           sub : str
+               Subject identifier.
+           ses : str
+               Session identifier.
+           hemi : str
+               Hemisphere. Either 'L' or 'R'.
+           space : str, optional
+                Default is '*'.
+           label : str, optional
+                Default is 'hipp'.
+           save_out_name : str, optional
+               Output file name to save the label image. Default is None.
+           method : str, optional
+               Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'nearest'.
+           Returns
+           -------
+           numpy.ndarray
+               Labeled voxel data.
+           """
     if len(ses)>0: 
         ses = 'ses-'+ses
         uses = '_'+ses 
@@ -267,10 +379,16 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
 
 
 def bound_cdata(cdata,cutoff=0.05):
-    '''Returns upper and lower X percent interval values
-    Input
-      cdata: list of values
-      cutoff: upper and lower percentile'''
+        """
+          Returns upper and lower X percent interval values.
+          Parameters
+          ----------
+          cdata :  List of values.
+          cutoff : Default is 0.05.
+          Returns
+          -------
+           Values within the upper and lower X percent interval.
+          """
     if not cutoff:
         return False
     shp = cdata.shape
