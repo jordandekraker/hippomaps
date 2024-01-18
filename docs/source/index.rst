@@ -42,4 +42,6 @@ Contents
 .. toctree::
    getting started
    usage
+   tutorials
    api
+
