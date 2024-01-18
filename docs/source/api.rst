@@ -6,8 +6,6 @@ API
 
 .. currentmodule:: hippomaps.example_data.utils
 
-.. autosummary::
-   :toctree: ../../generated/
 
     hippomaps
 
