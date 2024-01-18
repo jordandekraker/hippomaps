@@ -40,8 +40,7 @@ tree_osf_hashes('v8acf',name_hashes,maxdepth,current_hash)
 
 test=list(name_hashes.values())[-1]
 # fn = wget.download(f"https://files.ca-1.osf.io/v1/resources/v8acf/providers/osfstorage{test}", out='test')
-# for folders, add /?zip= to download 
-
+# for folders, add /?zip= to download
 
 # get a flexible Dict reader
 class GlobDict(dict):
