@@ -40,12 +40,9 @@ Utils
 .. autosummary::
    :toctree: ../../generated/
 
-   avg_neighbours
    surfdat_smooth
    profile_align
    Laplace_solver
-   fillnanvertices
    density_interp
-   area_rescale
    surface_to_volume
-   bound_cdata
+
