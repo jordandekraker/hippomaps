@@ -7,3 +7,4 @@ pygeodesic
 scipy
 wget
 pywget
+nbsphinx
