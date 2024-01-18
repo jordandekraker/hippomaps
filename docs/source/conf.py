@@ -19,7 +19,8 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'nbsphinx',
-    'sphinx_gallery.load_style'
+    'sphinx_gallery.load_style',
+    'nbsphinx_thumb'
 ]
 
 intersphinx_mapping = {
