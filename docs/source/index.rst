@@ -44,3 +44,4 @@ Contents
    usage
    tutorials
    api
+   Test
