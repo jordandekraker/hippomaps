@@ -2,6 +2,13 @@ API
 ===
 
 
+Utils 
+------------
+
+.. automodule:: hippomaps.utils
+   :members:
+   :undoc-members:
+
 Plotting 
 ------------
 
