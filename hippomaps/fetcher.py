@@ -9,6 +9,28 @@ name_hashes={}
 maxdepth=4
 current_hash=''
 def tree_osf_hashes(repoID, name_hashes, maxdepth, current_hash):
+    """
+    Recursively fetches file hashes from the OSF repository. Verify with jordan
+
+    Parameters
+    ----------
+    repoID : str
+        The ID of the OSF repository.
+
+    name_hashes : dict
+        A dictionary to store file names and their corresponding hashes.
+
+    maxdepth : int
+        The maximum depth to traverse the file tree.
+
+    current_hash : str
+        The hash of the current file or directory.
+
+    Returns
+    -------
+    None
+        The function populates the name_hashes dictionary with file names and their corresponding hashes.
+    """
     with urllib.request.urlopen(f"https://api.osf.io/v2/nodes/{repoID}/files/osfstorage{current_hash}") as url:
         data = json.load(url)['data']
         if isinstance(data, list):
@@ -29,7 +51,20 @@ test=list(name_hashes.values())[-1]
 # get a flexible Dict reader
 class GlobDict(dict):
     def glob(self, match):
-        """@match should be a glob style pattern match (e.g. '*.txt')"""
+        """
+       Glob-style pattern matching for the dictionary keys.@match should be a glob style pattern match (e.g. '*.txt')
+
+       Parameters
+       ----------
+       match : str
+           The glob-style pattern to match keys.
+
+       Returns
+       -------
+       dict
+           A filtered dictionary with keys matching the specified pattern.
+        """
+
         return dict([(k,v) for k,v  in self.items() if fnmatch(k, match)])
 
 glob_dict = GlobDict( **name_hashes )
