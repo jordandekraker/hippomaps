@@ -1,4 +1,4 @@
-API Reference
+Api Reference
 =================
 
 Submodules
