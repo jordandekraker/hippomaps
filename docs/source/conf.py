@@ -44,5 +44,5 @@ package_path = os.path.abspath('../..')
 os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
 
 nbsphinx_prolog = """
-.. include:: ../../tutorials/tutorials.rst
+.. include:: ../../docs/source/tutorials.rst
 """
