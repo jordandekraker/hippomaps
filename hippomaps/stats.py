@@ -7,25 +7,52 @@ import warnings
 import hippomaps.utils
 
 def spin_test(imgfix,imgperm,nperm,metric='pearson',label='hipp',space='orig'):
+    """
+       Permutation testing of unfolded hippocampus maps.
 
-    '''Permutation testing of unfolded hippocampus maps
-    Original code by Bradley Karat at https://github.com/Bradley-Karat/Hippo_Spin_Testing
-    Karat, B. G., DeKraker, J., Hussain, U., Köhler, S., & Khan, A. R. (2023). Mapping the macrostructure and microstructure of the in vivo human hippocampus using diffusion MRI. Human Brain Mapping. https://doi.org/10.1002/hbm.26461
+       Original code by Bradley Karat at https://github.com/Bradley-Karat/Hippo_Spin_Testing
+       Karat, B. G., DeKraker, J., Hussain, U., Köhler, S., & Khan, A. R. (2023).
+       Mapping the macrostructure and microstructure of the in vivo human hippocampus using diffusion MRI.
+       Human Brain Mapping. https://doi.org/10.1002/hbm.26461
 
-    Inputs:
-      imgfix: path to the fixed map
-      imgperm: path to the map which wll be permuted
-      nperm: Number of permutations to perform
-      metric: Metric for comparing maps (one of pearson, spearman, adjusted rand, or adjusted mutual info)
-      space: Space the correlation will be performed in. If 'orig' will perform 
-             the correlation at the original density. If 'unfoldiso' will perform
-             the correlation at the isotropic density which is the density used 
-             for permutations.
-    Outputs: 
-      metricnull: null distribution of metric
-      permutedimg: All permuted spatial maps at 'unfoldiso' density
-      r_obs: The observed association between the two aligned maps
-      pval: p-value based on metricnull r_obs'''
+       Parameters
+       ----------
+       imgfix : str
+           Path to the fixed map.
+
+       imgperm : str
+           Path to the map which will be permuted.
+
+       nperm : int
+           Number of permutations to perform.
+
+       metric : str, optional
+           Metric for comparing maps (one of pearson, spearman, adjusted rand, or adjusted mutual info).
+           Default is 'pearson'. is this true?
+
+       label : str, optional
+           Label for the hippocampus. Default is 'hipp'.
+
+       space : str, optional
+           Space in which the correlation will be performed.
+           If 'orig', the correlation will be performed at the original density.
+           If 'unfoldiso', the correlation will be performed at the isotropic density, which is the density used for permutations.
+           Default is 'orig'.
+
+       Returns
+       -------
+       metricnull : numpy.ndarray
+           Null distribution of the specified metric.
+
+       permutedimg : numpy.ndarray
+           All permuted spatial maps at 'unfoldiso' density.
+
+       r_obs : float
+           The observed association between the two aligned maps.
+
+       pval : float
+           p-value based on metricnull r_obs.
+       """
     if type(imgfix) == str:
         fixedimg = nib.load(imgfix)
         fixedimgdata = fixedimg.agg_data()
