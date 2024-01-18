@@ -18,6 +18,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
+    'sphinx_autodoc_typehints'
 ]
 
 intersphinx_mapping = {
@@ -38,4 +39,6 @@ epub_show_urls = 'footnote'
 #path to the root of hippomaps  relative to the documentation root 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../../'))
+package_path = os.path.abspath('../..')
+os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
