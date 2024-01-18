@@ -43,5 +43,6 @@ Contents
    getting started
    usage
    tutorials
-   api
+   hippomaps
+   modules
 
