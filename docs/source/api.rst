@@ -4,7 +4,7 @@ API
 .. autosummary::
    :toctree: generated
 
-.. currentmodule:: hippomaps.example_data.utils
+.. currentmodule:: hippomaps.utils
 
 
     hippomaps
