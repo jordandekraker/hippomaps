@@ -12,6 +12,15 @@ Utils
 Plotting 
 ------------
 
-.. automodule:: hippomaps.plotting
-   :members:
-   :undoc-members:
+.. currentmodule:: hippomaps.plotting
+
+.. autosummary::
+   :toctree: ../../generated/
+
+   surfplot_canonical_foldunfold
+   surfplot_sub_foldunfold
+
+
+
+
+
