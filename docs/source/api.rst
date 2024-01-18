@@ -6,6 +6,3 @@ API
 
 .. currentmodule:: hippomaps.utils
 
-
-    hippomaps
-
