@@ -4,3 +4,6 @@ numpy
 nibabel
 brainspace
 pygeodesic
+scipy
+wget
+pywget
