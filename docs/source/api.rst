@@ -6,4 +6,4 @@ utils
 ------------
 
 .. automodule:: hippomaps.utils
-   :members:
+   profile_align
