@@ -6,4 +6,5 @@ utils
 ------------
 
 .. automodule:: hippomaps.utils
-   profile_align
+   :members:
+   :undoc-members:
