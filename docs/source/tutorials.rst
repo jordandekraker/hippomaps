@@ -7,4 +7,4 @@ Welcome to the Hippomaps tutorial section! Here, you'll find a collection of Jup
    :maxdepth: 2
    :caption: Contents:
 
-   ../tutorials/iEEG
+   ../../tutorials/*.ipynb
