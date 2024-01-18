@@ -8,6 +8,6 @@ utils
 .. currentmodule:: hippomaps.utils
 
 .. autosummary::
-   :toctree: ../../generated/
+   :toctree: generated
 
     profile_align
