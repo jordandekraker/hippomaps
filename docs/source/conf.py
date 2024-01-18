@@ -37,6 +37,17 @@ html_theme = 'sphinx_rtd_theme'
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
 
+autodoc_default_options = {
+    'members': None,
+    'member_order': 'bysource',
+    'inherited-members': None,
+    'no-special-members': None,
+    'exclude-members': 'get_params,set_params',
+    'undoc-members': None,
+}
+
+autoclass_content = 'class'
+
 # path to the root of hippomaps  relative to the documentation root
 import os
 import sys
