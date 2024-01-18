@@ -38,17 +38,16 @@ def surfdat_smooth(F, cdata, iters=1, cores=8):
 
 
 def profile_align(P,V,F, patchdist=None, maxroll=5):
-
-     """
-    Description about this function
-
-    :param arg_name: Explanation about this argument
-    :return: Explanation about your return value
-    :example:
-    .. jupyter-execute::
-
-        import your_package_name
-        print(your_package_name.some_documented_func(1))
+    """    
+    Aligns microstructural profiles in the depth direction across a set of surfaces. 
+    
+    :param P: a VxD matrix of intensities (vertices x depths) 
+    :param V: the midthickness surface vertices
+    :param F: the midthickness surface faces 
+    :param patchdist: radius (in mm) of geodesic distance to compute the average profile. If None then all profiles are used
+    :param maxroll:  maximum shift
+    
+    :return: a matrix the same size as P pads profiles by maxroll, then rolls them by +/- maxroll until maximum overlap with the patch average is achieved
     """
     P = np.pad(P,((0,0),(maxroll,maxroll)),mode='edge')
     Paligned = np.ones(P.shape)*np.nan
