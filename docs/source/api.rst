@@ -4,10 +4,10 @@ API
 .. autosummary::
    :toctree: generated
 
-Install with pip
-::
+.. currentmodule:: hippomaps.example_data.utils
 
-    pip install your_package_name
+.. autosummary::
+   :toctree: ../../generated/
 
+    hippomaps
 
-   hippomaps
