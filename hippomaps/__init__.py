@@ -5,6 +5,7 @@ import hippomaps.utils
 import hippomaps.plotting
 import hippomaps.stats
 import hippomaps.fetcher
+from hippomaps.utils import profile_align
 
-__all__ = ['utils', 'plotting', 'stats', 'fetcher', 'utils.profile_align']
+__all__ = ['utils', 'plotting', 'stats', 'fetcher', 'profile_align']
 
