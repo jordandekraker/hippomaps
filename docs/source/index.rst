@@ -40,6 +40,6 @@ Contents
 --------
 
 .. toctree::
-   getting_started
+   getting started
    usage
    api
