@@ -6,7 +6,7 @@ Plotting
 
 - :ref:`pysec-hippomaps-plotting`
 
-.. _pysec-hippomaps-:
+.. _pysec-hippomaps-plotting:
 
 Plotting
 ------------
