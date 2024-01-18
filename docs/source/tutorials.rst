@@ -6,4 +6,4 @@ Welcome to the Hippomaps tutorial section! Here, you'll find a collection of Jup
 .. autosummary::
    :toctree: ../../generated/
 
-   tutorials/MRI-3T-rsfMRI
+    ../../tutorials/MRI-3T-rsfMRI
