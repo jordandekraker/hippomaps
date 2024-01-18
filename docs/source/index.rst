@@ -43,5 +43,5 @@ Contents
    getting started
    usage
    tutorials
-   hippomaps
+   api
 
