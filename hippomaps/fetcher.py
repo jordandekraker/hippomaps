@@ -11,21 +11,16 @@ current_hash=''
 def tree_osf_hashes(repoID, name_hashes, maxdepth, current_hash):
     """
     Recursively fetches file hashes from the OSF repository. Verify with jordan
-
     Parameters
     ----------
     repoID : str
-        The ID of the OSF repository.
-
+        The ID of the repository.
     name_hashes : dict
         A dictionary to store file names and their corresponding hashes.
-
     maxdepth : int
         The maximum depth to traverse the file tree.
-
     current_hash : str
         The hash of the current file or directory.
-
     Returns
     -------
     None
@@ -53,18 +48,15 @@ class GlobDict(dict):
     def glob(self, match):
         """
        Glob-style pattern matching for the dictionary keys.@match should be a glob style pattern match (e.g. '*.txt')
-
        Parameters
        ----------
        match : str
            The glob-style pattern to match keys.
-
        Returns
        -------
        dict
            A filtered dictionary with keys matching the specified pattern.
         """
-
         return dict([(k,v) for k,v  in self.items() if fnmatch(k, match)])
 
 glob_dict = GlobDict( **name_hashes )
