@@ -8,3 +8,4 @@ scipy
 wget
 pywget
 nbsphinx
+sphinx-gallery
