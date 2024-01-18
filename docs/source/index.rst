@@ -44,5 +44,4 @@ Contents
    usage
    tutorials
    hippomaps
-   modules
 
