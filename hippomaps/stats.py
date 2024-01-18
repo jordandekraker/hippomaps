@@ -19,20 +19,15 @@ def spin_test(imgfix,imgperm,nperm,metric='pearson',label='hipp',space='orig'):
        ----------
        imgfix : str
            Path to the fixed map.
-
        imgperm : str
            Path to the map which will be permuted.
-
        nperm : int
            Number of permutations to perform.
-
        metric : str, optional
            Metric for comparing maps (one of pearson, spearman, adjusted rand, or adjusted mutual info).
            Default is 'pearson'. is this true?
-
        label : str, optional
            Label for the hippocampus. Default is 'hipp'.
-
        space : str, optional
            Space in which the correlation will be performed.
            If 'orig', the correlation will be performed at the original density.
@@ -41,17 +36,11 @@ def spin_test(imgfix,imgperm,nperm,metric='pearson',label='hipp',space='orig'):
 
        Returns
        -------
-       metricnull : numpy.ndarray
-           Null distribution of the specified metric.
+       metricnull : Null distribution of the specified metric
+       permutedimg : All permuted spatial maps at 'unfoldiso' density.
+       r_obs :  The observed association between the two aligned maps.
 
-       permutedimg : numpy.ndarray
-           All permuted spatial maps at 'unfoldiso' density.
-
-       r_obs : float
-           The observed association between the two aligned maps.
-
-       pval : float
-           p-value based on metricnull r_obs.
+       pval : p-value based on metricnull r_obs.
        """
     if type(imgfix) == str:
         fixedimg = nib.load(imgfix)
