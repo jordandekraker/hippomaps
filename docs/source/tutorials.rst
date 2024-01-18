@@ -5,13 +5,6 @@ Welcome to the Hippomaps tutorial section! Here, you'll find a collection of Jup
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
-   tutorials/MRI-3T-rsfMRI
-   tutorials/MRI-7T-struct
-   tutorials/Morphology
-   tutorials/iEEG
-   tutorials/Histology-MRI-9p4T
    tutorials/DimReduct
-
-.. nbsphinx-thumbnail::
-   :glob: ../../tutorials/*.ipynb
