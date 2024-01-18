@@ -18,7 +18,8 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
-    'nbsphinx'
+    'nbsphinx',
+    "sphinx_gallery.load_style"
 ]
 
 intersphinx_mapping = {
