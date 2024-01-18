@@ -1,4 +1,4 @@
-hippomaps package
+API reference
 =================
 
 Submodules
