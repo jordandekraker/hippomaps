@@ -5,9 +5,5 @@ API
 utils
 ------------
 
-.. currentmodule:: hippomaps.utils
-
-.. autosummary::
-   :toctree: generated
-
-    profile_align
+.. automodule:: hippomaps.utils
+   :members:
