@@ -3,10 +3,15 @@ Tutorials
 
 Welcome to the Hippomaps tutorial section! Here, you'll find a collection of Jupyter notebooks providing step-by-step guides and examples.
 
-.. nbgallery::
-    :caption: This is a tutorials gallery:
-    :name: tutorials
-    :glob:
-    :reversed:
+.. toctree::
+   :maxdepth: 2
 
-    tutorials/*.ipynb
+   tutorials/MRI-3T-rsfMRI
+   tutorials/MRI-7T-struct
+   tutorials/Morphology
+   tutorials/iEEG
+   tutorials/Histology-MRI-9p4T
+   tutorials/DimReduct
+
+.. nbsphinx-thumbnail::
+   :glob: ../../tutorials/*.ipynb
