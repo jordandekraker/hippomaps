@@ -2,9 +2,9 @@ API
 ===
 
 
-utils
+Plotting 
 ------------
 
-.. automodule:: hippomaps.utils
+.. automodule:: hippomaps.plotting
    :members:
    :undoc-members:
