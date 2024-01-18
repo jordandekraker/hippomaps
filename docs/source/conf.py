@@ -17,7 +17,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx'
+    'sphinx.ext.intersphinx',
+    'nbsphinx'
 ]
 
 intersphinx_mapping = {
@@ -41,3 +42,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../../'))
 package_path = os.path.abspath('../..')
 os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
+
+nbsphinx_prolog = """
+.. include:: ../../tutorials/README.rst
+"""
