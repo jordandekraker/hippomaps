@@ -14,7 +14,8 @@ from scipy.interpolate import interpn
 from numpy.matlib import repmat
 import pygeodesic.geodesic as geodesic
 
-resourcesdir=str(Path(__file__).parents[1]) + '/resources'
+resourcesdir = str(Path(__file__).parents[1]) + '/resources'
+
 
 def avg_neighbours(invar):
     """
@@ -33,13 +34,14 @@ def avg_neighbours(invar):
     float
         The average value of the vertex-wise data at vertex n and its neighboring vertices.
     """
-    F,cdat,n = invar
-    frows = np.where(F==n)[0]
-    v = np.unique(F[frows,:])
+    F, cdat, n = invar
+    frows = np.where(F == n)[0]
+    v = np.unique(F[frows, :])
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         out = np.nanmean(cdat[v])
     return out
+
 
 def surfdat_smooth(F, cdata, iters=1, cores=8):
     """
@@ -61,13 +63,13 @@ def surfdat_smooth(F, cdata, iters=1, cores=8):
        """
     cdat = copy.deepcopy(cdata)
     for i in range(iters):
-        cdat = Parallel(n_jobs=cores)(delayed(avg_neighbours)((F,cdat,n)) for n in range(len(cdat)))
+        cdat = Parallel(n_jobs=cores)(delayed(avg_neighbours)((F, cdat, n)) for n in range(len(cdat)))
         cdata_smooth = np.array(cdat)
         cdat = copy.deepcopy(cdata_smooth)
     return cdata_smooth
 
 
-def profile_align(P,V,F, patchdist=None, maxroll=5):
+def profile_align(P, V, F, patchdist=None, maxroll=5):
     """
        Aligns microstructural profiles in the depth direction across a set of surfaces.
 
@@ -91,38 +93,38 @@ def profile_align(P,V,F, patchdist=None, maxroll=5):
        - If patchdist is specified, the function aligns profiles based on the mean profile within a geodesic patch around each vertex.
        - The alignment is performed by rolling the profiles to achieve maximum correlation with the reference profile.
        """
-    P = np.pad(P,((0,0),(maxroll,maxroll)),mode='edge')
-    Paligned = np.ones(P.shape)*np.nan
+    P = np.pad(P, ((0, 0), (maxroll, maxroll)), mode='edge')
+    Paligned = np.ones(P.shape) * np.nan
 
-    if patchdist==None:
-        p_mean = np.nanmean(P,axis=0)
+    if patchdist == None:
+        p_mean = np.nanmean(P, axis=0)
         # get R for all rolls
-        rolls = np.arange(-maxroll,maxroll+1)
-        R = np.zeros((len(P),len(rolls)))
-        for o,offset in enumerate(rolls):
-            p_mean_off = np.reshape(np.roll(p_mean,offset),(1,len(p_mean)))
-            R[:,o] = np.corrcoef(p_mean_off,P)[1:,0]
-        Rbest = np.argmax(R,axis=1)
+        rolls = np.arange(-maxroll, maxroll + 1)
+        R = np.zeros((len(P), len(rolls)))
+        for o, offset in enumerate(rolls):
+            p_mean_off = np.reshape(np.roll(p_mean, offset), (1, len(p_mean)))
+            R[:, o] = np.corrcoef(p_mean_off, P)[1:, 0]
+        Rbest = np.argmax(R, axis=1)
         # keep only the best roll
         for v in range(P.shape[0]):
-            Paligned[v,:] = np.roll(P[v,:],-rolls[Rbest[v]])
+            Paligned[v, :] = np.roll(P[v, :], -rolls[Rbest[v]])
     else:
         geoalg = geodesic.PyGeodesicAlgorithmExact(V, F)
         for v in range(len(V)):
             # use a patch around the given vertex as the averaged reference
-            dist,_ = geoalg.geodesicDistances(np.array([v]), None)
-            p_mean = np.nanmean(P[dist<patchdist,:],axis=0)
-            rolls = np.arange(-maxroll,maxroll+1)
+            dist, _ = geoalg.geodesicDistances(np.array([v]), None)
+            p_mean = np.nanmean(P[dist < patchdist, :], axis=0)
+            rolls = np.arange(-maxroll, maxroll + 1)
             R = np.zeros((len(rolls)))
-            for o,offset in enumerate(rolls):
-                p_mean_off = np.reshape(np.roll(p_mean,offset),(1,len(p_mean)))
-                R[o] = np.corrcoef(p_mean_off,P[v,:])[0,1]
+            for o, offset in enumerate(rolls):
+                p_mean_off = np.reshape(np.roll(p_mean, offset), (1, len(p_mean)))
+                R[o] = np.corrcoef(p_mean_off, P[v, :])[0, 1]
             Rbest = np.argmax(R)
-            Paligned[v,:] = np.roll(P[v,:],-rolls[Rbest])
-    return Paligned[:,maxroll:-maxroll]
-      
+            Paligned[v, :] = np.roll(P[v, :], -rolls[Rbest])
+    return Paligned[:, maxroll:-maxroll]
 
-def Laplace_solver(faces,init,maxiters=1e4,conv=1e-6,cores=8):
+
+def Laplace_solver(faces, init, maxiters=1e4, conv=1e-6, cores=8):
     """
     Solves the Laplace equation along vertices of a surface.
     Parameters
@@ -140,27 +142,27 @@ def Laplace_solver(faces,init,maxiters=1e4,conv=1e-6,cores=8):
     LP : Laplace solution (vertex-wise).
     change : sum of absolute changes per iteration (should converge towards 0)
     """
-    ind_start = np.where(init==0)[0]
-    ind_end = np.where(init==1)[0]
+    ind_start = np.where(init == 0)[0]
+    ind_end = np.where(init == 1)[0]
     mask = np.where(np.isnan(init))[0]
     # optimize speed
-    faces = np.delete(faces, np.where(np.isin(faces,mask))[0],0)
+    faces = np.delete(faces, np.where(np.isin(faces, mask))[0], 0)
     change = []
     LP = copy.deepcopy(init)
     for iters in range(maxiters):
-        LPup = surfdat_smooth(faces,LP,iters=1,cores=cores)
+        LPup = surfdat_smooth(faces, LP, iters=1, cores=cores)
         LPup[ind_start] = 0
         LPup[ind_end] = 1
         LPup[mask] = np.nan
-        c = np.nansum(np.abs(LP-LPup))
+        c = np.nansum(np.abs(LP - LPup))
         change.append(c)
         LP = copy.deepcopy(LPup)
         if c < conv:
             break
-    return LP,change
+    return LP, change
 
 
-def fillnanvertices(F,V):
+def fillnanvertices(F, V):
     """
        Fills NaNs by iteratively computing the nanmean of nearest neighbors until no NaNs remain.
        Can be used to fill missing vertices OR missing vertex cdata.
@@ -181,17 +183,17 @@ def fillnanvertices(F,V):
         # replace with the nanmean of neighbouring vertices
         for n in vrows:
             frows = np.where(F == n)[0]
-            neighbours = np.unique(F[frows,:])
+            neighbours = np.unique(F[frows, :])
             Vnew[n] = np.nanmean(Vnew[neighbours], 0)
-        if sum(np.isnan(Vold)) == sum(np.isnan(Vnew)): # stop if no changes
+        if sum(np.isnan(Vold)) == sum(np.isnan(Vnew)):  # stop if no changes
             break
         else:
-            Vold=Vnew
+            Vold = Vnew
     return Vnew
 
 
 def density_interp(indensity, outdensity, cdata, label, method='linear', resourcesdir=resourcesdir):
-         """
+    """
        Interpolates data from one surface density onto another via unfolded space.
        Parameters
        ----------
@@ -212,29 +214,31 @@ def density_interp(indensity, outdensity, cdata, label, method='linear', resourc
        -------
        interp : interpolated data
        faces: face connectivity from new surface density
-       """
+    """
     VALID_STATUS = {'0p5mm', '1mm', '2mm', 'unfoldiso'}
     if indensity not in VALID_STATUS:
         raise ValueError("results: indensity must be one of %r." % VALID_STATUS)
     if outdensity not in VALID_STATUS:
         raise ValueError("results: outdensity must be one of %r." % VALID_STATUS)
-    
+
     # load unfolded surfaces for topological matching
-    startsurf = nib.load(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{indensity}_label-{label}_midthickness.surf.gii')
+    startsurf = nib.load(
+        f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{indensity}_label-{label}_midthickness.surf.gii')
     vertices_start = startsurf.get_arrays_from_intent('NIFTI_INTENT_POINTSET')[0].data
-    targetsurf = nib.load(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii')
+    targetsurf = nib.load(
+        f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii')
     vertices_target = targetsurf.get_arrays_from_intent('NIFTI_INTENT_POINTSET')[0].data
     faces = targetsurf.get_arrays_from_intent('NIFTI_INTENT_TRIANGLE')[0].data
 
     # interpolate
-    interp = griddata(vertices_start[:,:2], values=cdata, xi=vertices_target[:,:2], method=method)
+    interp = griddata(vertices_start[:, :2], values=cdata, xi=vertices_target[:, :2], method=method)
     # fill any NaNs
-    interp = fillnanvertices(faces,interp)
-    return interp,faces,vertices_target
+    interp = fillnanvertices(faces, interp)
+    return interp, faces, vertices_target
 
 
-def area_rescale(vertices,den,label,APaxis=1):
-        """
+def area_rescale(vertices, den, label, APaxis=1):
+    """
          Rescales unfolded surface vertices to account for overrepresentation of anterior and posterior regions.
         #original Most of the time, in unfolded space the anterior and psoterior are overrepresented. This function compresses these regions proportionally to the surface areas of a cononical example
          Parameters
@@ -250,94 +254,105 @@ def area_rescale(vertices,den,label,APaxis=1):
          -------
          numpy.ndarray
              Rescaled unfolded surface vertices.
-         """
-    w = 126 if label=='hipp' else 30 # width of unfolded space
-    s=15 # surf area smoothing (sigma)
-    Pold = vertices[:,APaxis]
+     """
+    w = 126 if label == 'hipp' else 30  # width of unfolded space
+    s = 15  # surf area smoothing (sigma)
+    Pold = vertices[:, APaxis]
 
     # compute rescaling from surface areas
-    surfarea = nib.load(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-{label}_surfarea.shape.gii').darrays[0].data
-    surfarea,_,_ = density_interp(den, 'unfoldiso', surfarea.flatten(), label)
-    surfarea = np.reshape(surfarea,(w,254))
-    surfarea = gaussian_filter(surfarea,sigma=s)
+    surfarea = \
+        nib.load(
+            f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-{label}_surfarea.shape.gii').darrays[
+            0].data
+    surfarea, _, _ = density_interp(den, 'unfoldiso', surfarea.flatten(), label)
+    surfarea = np.reshape(surfarea, (w, 254))
+    surfarea = gaussian_filter(surfarea, sigma=s)
 
-    avg_surfarea = np.mean(surfarea,axis=0)
-    rescalefactor = np.cumsum(1/avg_surfarea)
+    avg_surfarea = np.mean(surfarea, axis=0)
+    rescalefactor = np.cumsum(1 / avg_surfarea)
     rescalefactor = rescalefactor - np.min(rescalefactor)
-    rescalefactor = rescalefactor/np.max(rescalefactor)
-    rescalefactor = rescalefactor+1 - np.linspace(0,1,len(rescalefactor))
+    rescalefactor = rescalefactor / np.max(rescalefactor)
+    rescalefactor = rescalefactor + 1 - np.linspace(0, 1, len(rescalefactor))
 
-    rescalefactor = repmat(rescalefactor,w,1)
-    rescalefactor,_,_ = density_interp('unfoldiso', den, rescalefactor.flatten(), label)
+    rescalefactor = repmat(rescalefactor, w, 1)
+    rescalefactor, _, _ = density_interp('unfoldiso', den, rescalefactor.flatten(), label)
 
     Pnew = Pold * rescalefactor
-    vertices[:,APaxis] = Pnew
+    vertices[:, APaxis] = Pnew
     return vertices
 
 
-def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, space='*', label='hipp', save_out_name=None, method='nearest'):
-        """
-           Labels voxels using data on a folded/unfolded surface and native space coordinates images.
-            from https://github.com/khanlab/hippunfold/blob/master/hippunfold/workflow/scripts/label_subfields_from_vol_coords.py
-            this function labels voxels using data on a folded/unfolded surface (midthickness or any), and native space coords (ap, pd) images
-            TODO: consider trying to simplify inputs specifying the coords paths?
-           Parameters
-           ----------
-           surf_data : Data on the folded/unfolded surface (midthickness or any).
-           indensity : str
-               Density of the unfolded space. One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
-           hippunfold_dir : str
-               Directory path to the HippUnfold output.
-           sub : str
-               Subject identifier.
-           ses : str
-               Session identifier.
-           hemi : str
-               Hemisphere. Either 'L' or 'R'.
-           space : str, optional
-                Default is '*'.
-           label : str, optional
-                Default is 'hipp'.
-           save_out_name : str, optional
-               Output file name to save the label image. Default is None.
-           method : str, optional
-               Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'nearest'.
-           Returns
-           -------
-           numpy.ndarray
-               Labeled voxel data.
-           """
-    if len(ses)>0: 
-        ses = 'ses-'+ses
-        uses = '_'+ses 
-    else: 
+def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, space='*', label='hipp', save_out_name=None,
+                      method='nearest'):
+    """
+       Labels voxels using data on a folded/unfolded surface and native space coordinates images.
+        from https://github.com/khanlab/hippunfold/blob/master/hippunfold/workflow/scripts/label_subfields_from_vol_coords.py
+        this function labels voxels using data on a folded/unfolded surface (midthickness or any), and native space coords (ap, pd) images
+        TODO: consider trying to simplify inputs specifying the coords paths?
+       Parameters
+       ----------
+       surf_data : Data on the folded/unfolded surface (midthickness or any).
+       indensity : str
+           Density of the unfolded space. One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+       hippunfold_dir : str
+           Directory path to the HippUnfold output.
+       sub : str
+           Subject identifier.
+       ses : str
+           Session identifier.
+       hemi : str
+           Hemisphere. Either 'L' or 'R'.
+       space : str, optional
+            Default is '*'.
+       label : str, optional
+            Default is 'hipp'.
+       save_out_name : str, optional
+           Output file name to save the label image. Default is None.
+       method : str, optional
+           Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'nearest'.
+       Returns
+       -------
+       numpy.ndarray
+           Labeled voxel data.
+       """
+    if len(ses) > 0:
+        ses = 'ses-' + ses
+        uses = '_' + ses
+    else:
         uses = ''
 
-    nii_ap = glob.glob(f'{hippunfold_dir}/sub-{sub}/{ses}/coords/sub-{sub}{uses}_dir-AP_hemi-{hemi}_space-{space}_label-{label}_desc-laplace_coords.nii.gz')[0]
-    nii_pd = glob.glob(f'{hippunfold_dir}/sub-{sub}/{ses}/coords/sub-{sub}{uses}_dir-PD_hemi-{hemi}_space-{space}_label-{label}_desc-laplace_coords.nii.gz')[0]
-    nii_mask = glob.glob(f'{hippunfold_dir}/sub-{sub}/{ses}/anat/sub-{sub}{uses}_hemi-{hemi}_space-{space}_*_dseg.nii.gz')[0]
+    nii_ap = glob.glob(
+        f'{hippunfold_dir}/sub-{sub}/{ses}/coords/sub-{sub}{uses}_dir-AP_hemi-{hemi}_space-{space}_label-{label}_desc-laplace_coords.nii.gz')[
+        0]
+    nii_pd = glob.glob(
+        f'{hippunfold_dir}/sub-{sub}/{ses}/coords/sub-{sub}{uses}_dir-PD_hemi-{hemi}_space-{space}_label-{label}_desc-laplace_coords.nii.gz')[
+        0]
+    nii_mask = \
+        glob.glob(f'{hippunfold_dir}/sub-{sub}/{ses}/anat/sub-{sub}{uses}_hemi-{hemi}_space-{space}_*_dseg.nii.gz')[0]
 
     # resample surface data into APxPD shape
     surf_data[np.isnan(surf_data)] = -999
     if indensity != 'unfildiso':
-        surf_data_unfoldiso,_,_ = density_interp(indensity,'unfoldiso',surf_data, label, method=method)
-    surf_data_unfoldiso = surf_data_unfoldiso.reshape(126,254).T
-    surf_data_unfoldiso[surf_data_unfoldiso==-999] = np.nan
+        surf_data_unfoldiso, _, _ = density_interp(indensity, 'unfoldiso', surf_data, label, method=method)
+    surf_data_unfoldiso = surf_data_unfoldiso.reshape(126, 254).T
+    surf_data_unfoldiso[surf_data_unfoldiso == -999] = np.nan
 
     # undo unfolded space warp
-    warp = glob.glob(f'{hippunfold_dir}/../work/sub-{sub}/{ses}/warps/sub-{sub}{uses}_hemi-{hemi}_space-unfold_desc-SyN_from-*_to-subject_type-itk_xfm.nii.gz')
-    if not warp: raise Warning("No unfolded space warp found. It may be that your HippUnfold output work dir is tarred, or you ran hippunfold without unfolded space registration. Proceeding without unfolded space registration")
+    warp = glob.glob(
+        f'{hippunfold_dir}/../work/sub-{sub}/{ses}/warps/sub-{sub}{uses}_hemi-{hemi}_space-unfold_desc-SyN_from-*_to-subject_type-itk_xfm.nii.gz')
+    if not warp: raise Warning(
+        "No unfolded space warp found. It may be that your HippUnfold output work dir is tarred, or you ran hippunfold without unfolded space registration. Proceeding without unfolded space registration")
     try:
         t = nib.load(warp[0])
         tmp_nib = nib.Nifti1Image(surf_data_unfoldiso, t.affine)
         nib.save(tmp_nib, "tmp.nii.gz")
-        if method=="nearest": 
-            meth = "NearestNeighbor" 
-        elif method=="linear": 
-            meth="Linear"
+        if method == "nearest":
+            meth = "NearestNeighbor"
+        elif method == "linear":
+            meth = "Linear"
         t = os.system(f"antsApplyTransforms -i tmp.nii.gz -r tmp.nii.gz -o tmpWarped.nii.gz -t {warp[0]} -n {meth}")
-        if t!=0: raise Error("ANTs not found")
-        surf_data_unfoldiso = nib.load("tmpWarped.nii.gz").get_fdata()[:,:,0]
+        if t != 0: raise Error("ANTs not found")
+        surf_data_unfoldiso = nib.load("tmpWarped.nii.gz").get_fdata()[:, :, 0]
         os.system("rm tmp.nii.gz tmpWarped.nii.gz")
     except:
         raise Warning("error in unfolded space registration")
@@ -356,12 +371,12 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
     # get mask of coords
     mask_nib = nib.load(nii_mask)
     mask_img = mask_nib.get_fdata()
-    if label=='hipp':
+    if label == 'hipp':
         mask = np.logical_and(mask_img > 0, mask_img < 6)
-    elif label=='dentate':
-        mask = mask_img==6
+    elif label == 'dentate':
+        mask = mask_img == 6
     else:
-        mask = mask_img>0
+        mask = mask_img > 0
 
     # interpolate
     query_points = np.vstack((ap_img[mask], pd_img[mask])).T
@@ -369,8 +384,8 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
 
     # put back into image
     label_img = np.zeros(ap_img.shape, dtype="uint16")
-    label_img[mask==1] = labelled_points
-    
+    label_img[mask == 1] = labelled_points
+
     if save_out_name:
         # save label img
         label_nib = nib.Nifti1Image(label_img, ap_nib.affine, ap_nib.header)
@@ -378,27 +393,26 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
     return label_img
 
 
-def bound_cdata(cdata,cutoff=0.05):
-        """
-          Returns upper and lower X percent interval values.
-          Parameters
-          ----------
-          cdata :  List of values.
-          cutoff : Default is 0.05.
-          Returns
-          -------
-           Values within the upper and lower X percent interval.
-          """
+def bound_cdata(cdata, cutoff=0.05):
+    """
+      Returns upper and lower X percent interval values.
+      Parameters
+      ----------
+      cdata :  List of values.
+      cutoff : Default is 0.05.
+      Returns
+      -------
+       Values within the upper and lower X percent interval.
+    """
     if not cutoff:
         return False
     shp = cdata.shape
     c = cdata.flatten()
     l = np.sort(c[~np.isnan(c)])
     try:
-        bounds = l[[int(cutoff*len(l)), int((1-cutoff)*len(l))]]
-        cdata[cdata<bounds[0]] = bounds[0]
-        cdata[cdata>bounds[1]] = bounds[1]
+        bounds = l[[int(cutoff * len(l)), int((1 - cutoff) * len(l))]]
+        cdata[cdata < bounds[0]] = bounds[0]
+        cdata[cdata > bounds[1]] = bounds[1]
     except:
         print('cdata all NaN')
     return np.reshape(cdata, shp)
-
