@@ -11,12 +11,15 @@ resourcesdir=str(Path(__file__).parents[1]) + '/resources'
 import hippomaps.utils
 
 def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentate'], unfoldAPrescale=False, den='0p5mm', tighten_cwindow=False, resourcesdir=resourcesdir, size=[350,300], **qwargs):
-    '''
+
+    """
     Plots canonical folded and unfolded surfaces (hipp/dentate; folded/unfolded). This is good for cdata that isn't specific to one subject (eg. maybe it has been averaged across many subjects).
+    :param cdata: array with the shape Vx2xF, where V is the number of vertices (including DG unless specified), 2 is the number of hemispheres (unless specified), and F is the number of rows/features
+
+    :param kwargs:     kwargs: see https://brainspace.readthedocs.io/en/latest/generated/brainspace.plotting.surface_plotting.plot_surf.html#brainspace.plotting.surface_plotting.plot_surf
+    :return: Figure to plot
     
-    cdata: array with the shape Vx2xF, where V is the number of vertices (including DG unless specified), 2 is the number of hemispheres (unless specified), and F is the number of rows/features
-    kwargs: see https://brainspace.readthedocs.io/en/latest/generated/brainspace.plotting.surface_plotting.plot_surf.html#brainspace.plotting.surface_plotting.plot_surf
-    '''
+    """
     # load surfaces
     rh = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-hipp_midthickness.surf.gii')
     ru = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-hipp_midthickness.surf.gii')
