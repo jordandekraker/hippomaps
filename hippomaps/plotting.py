@@ -147,7 +147,7 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'],
         Additional keyword arguments for customization.
     Returns
     -------
-    None
+    matplotlib.figure.Figure
         The function generates a surface plot for the specified subject's folded and unfolded hippocampus.
     """
 
