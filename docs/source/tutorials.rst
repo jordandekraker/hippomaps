@@ -5,7 +5,7 @@ Tutorials
    :maxdepth: 2
    :caption: Contents:
 
-   /notebooks/DimReduct
+   /notebooks/DimReduct.rst
 
 .. nbgallery::
    /notebooks/iEEG
