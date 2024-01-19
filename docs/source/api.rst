@@ -1,45 +1,47 @@
-Api Reference
-=================
+API Reference
+==================
 
-Submodules
-----------
+Plotting
+------------
 
-hippomaps.fetcher module
-------------------------
+.. currentmodule:: hippomaps.plotting
 
-.. automodule:: hippomaps.fetcher
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autosummary::
+   :toctree: ../../generated/
 
-hippomaps.plotting module
--------------------------
+   surfplot_canonical_foldunfold
+   surfplot_sub_foldunfold
 
-.. automodule:: hippomaps.plotting
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Stats
+------------
 
-hippomaps.stats module
-----------------------
+.. currentmodule:: hippomaps.stats
 
-.. automodule:: hippomaps.stats
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autosummary::
+   :toctree: ../../generated/
 
-hippomaps.utils module
-----------------------
+   spin_test
 
-.. automodule:: hippomaps.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Fetcher
+------------
 
-Module contents
----------------
+.. currentmodule:: hippomaps.fetcher
 
-.. automodule:: hippomaps
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autosummary::
+   :toctree: ../../generated/
+
+   tree_osf_hashes
+
+Utils
+------------
+
+.. currentmodule:: hippomaps.utils
+
+.. autosummary::
+   :toctree: ../../generated/
+
+   surfdat_smooth
+   profile_align
+   Laplace_solver
+   density_interp
+   surface_to_volume
