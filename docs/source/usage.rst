@@ -1,5 +1,5 @@
 Usage
-=====
+==============
 
 .. _installation:
 
