@@ -113,6 +113,7 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'],
     Plots subject-specific folded and unfolded surfaces (hipp/dentate; folded/unfolded).
     Parameters
     ----------
+
     hippunfold_dir : str
         Directory path containing unfolded hippocampus data.
     sub : str
@@ -145,6 +146,7 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'],
         Colormap for the surface plot. Default is 'viridis'.
     **qwargs : dict, optional
         Additional keyword arguments for customization.
+
     Returns
     -------
     matplotlib.figure.Figure
