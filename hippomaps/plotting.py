@@ -11,12 +11,41 @@ resourcesdir=str(Path(__file__).parents[1]) + '/resources'
 import hippomaps.utils
 
 def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentate'], unfoldAPrescale=False, den='0p5mm', tighten_cwindow=False, resourcesdir=resourcesdir, size=[350,300], **qwargs):
-    '''
-    Plots canonical folded and unfolded surfaces (hipp/dentate; folded/unfolded). This is good for cdata that isn't specific to one subject (eg. maybe it has been averaged across many subjects).
-    
-    cdata: array with the shape Vx2xF, where V is the number of vertices (including DG unless specified), 2 is the number of hemispheres (unless specified), and F is the number of rows/features
-    kwargs: see https://brainspace.readthedocs.io/en/latest/generated/brainspace.plotting.surface_plotting.plot_surf.html#brainspace.plotting.surface_plotting.plot_surf
-    '''
+
+    """
+       Plots canonical folded and unfolded surfaces for hippocampus and dentate gyrus.
+       Parameters
+       ----------
+       cdata : numpy.ndarray
+           Array with the shape Vx2xF, where V is the number of vertices (including DG unless specified),
+           2 is the number of hemispheres (unless specified), and F is the number of rows/features.
+       hemis : list of str, optional
+           List of hemispheres to visualize. Default is ['L', 'R'].
+       labels : list of str, optional
+           List of labels for different structures. Default is ['hipp', 'dentate'].
+       unfoldAPrescale : bool, optional
+           Whether to pre-scale the anterior-posterior axis during unfolding. Default is False.
+       den : str, optional
+           Density parameter for surface plot. Default is '0p5mm'.
+       tighten_cwindow : bool, optional
+           Whether to tighten the color window for the surface plot. Default is False.
+       resourcesdir : str, optional
+           Directory path containing additional resources. Default is the value of resourcesdir.
+       size : list of int, optional
+           Size of the surface plot. Default is [350, 300].
+       **qwargs : dict, optional
+           Additional keyword arguments for customization.
+           See https://brainspace.readthedocs.io/en/latest/generated/brainspace.plotting.surface_plotting.plot_surf.html#brainspace.plotting.surface_plotting.plot_surf
+
+       Returns
+       -------
+       matplotlib.figure.Figure
+           Figure object for the generated surface plot.
+       Notes
+       -----
+       This function is suitable for plotting canonical folded and unfolded surfaces, and it is particularly useful
+       when the data (`cdata`) isn't specific to one subject (e.g., maybe it has been averaged across many subjects).
+       """
     # load surfaces
     rh = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-hipp_midthickness.surf.gii')
     ru = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-hipp_midthickness.surf.gii')
@@ -34,7 +63,7 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentat
                                     cells=np.concatenate((rh.GetCells2D().copy(), hd.GetCells2D().copy()+npts)))
         ru = mc.build_polydata(np.concatenate((ru.Points.copy(), ud.Points.copy())),
                                 cells=np.concatenate((ru.GetCells2D().copy(), ud.GetCells2D().copy()+npts)))
-    
+
     # flip to get left hemisphere
     lh = mc.build_polydata(rh.Points.copy(), cells=rh.GetCells2D().copy())
     lh.Points[:,0] = -lh.Points[:,0]
@@ -44,7 +73,7 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentat
     # do some cdata formatting
     cdata = np.reshape(cdata,[cdata.shape[0],len(hemis),-1])
     if len(cdata.shape) == 2: cdata = np.expand_dims(t,axis=2)
-    if tighten_cwindow>0: 
+    if tighten_cwindow>0:
         for i in range(0,cdata.shape[2]):
             cdata[:,:,i] = hippomaps.utils.bound_cdata(cdata[:,:,i])
 
@@ -65,7 +94,7 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentat
                 ru.append_array(cdata[:,h,f], name=f'feature{f}', at='point')
         for f in range(cdata.shape[2]):
             arrName[f,:] = f'feature{f}'
-    
+
     # extra parameters
     new_qwargs = dict(zoom=1.7, nan_color=(0,0,0,0))
     new_qwargs.update(qwargs)
@@ -79,19 +108,55 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentat
 
 
 def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'], labels=['hipp','dentate'], flipRcurv = True, unfoldAPrescale=False, den='0p5mm', modality='T1w', tighten_cwindow=True, rotate=True,  resourcesdir=resourcesdir, size=[350,230], cmap='viridis', **qwargs):
-    '''
-    Plots subject-specific folded and unfolded surfaces (hipp/dentate; folded/unfolded). 
-    
-    Inputs are path/filenames (eg. sub='01', ses='01') 
-        if ses doesn't exist, simply set it to ''. 
-    features: list of strings. Can include 'thickness', 'curvature', 'gyrification', 'subfields', or any added data that follows the same naming convention
-    kwargs: see https://brainspace.readthedocs.io/en/latest/generated/brainspace.plotting.surface_plotting.plot_surf.html#brainspace.plotting.surface_plotting.plot_surf
-    '''
 
-    if len(ses)>0: 
+    """
+    Plots subject-specific folded and unfolded surfaces (hipp/dentate; folded/unfolded).
+    Parameters
+    ----------
+
+    hippunfold_dir : str
+        Directory path containing unfolded hippocampus data.
+    sub : str
+        Subject ID. Inputs are path/filenames
+    ses : str
+        Session ID. Inputs are path/filenames
+    features : str
+        Feature or measurement to visualize on the surface plot.list of strings. Can include thickness, curvature, gyrification, subfields, or other added data that follows the same naming convention
+    hemis : list of str, optional
+        List of hemispheres to visualize. Default is ['L', 'R'].
+    labels : list of str, optional
+        List of labels for different structures. Default is ['hipp', 'dentate'].
+    flipRcurv : bool, optional
+        Whether to flip the curvature map for the right hemisphere. Default is True.
+    unfoldAPrescale : bool, optional
+        Whether to pre-scale the anterior-posterior axis during unfolding. Default is False.
+    den : str, optional
+        Density parameter for surface plot. Default is '0p5mm'.
+    modality : str, optional
+        Imaging modality (e.g., 'T1w'). Default is 'T1w'.
+    tighten_cwindow : bool, optional
+        Whether to tighten the color window for the surface plot. Default is True.
+    rotate : bool, optional
+        Whether to rotate the surface plot. Default is True.
+    resourcesdir : str, optional
+        Directory path containing additional resources. Default is the value of resourcesdir.
+    size : list of int, optional
+        Size of the surface plot. Default is [350, 230].
+    cmap : str, optional
+        Colormap for the surface plot. Default is 'viridis'.
+    **qwargs : dict, optional
+        Additional keyword arguments for customization.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The function generates a surface plot for the specified subject's folded and unfolded hippocampus.
+    """
+
+    if len(ses)>0:
         ses = 'ses-'+ses
-        uses = '_'+ses 
-    else: 
+        uses = '_'+ses
+    else:
         uses = ''
 
     # load surfaces
@@ -138,7 +203,7 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'],
     for h,hemi in enumerate(hemis):
         for l,label in enumerate(labels):
             for f,feature in enumerate(features):
-                if feature=='subfields': 
+                if feature=='subfields':
                     type='label'
                 else:
                     type='shape'
@@ -159,7 +224,7 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'],
             cdata[ind[1],:,f] = np.nanmax(cdata[ind[0],:,f])+1
             cmaps[f,:] = ('jet')
         else:
-            if tighten_cwindow>0: 
+            if tighten_cwindow>0:
                 cdata[:,:,f] = hippomaps.utils.bound_cdata(cdata[:,:,f])
 
     # set up layout
