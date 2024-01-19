@@ -5,5 +5,5 @@ Tutorials
    :maxdepth: 2
    :caption: Contents:
 
-   notebooks/DimReduct
+   ../../tutorials/DimReduct.ipynb
    /notebooks/iEEG.ipynb
