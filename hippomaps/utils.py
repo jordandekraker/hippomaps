@@ -69,7 +69,7 @@ def surfdat_smooth(F, cdata, iters=1, cores=8):
     return cdata_smooth
 
 
-def profile_align(P, V, F, patchdist=None, maxroll=5):
+def profile_align(P, patchdist=None, V=[],F=[], maxroll=5):
     """
        Aligns microstructural profiles in the depth direction across a set of surfaces.
 
