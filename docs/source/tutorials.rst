@@ -6,4 +6,4 @@ Tutorials
    :caption: Contents:
 
    notebooks/DimReduct
-   notebooks/iEEG
+   /notebooks/iEEG.ipynb
