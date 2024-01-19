@@ -1,9 +1,6 @@
 Api Reference
 =================
 
-Submodules
-----------
-
 hippomaps.fetcher module
 ------------------------
 
@@ -35,3 +32,15 @@ hippomaps.utils module
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+Plottingv2
+------------
+
+.. currentmodule:: hippomaps.plotting
+
+.. autosummary::
+   :toctree: ../../generated/
+
+   surfplot_canonical_foldunfold
+   surfplot_sub_foldunfold
