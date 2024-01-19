@@ -13,7 +13,6 @@ version = '0.1.0'
 
 extensions = [
     'nbsphinx',
-    "sphinx_gallery.load_style"
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
