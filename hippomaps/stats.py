@@ -3,8 +3,12 @@ import nibabel as nib
 import scipy.io as spio
 from scipy.ndimage import rotate
 from scipy.ndimage import shift
+from scipy.stats import spearmanr, pearsonr
+from sklearn.metrics import adjusted_mutual_info_score, adjusted_rand_score
 import warnings
 import hippomaps.utils
+import hippomaps.config
+import matplotlib.pyplot as plt
 
 
 def spin_test(imgfix, imgperm, nperm, metric='pearson', label='hipp', space='orig'):
@@ -104,26 +108,21 @@ def spin_test(imgfix, imgperm, nperm, metric='pearson', label='hipp', space='ori
             permutedimg[:, ii] = permutedimgiso[:, :, ii].flatten()
 
     if metric == 'pearson':
-        from scipy.stats import pearsonr
         r_obs = pearsonr(imgfixobs, imgpermobs)[0]  # observed correspondance when maps are anatomically aligned
         for ii in range(nperm):
             imgpermflat = permutedimg[:, ii]
             metricnull[ii] = pearsonr(imgfixobs, imgpermflat)[
                 0]  # null distribution of correspondance between permuted and fixed map
-    elif metric == 'spearman':
-        from scipy.stats import spearmanr
         r_obs = spearmanr(imgfixobs, imgpermobs)[0]
         for ii in range(nperm):
             imgpermflat = permutedimg[:, ii]
             metricnull[ii] = spearmanr(imgfixobs, imgpermflat)[0]
     elif metric == 'adjusted rand':
-        from sklearn.metrics import adjusted_rand_score
         r_obs = adjusted_rand_score(imgfixobs, imgpermobs)[0]
         for ii in range(nperm):
             imgpermflat = permutedimg[:, ii]
             metricnull[ii] = adjusted_rand_score(imgfixobs, imgpermflat)[0]
     elif metric == 'adjusted mutual info':
-        from sklearn.metrics import adjusted_mutual_info_score
         r_obs = adjusted_mutual_info(imgfixobs, imgpermobs)[0]
         for ii in range(nperm):
             imgpermflat = permutedimg[:, ii]
@@ -133,3 +132,80 @@ def spin_test(imgfix, imgperm, nperm, metric='pearson', label='hipp', space='ori
         r_obs))  # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
 
     return metricnull, permutedimgiso, pval, r_obs
+
+
+def contextualize2D(taskMaps, n_topComparison=3, permTest=True, nperm=1000, plot2D=True):
+    """
+       Compares the present maps to thoes in the inital HippoMaps release
+
+       Parameters
+       ----------
+       taskMaps : a VxT matrix of intensities. T is the number of maps to examine
+       n_topComparison : int, optional
+           Top N features for which to reurn comparisons (Pearson's R and p)
+       plot2D : bool
+           Whether to plot the new maps in context of other maps
+
+       Returns
+       -------
+       topFeatures : Names of most similar intialized features
+       topR : Correpsonding Pearson's R values
+       topP : Corresponding p values (spin test)
+       APcorr : Correlation with AP coordinates
+       Subfscorr : Max correlation with subfields (Spearmann)
+       ax : axis handle
+       """
+    nT = taskMaps.shape[1]
+
+    # load required data
+    contextHM = np.load('../resources/2Dcontextualize/initialHippoMaps.npz')
+    # resample input data if needed
+    nVref,iVref = hippomaps.config.get_nVertices(['hipp'],'0p5mm')
+    if taskMaps.shape[0] != nVref:
+        taskMapsresamp = np.ones((nVref,nT))*np.nan
+        for t in range(nT):
+            taskMapsresamp[:,t],_,_ = hippomaps.utils.density_interp('2mm','0p5mm',taskMaps[:,t], label='hipp')
+    else:
+        taskMapsresamp = taskMaps
+
+    # compute correlations with extant features
+    topFeatures = np.ones((nT,n_topComparison), dtype='object')
+    topR = np.ones((nT,n_topComparison))*np.nan
+    topP = np.ones((nT,n_topComparison))*np.nan
+    if n_topComparison >0:
+        p = np.ones((taskMaps.shape[1],len(contextHM['features'])))
+        R = np.ones((taskMaps.shape[1],len(contextHM['features'])))
+        for i in range(taskMaps.shape[1]):
+            for j in range(len(contextHM['features'])):
+                if permTest:
+                    _,_,p[i,j],R[i,j] = hippomaps.stats.spin_test(taskMapsresamp[:,i],contextHM['featureData'][:,j], nperm, space='orig')
+                else:
+                    R[i,j],p[i,j] = pearsonr(taskMapsresamp[:,i],contextHM['featureData'][:,j])
+        # get ordering of the closest n_topComparison neighbours
+        for t in range(nT):
+            order = np.argsort(np.abs(R[t,:]))[::-1]
+            for c in range(n_topComparison):
+                topFeatures[t,c] = contextHM['features'][order[c]]
+                topR[t,c] = R[t,order[c]]
+                topP[t,c] = p[t,order[c]]
+            
+    # get position of new features on 2D space axes
+    APcorr = spearmanr(np.concatenate((taskMapsresamp,contextHM['AP'].reshape([-1,1])),axis=1))[0][nT:,:nT]
+    APcorr = np.abs(APcorr)
+    Subfscorr = spearmanr(np.concatenate((taskMapsresamp,contextHM['subfields_permuted']),axis=1))[0][nT:,:nT]
+    Subfscorr = np.nanmax(np.abs(Subfscorr),axis=0)
+
+    # plot in space
+    fig, ax = plt.subplots(figsize=(8,8))
+    if plot2D:
+        ax.spines[['right', 'top']].set_visible(False)
+        ax.scatter(contextHM['axiscorrAPPD'][0],contextHM['subfieldsmaxcorr'],c=contextHM['colors'],cmap='Set3',s=200)
+        plt.ylabel("absolute subfield correlation (Spearmann's R)")
+        plt.xlabel("absolute AP correlation (Pearnson's R)")
+        for f,feature in enumerate(contextHM['features']):
+            ax.annotate(str(int(contextHM['feature_n'][f])), (contextHM['axiscorrAPPD'][0,f]-.008, contextHM['subfieldsmaxcorr'][f]-.007))
+        ax.scatter(APcorr,Subfscorr,color='k',s=200);
+        for t in range(nT):
+            ax.annotate(str(t), (APcorr[0,t]-.008, Subfscorr[t]-.007),color='w')
+            
+    return topFeatures, topR, topP, APcorr, Subfscorr, ax
