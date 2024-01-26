@@ -29,7 +29,6 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'sphinx.ext.autosectionlabel',
-    'sphinx_gallery.gen_gallery'
 ]
 
 #generate autosummary even if no references

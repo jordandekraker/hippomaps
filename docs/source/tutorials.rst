@@ -9,7 +9,6 @@ Tutorials
 
 .. nbgallery::
    /notebooks/iEEG
-
 .. only:: html
 
  .. figure:: /notebooks/DimReduct_files/DimReduct_7_1.png
