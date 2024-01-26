@@ -33,7 +33,7 @@ extensions = [
 ]
 
 #generate autosummary even if no references
-autosummary_generate = True
+#autosummary_generate = True
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
     'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
