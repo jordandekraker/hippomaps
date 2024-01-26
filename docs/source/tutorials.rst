@@ -8,15 +8,9 @@ Tutorials
    examples_dirs/DimReduct.ipynb
 
 .. nbgallery::
-   /notebooks/iEEG
-.. only:: html
+   examples_dirs/iEEG
+   examples_dirs/DiReduct
+   examples_dirs/Morphology
 
- .. figure:: /notebooks/DimReduct_files/DimReduct_7_1.png
-     :alt: Tutorial 0: iEEG tutorials
 
-     :ref:`sphx_glr_tutorials_DimReduct.ipynb`
 
-.. toctree::
-   :hidden:
-
-   ../../tutorials/DimReduct
