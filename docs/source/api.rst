@@ -1,7 +1,7 @@
 Api Reference
 =================
 
-hippomaps.fetcher module
+Fetcher
 ------------------------
 
 .. automodule:: hippomaps.fetcher
@@ -9,7 +9,7 @@ hippomaps.fetcher module
    :undoc-members:
    :show-inheritance:
 
-hippomaps.plotting module
+Plotting
 -------------------------
 
 .. automodule:: hippomaps.plotting
@@ -17,7 +17,7 @@ hippomaps.plotting module
    :undoc-members:
    :show-inheritance:
 
-hippomaps.stats module
+Stats
 ----------------------
 
 .. automodule:: hippomaps.stats
@@ -25,7 +25,7 @@ hippomaps.stats module
    :undoc-members:
    :show-inheritance:
 
-hippomaps.utils module
+Utils
 ----------------------
 
 .. automodule:: hippomaps.utils
