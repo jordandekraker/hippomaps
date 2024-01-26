@@ -5,12 +5,12 @@ Tutorials
    :maxdepth: 2
    :caption: Contents:
 
-   examples_dirs/DimReduct.ipynb
+   tutorials/DimReduct.ipynb
 
 .. nbgallery::
    examples_dirs/iEEG
-   examples_dirs/DiReduct
-   examples_dirs/Morphology
+   examples_dirs/DimReduct
+   tutorials/Morphology
 
 
 
