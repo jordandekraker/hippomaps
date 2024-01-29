@@ -1,11 +1,20 @@
 Tutorials
 =========
+- :doc:`../../tutorials/README.txt`
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   /notebooks/iEEG.ipynb
+   tutorials/DimReduct.ipynb
+   ../../tutorials/iEEG.ipynb
+   Morphology
+
 
 .. nbgallery::
-   /notebooks/iEEG
+   iEEG
+   examples_dirs/DimReduct
+   ../../tutorials/Morphology
+
+
+

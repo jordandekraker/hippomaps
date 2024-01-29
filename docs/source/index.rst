@@ -40,7 +40,7 @@ Contents
 --------
 
 .. toctree::
-   getting started
+   getting_started
    usage
    tutorials
    api
