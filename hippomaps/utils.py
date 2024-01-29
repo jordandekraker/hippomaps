@@ -19,7 +19,7 @@ resourcesdir = str(Path(__file__).parents[1]) + '/resources'
 def avg_neighbours(invar):
     """
     Averages vertex-wise data at vertex n with its neighboring vertices.
-    #original Averages vertex-wise data at vertex n with its neighbouring vertices. F, cdat, n should be passed as a tuple (for easier parallel)
+
     Parameters
     ----------
     invar : tuple
@@ -45,7 +45,6 @@ def avg_neighbours(invar):
 def surfdat_smooth(F, cdata, iters=1, cores=8):
     """
        Smooths surface data across neighboring vertices.
-       #originalSmoothes surface data across neighbouring vertices. This assumes that vertices are evenly spaced and evenly connected.
        TODO: convert to mm vis calibration curves in https://github.com/MELDProject/meld_classifier/blob/9d3d364de86dc207d3a1e5ec11dcab3ef012ebcb/meld_classifier/mesh_tools.py#L17'''
        This function assumes that vertices are evenly spaced and evenly connected.
 
@@ -123,24 +122,25 @@ def profile_align(P, patchdist=None, V=[],F=[], maxroll=5):
     return Paligned[:, maxroll:-maxroll]
 
 
-def Laplace_solver(faces, init, maxiters=1e4, conv=1e-6, cores=8):
+def laplace_solver(faces, init, maxiters=1e4, conv=1e-6, cores=8):
     """
-    Solves the Laplace equation along vertices of a surface.
-    Parameters
-    ----------
-    faces : Faces of a surface mesh.
-    init : Initial vertex-wise values. Source(s) should have a value of 0, Sink(s) should have a value of 1. NaN values will be masked. Time required scales with the number of unmasked vertices.
-    maxiters : int, optional
-        Maximum iterations to run. Default is 1e4.
-    conv : float, optional
-        Convergence criterion. Default is 1e-6.
-    cores : int, optional
-        Number of CPU cores to use (per iteration). Default is 8.
-    Returns
-    -------
-    LP : Laplace solution (vertex-wise).
-    change : sum of absolute changes per iteration (should converge towards 0)
-    """
+        Solves the Laplace equation along vertices of a surface.
+
+        Parameters
+        ----------
+        faces : Faces of a surface mesh.
+        init : Initial vertex-wise values. Source(s) should have a value of 0, Sink(s) should have a value of 1. NaN values will be masked. Time required scales with the number of unmasked vertices.
+        maxiters : int, optional
+            Maximum iterations to run. Default is 1e4.
+        conv : float, optional
+            Convergence criterion. Default is 1e-6.
+        cores : int, optional
+            Number of CPU cores to use (per iteration). Default is 8.
+        Returns
+        -------
+        LP : Laplace solution (vertex-wise).
+        change : sum of absolute changes per iteration (should converge towards 0)
+        """
     ind_start = np.where(init == 0)[0]
     ind_end = np.where(init == 1)[0]
     mask = np.where(np.isnan(init))[0]
@@ -165,6 +165,7 @@ def fillnanvertices(F, V):
     """
        Fills NaNs by iteratively computing the nanmean of nearest neighbors until no NaNs remain.
        Can be used to fill missing vertices OR missing vertex cdata.
+
        Parameters
        ----------
        F : Faces of a surface mesh.
@@ -194,6 +195,7 @@ def fillnanvertices(F, V):
 def density_interp(indensity, outdensity, cdata, label, method='linear', resourcesdir=resourcesdir):
     """
        Interpolates data from one surface density onto another via unfolded space.
+
        Parameters
        ----------
        indensity : str
@@ -236,51 +238,6 @@ def density_interp(indensity, outdensity, cdata, label, method='linear', resourc
     return interp, faces, vertices_target
 
 
-def area_rescale(vertices, den, label, APaxis=1):
-    """
-         Rescales unfolded surface vertices to account for overrepresentation of anterior and posterior regions.
-        #original Most of the time, in unfolded space the anterior and psoterior are overrepresented. This function compresses these regions proportionally to the surface areas of a cononical example
-         Parameters
-         ----------
-         vertices : Unfolded surface vertices.
-         den : str
-             Density of the unfolded space. One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
-         label : str
-             Surface label. Either 'hipp' or 'dentate'.
-         APaxis : int, optional
-             Axis along the anterior-posterior direction. Default is 1.
-         Returns
-         -------
-         numpy.ndarray
-             Rescaled unfolded surface vertices.
-     """
-    w = 126 if label == 'hipp' else 30  # width of unfolded space
-    s = 15  # surf area smoothing (sigma)
-    Pold = vertices[:, APaxis]
-
-    # compute rescaling from surface areas
-    surfarea = \
-        nib.load(
-            f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-{label}_surfarea.shape.gii').darrays[
-            0].data
-    surfarea, _, _ = density_interp(den, 'unfoldiso', surfarea.flatten(), label)
-    surfarea = np.reshape(surfarea, (w, 254))
-    surfarea = gaussian_filter(surfarea, sigma=s)
-
-    avg_surfarea = np.mean(surfarea, axis=0)
-    rescalefactor = np.cumsum(1 / avg_surfarea)
-    rescalefactor = rescalefactor - np.min(rescalefactor)
-    rescalefactor = rescalefactor / np.max(rescalefactor)
-    rescalefactor = rescalefactor + 1 - np.linspace(0, 1, len(rescalefactor))
-
-    rescalefactor = repmat(rescalefactor, w, 1)
-    rescalefactor, _, _ = density_interp('unfoldiso', den, rescalefactor.flatten(), label)
-
-    Pnew = Pold * rescalefactor
-    vertices[:, APaxis] = Pnew
-    return vertices
-
-
 def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, space='*', label='hipp', save_out_name=None,
                       method='nearest'):
     """
@@ -288,6 +245,7 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
         from https://github.com/khanlab/hippunfold/blob/master/hippunfold/workflow/scripts/label_subfields_from_vol_coords.py
         this function labels voxels using data on a folded/unfolded surface (midthickness or any), and native space coords (ap, pd) images
         TODO: consider trying to simplify inputs specifying the coords paths?
+
        Parameters
        ----------
        surf_data : Data on the folded/unfolded surface (midthickness or any).
@@ -391,27 +349,3 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
         nib.save(label_nib, save_out_name)
     return label_img
 
-
-def bound_cdata(cdata, cutoff=0.05):
-    """
-      Returns upper and lower X percent interval values.
-      Parameters
-      ----------
-      cdata :  List of values.
-      cutoff : Default is 0.05.
-      Returns
-      -------
-       Values within the upper and lower X percent interval.
-    """
-    if not cutoff:
-        return False
-    shp = cdata.shape
-    c = cdata.flatten()
-    l = np.sort(c[~np.isnan(c)])
-    try:
-        bounds = l[[int(cutoff * len(l)), int((1 - cutoff) * len(l))]]
-        cdata[cdata < bounds[0]] = bounds[0]
-        cdata[cdata > bounds[1]] = bounds[1]
-    except:
-        print('cdata all NaN')
-    return np.reshape(cdata, shp)

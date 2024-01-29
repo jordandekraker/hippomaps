@@ -21,7 +21,7 @@ version = '0.1.0'
 # -- General configuration
 
 extensions = [
-    'nbsphinx',
+#    'nbsphinx',
     'sphinx_gallery.load_style',
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
@@ -30,8 +30,12 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'sphinx.ext.autosectionlabel',
-    'sphinx_gallery.gen_gallery'
-]
+    'sphinx_gallery.gen_gallery',
+    'm2r2',]
+
+# source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+
 sphinx_gallery_conf = {
     'examples_dirs': '../../tutorials',
     # 'plot_gallery': 'False',
@@ -45,10 +49,10 @@ sphinx_gallery_conf = {
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'build', 'Thumbs.db', '.DS_Store']
 
 #generate autosummary even if no references
-#autosummary_generate = True
+autosummary_generate = True
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
     'sphinx': ('https://www.sphinx-doc.org/en/master/', None),

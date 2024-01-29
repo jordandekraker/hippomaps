@@ -1,16 +1,9 @@
-Api Reference
-=================
+Overview of functions
+==================
 
-Fetcher
-------------------------
-
-.. automodule:: hippomaps.fetcher
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Plotting
--------------------------
+-------
 
 .. automodule:: hippomaps.plotting
    :members:
@@ -18,15 +11,23 @@ Plotting
    :show-inheritance:
 
 Stats
-----------------------
+-------
 
 .. automodule:: hippomaps.stats
    :members:
    :undoc-members:
    :show-inheritance:
 
+Fetcher
+-------
+
+.. automodule:: hippomaps.fetcher
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Utils
-----------------------
+-------
 
 .. automodule:: hippomaps.utils
    :members:
@@ -34,13 +35,4 @@ Utils
    :show-inheritance:
 
 
-Plottingv2
-------------
 
-.. currentmodule:: hippomaps.plotting
-
-.. autosummary::
-   :toctree: ../../generated/
-
-   surfplot_canonical_foldunfold
-   surfplot_sub_foldunfold

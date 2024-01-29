@@ -7,7 +7,6 @@ from brainspace.plotting import plot_hemispheres, plot_surf, build_plotter
 from brainspace.mesh import mesh_creation as mc
 from pathlib import Path
 resourcesdir=str(Path(__file__).parents[1]) + '/resources'
-
 import hippomaps.utils
 
 def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentate'], unfoldAPrescale=False, den='0p5mm', tighten_cwindow=False, resourcesdir=resourcesdir, size=[350,300], **qwargs):
@@ -46,6 +45,7 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentat
        This function is suitable for plotting canonical folded and unfolded surfaces, and it is particularly useful
        when the data (`cdata`) isn't specific to one subject (e.g., maybe it has been averaged across many subjects).
        """
+
     # load surfaces
     rh = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-hipp_midthickness.surf.gii')
     ru = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-hipp_midthickness.surf.gii')
@@ -110,47 +110,47 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentat
 def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'], labels=['hipp','dentate'], flipRcurv = True, unfoldAPrescale=False, den='0p5mm', modality='T1w', tighten_cwindow=True, rotate=True,  resourcesdir=resourcesdir, size=[350,230], cmap='viridis', **qwargs):
 
     """
-    Plots subject-specific folded and unfolded surfaces (hipp/dentate; folded/unfolded).
-    Parameters
-    ----------
+        Plots subject-specific folded and unfolded surfaces (hipp/dentate; folded/unfolded).
+        Parameters
+        ----------
 
-    hippunfold_dir : str
-        Directory path containing unfolded hippocampus data.
-    sub : str
-        Subject ID. Inputs are path/filenames
-    ses : str
-        Session ID. Inputs are path/filenames
-    features : str
-        Feature or measurement to visualize on the surface plot.list of strings. Can include thickness, curvature, gyrification, subfields, or other added data that follows the same naming convention
-    hemis : list of str, optional
-        List of hemispheres to visualize. Default is ['L', 'R'].
-    labels : list of str, optional
-        List of labels for different structures. Default is ['hipp', 'dentate'].
-    flipRcurv : bool, optional
-        Whether to flip the curvature map for the right hemisphere. Default is True.
-    unfoldAPrescale : bool, optional
-        Whether to pre-scale the anterior-posterior axis during unfolding. Default is False.
-    den : str, optional
-        Density parameter for surface plot. Default is '0p5mm'.
-    modality : str, optional
-        Imaging modality (e.g., 'T1w'). Default is 'T1w'.
-    tighten_cwindow : bool, optional
-        Whether to tighten the color window for the surface plot. Default is True.
-    rotate : bool, optional
-        Whether to rotate the surface plot. Default is True.
-    resourcesdir : str, optional
-        Directory path containing additional resources. Default is the value of resourcesdir.
-    size : list of int, optional
-        Size of the surface plot. Default is [350, 230].
-    cmap : str, optional
-        Colormap for the surface plot. Default is 'viridis'.
-    **qwargs : dict, optional
-        Additional keyword arguments for customization.
+        hippunfold_dir : str
+            Directory path containing unfolded hippocampus data.
+        sub : str
+            Subject ID. Inputs are path/filenames
+        ses : str
+            Session ID. Inputs are path/filenames
+        features : str
+            Feature or measurement to visualize on the surface plot.list of strings. Can include thickness, curvature, gyrification, subfields, or other added data that follows the same naming convention
+        hemis : list of str, optional
+            List of hemispheres to visualize. Default is ['L', 'R'].
+        labels : list of str, optional
+            List of labels for different structures. Default is ['hipp', 'dentate'].
+        flipRcurv : bool, optional
+            Whether to flip the curvature map for the right hemisphere. Default is True.
+        unfoldAPrescale : bool, optional
+            Whether to pre-scale the anterior-posterior axis during unfolding. Default is False.
+        den : str, optional
+            Density parameter for surface plot. Default is '0p5mm'.
+        modality : str, optional
+            Imaging modality (e.g., 'T1w'). Default is 'T1w'.
+        tighten_cwindow : bool, optional
+            Whether to tighten the color window for the surface plot. Default is True.
+        rotate : bool, optional
+            Whether to rotate the surface plot. Default is True.
+        resourcesdir : str, optional
+            Directory path containing additional resources. Default is the value of resourcesdir.
+        size : list of int, optional
+            Size of the surface plot. Default is [350, 230].
+        cmap : str, optional
+            Colormap for the surface plot. Default is 'viridis'.
+        **qwargs : dict, optional
+            Additional keyword arguments for customization.
 
-    Returns
-    -------
-    matplotlib.figure.Figure
-        The function generates a surface plot for the specified subject's folded and unfolded hippocampus.
+        Returns
+        -------
+        matplotlib.figure.Figure
+            The function generates a surface plot for the specified subject's folded and unfolded hippocampus.
     """
 
     if len(ses)>0:
@@ -255,3 +255,72 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'],
     p = plot_surf(surfDict,surfList, array_name=arrName, size=new_size, cmap=cmaps, **new_qwargs)
     return p
 
+
+def bound_cdata(cdata, cutoff=0.05):
+    """
+      Returns upper and lower X percent interval values.
+      Parameters
+      ----------
+      cdata :  List of values.
+      cutoff : Default is 0.05.
+      Returns
+      -------
+       Values within the upper and lower X percent interval.
+    """
+    if not cutoff:
+        return False
+    shp = cdata.shape
+    c = cdata.flatten()
+    l = np.sort(c[~np.isnan(c)])
+    try:
+        bounds = l[[int(cutoff * len(l)), int((1 - cutoff) * len(l))]]
+        cdata[cdata < bounds[0]] = bounds[0]
+        cdata[cdata > bounds[1]] = bounds[1]
+    except:
+        print('cdata all NaN')
+    return np.reshape(cdata, shp)
+
+
+def area_rescale(vertices, den, label, APaxis=1):
+    """
+         Rescales unfolded surface vertices to account for overrepresentation of anterior and posterior regions.
+
+         Parameters
+         ----------
+         vertices : Unfolded surface vertices.
+         den : str
+             Density of the unfolded space. One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+         label : str
+             Surface label. Either 'hipp' or 'dentate'.
+         APaxis : int, optional
+             Axis along the anterior-posterior direction. Default is 1.
+         Returns
+         -------
+         numpy.ndarray
+             Rescaled unfolded surface vertices.
+     """
+    w = 126 if label == 'hipp' else 30  # width of unfolded space
+    s = 15  # surf area smoothing (sigma)
+    Pold = vertices[:, APaxis]
+
+    # compute rescaling from surface areas
+    surfarea = \
+        nib.load(
+            f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-{label}_surfarea.shape.gii').darrays[
+            0].data
+    surfarea, _, _ = hippomaps.utils.density_interp(den, 'unfoldiso', surfarea.flatten(), label)
+    surfarea = np.reshape(surfarea, (w, 254))
+    surfarea = gaussian_filter(surfarea, sigma=s)
+
+    avg_surfarea = np.mean(surfarea, axis=0)
+    rescalefactor = np.cumsum(1 / avg_surfarea)
+    rescalefactor = rescalefactor - np.min(rescalefactor)
+    rescalefactor = rescalefactor / np.max(rescalefactor)
+    rescalefactor = rescalefactor + 1 - np.linspace(0, 1, len(rescalefactor))
+
+    rescalefactor = repmat(rescalefactor, w, 1)
+    rescalefactor, _, _ = hippomaps.utils.density_interp('unfoldiso', den, rescalefactor.flatten(), label)
+
+    Pnew = Pold * rescalefactor
+    vertices[:, APaxis] = Pnew
+    return vertices
