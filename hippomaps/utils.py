@@ -7,13 +7,12 @@ import warnings
 from scipy.interpolate import griddata
 from scipy.interpolate import NearestNDInterpolator
 import nibabel as nib
-from pathlib import Path
 from scipy.ndimage.filters import gaussian_filter
 from scipy.interpolate import interp1d
 from scipy.interpolate import interpn
 from numpy.matlib import repmat
 import pygeodesic.geodesic as geodesic
-
+from pathlib import Path
 resourcesdir = str(Path(__file__).parents[1]) + '/resources'
 
 

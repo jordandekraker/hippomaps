@@ -9,9 +9,13 @@ import warnings
 import hippomaps.utils
 import hippomaps.config
 import matplotlib.pyplot as plt
+from brainspace.mesh.mesh_io import read_surface
+from hippomaps.moran import MoranRandomization
+from brainspace.mesh import mesh_elements as me
+from pathlib import Path
+resourcesdir=str(Path(__file__).parents[1]) + '/resources'
 
-
-def spin_test(imgfix, imgperm, nperm, metric='pearson', label='hipp', space='orig'):
+def spin_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den='0p5mm'):
     """
        Permutation testing of unfolded hippocampus maps.
 
@@ -22,22 +26,19 @@ def spin_test(imgfix, imgperm, nperm, metric='pearson', label='hipp', space='ori
 
        Parameters
        ----------
-       imgfix : str
-           Path to the fixed map.
-       imgperm : str
-           Path to the map which will be permuted.
+       imgfix : str or array
+           Path to the fixed map, or fixed array map.
+       imgperm : str or array
+           Path to the fixed map to be permuted, or array map to be permuted.
        nperm : int
            Number of permutations to perform.
        metric : str, optional
            Metric for comparing maps (one of pearson, spearman, adjusted rand, or adjusted mutual info).
-           Default is 'pearson'. is this true?
+           Default is 'pearson'.
        label : str, optional
-           Label for the hippocampus. Default is 'hipp'.
-       space : str, optional
-           Space in which the correlation will be performed.
-           If 'orig', the correlation will be performed at the original density.
-           If 'unfoldiso', the correlation will be performed at the isotropic density, which is the density used for permutations.
-           Default is 'orig'.
+           Label for the hippocampus ('hipp' or 'dentate'). Default is 'hipp'.
+       den : str, optional
+           Density of the surface data. Default '0p5mm'.
 
        Returns
        -------
@@ -48,91 +49,111 @@ def spin_test(imgfix, imgperm, nperm, metric='pearson', label='hipp', space='ori
        pval : p-value based on metricnull r_obs.
        """
     if type(imgfix) == str:
-        fixedimg = nib.load(imgfix)
-        fixedimgdata = fixedimg.agg_data()
-    else:
-        fixedimgdata = imgfix
+        imgfix = nib.load(imgfix).agg_data()
     if type(imgperm) == str:
-        permimg = nib.load(imgperm)
-        permimgdata = permimg.agg_data()
-    else:
-        permimgdata = imgperm
-    fixedimgvertnum = np.max(fixedimgdata.shape)  # number of vertices
-    permimgvertnum = np.max(permimgdata.shape)
+        imgperm = nib.load(imgperm).agg_data()
 
-    if fixedimgvertnum != permimgvertnum:  # maps don't have to be the same size because they both get interpolated to same density
-        warnings.warn("Warning fixed and permuted map not the same size. Program will continue to interpolation")
-
-    vertexnumber = [7262, 2004, 419]  # corresponds to 0p5mm, 1mm, and 2mm respectively
-    surfacespacing = ['0p5mm', '1mm', '2mm']
-
-    if fixedimgvertnum not in vertexnumber or permimgvertnum not in vertexnumber:
-        raise ValueError(f"Surface number of vertices must be one of {vertexnumber}.")
-    else:
-        permind = vertexnumber.index(permimgvertnum)
-        imgperminterp = hippomaps.utils.density_interp(surfacespacing[permind], 'unfoldiso', permimgdata, label=label,
-                                                       method='nearest')[0]
-        imgperminterp = np.reshape(imgperminterp, (126, 254))  # get maps to 126x254
-        if space == 'unfoldiso':  # if unfoldiso, then need to interpolate fixed image to unfoldiso for correlation
-            fixind = vertexnumber.index(
-                fixedimgvertnum)  # find the surface spacing which corresponds to the vertex number of that map
-            imgfixobs = \
-            hippomaps.utils.density_interp(surfacespacing[fixind], 'unfoldiso', fixedimgdata, method='nearest')[
-                0]  # interpolate to unfoldiso density
-            imgpermobs = imgperminterp.flatten()
-            permutedimg = np.empty((126 * 254, nperm))
-        elif space == 'orig':  # if orig, then correlations performed at original density, no need to interpolate fixed image
-            imgfixobs = fixedimgdata
-            imgpermobs = permimgdata
-            permutedimg = np.empty((permimgvertnum, nperm))
+    # resmaple to space-unfoldiso
+    if den != 'unfoldiso':
+        imgperm = hippomaps.utils.density_interp(den, 'unfoldiso', imgperm, label=label, method='nearest')[0]
+        imgfix = hippomaps.utils.density_interp(den, 'unfoldiso', imgfix, label=label, method='nearest')[0]  
+    imgperm = np.reshape(imgperm, (126, 254))  # get maps to 126x254
+    imgfix = np.reshape(imgfix, (126, 254))  # get maps to 126x254
 
     rotation = np.random.randint(1, 360, nperm)  # generate random rotations
     translate1 = np.random.randint(-63, 64, nperm)  # generate random translations
     translate2 = np.random.randint(-127, 128, nperm)
-
-    imgsize = imgperminterp.shape
-    permutedimgiso = np.empty((imgsize[0], imgsize[1], nperm))
+    permutedimg = np.empty((126, 254, nperm))
     metricnull = np.empty((nperm))
 
     for ii in range(nperm):
-        rotimg = rotate(imgperminterp, rotation[ii], axes=(1, 0), reshape=False, output=None, order=3, mode='wrap',
+        rotimg = rotate(imgperm, rotation[ii], axes=(1, 0), reshape=False, output=None, order=3, mode='wrap',
                         cval=0.0, prefilter=True)  # rotate image
         transrotimg = shift(rotimg, [translate1[ii], translate2[ii]], output=None, order=3, mode='wrap', cval=0.0,
                             prefilter=True)  # translate image
-        permutedimgiso[:, :, ii] = transrotimg  # this is our permuted image at unfoldiso density
-        if space == 'orig':  # resample permuted maps back to original density for correlation
-            permutedimg[:, ii] = \
-            hippomaps.utils.density_interp('unfoldiso', surfacespacing[permind], permutedimgiso[:, :, ii].flatten(),
-                                           label=label, method='nearest')[0]
-        elif space == 'unfoldiso':  # permuted map can remain in unfoldiso for correlation
-            permutedimg[:, ii] = permutedimgiso[:, :, ii].flatten()
+        permutedimg[:, :, ii] = transrotimg  # this is our permuted image at unfoldiso density
 
     if metric == 'pearson':
-        r_obs = pearsonr(imgfixobs, imgpermobs)[0]  # observed correspondance when maps are anatomically aligned
+        r_obs = pearsonr(imgfix.flatten(), imgperm.flatten())[0]  
         for ii in range(nperm):
-            imgpermflat = permutedimg[:, ii]
-            metricnull[ii] = pearsonr(imgfixobs, imgpermflat)[
-                0]  # null distribution of correspondance between permuted and fixed map
-        r_obs = spearmanr(imgfixobs, imgpermobs)[0]
+            metricnull[ii] = pearsonr(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
+    elif metric == 'spearman':
+        r_obs = spearmanr(imgfix.flatten(), imgperm.flatten())[0]  
         for ii in range(nperm):
-            imgpermflat = permutedimg[:, ii]
-            metricnull[ii] = spearmanr(imgfixobs, imgpermflat)[0]
+            metricnull[ii] = spearmanr(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
     elif metric == 'adjusted rand':
-        r_obs = adjusted_rand_score(imgfixobs, imgpermobs)[0]
+        r_obs = adjusted_rand_score(imgfix.flatten(), imgperm.flatten())[0]  
         for ii in range(nperm):
-            imgpermflat = permutedimg[:, ii]
-            metricnull[ii] = adjusted_rand_score(imgfixobs, imgpermflat)[0]
+            metricnull[ii] = adjusted_rand_score(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
     elif metric == 'adjusted mutual info':
-        r_obs = adjusted_mutual_info(imgfixobs, imgpermobs)[0]
+        r_obs = adjusted_mutual_info(imgfix.flatten(), imgperm.flatten())[0]  
         for ii in range(nperm):
-            imgpermflat = permutedimg[:, ii]
-            metricnull[ii] = (imgfixobs, imgpermflat)
+            metricnull[ii] = adjusted_mutual_info(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
+    
+    # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
+    pval = np.mean(np.abs(metricnull) >= np.abs(r_obs))  
 
-    pval = np.mean(np.abs(metricnull) >= np.abs(
-        r_obs))  # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
+    return metricnull, permutedimg, pval, r_obs
 
-    return metricnull, permutedimgiso, pval, r_obs
 
+def moran_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den='0p5mm'):
+    """
+       Moran Spectral Randomization
+       Moran Spectral Randomization (MSR) computes Moran’s I, a metric for spatial auto-correlation and generates normally distributed data with similar auto-correlation. MSR relies on a weight matrix denoting the spatial proximity of features to one another. Within neuroimaging, one straightforward example of this is inverse geodesic distance i.e. distance along the cortical surface.
+
+       Code from BrainSpace https://brainspace.readthedocs.io/en/latest/python_doc/auto_examples/plot_tutorial3.html
+       Vos de Wael, Reinder, Oualid Benkarim, Casey Paquola, Sara Lariviere, Jessica Royer, Shahin Tavakol, Ting Xu et al. "BrainSpace: a toolbox for the analysis of macroscale gradients in neuroimaging and connectomics datasets." Communications biology 3, no. 1 (2020): 103.
+
+       Parameters
+       ----------
+       imgfix : str or array
+           Path to the fixed map, or fixed array map.
+       imgperm : str or array
+           Path to the fixed map to be permuted, or array map to be permuted.
+       nperm : int
+           Number of permutations to perform.
+       metric : str, optional
+           Metric for comparing maps (one of pearson, spearman, adjusted rand, or adjusted mutual info).
+           Default is 'pearson'.
+       label : str, optional
+           Label for the hippocampus ('hipp' or 'dentate'). Default is 'hipp'.
+       den : str, optional
+           Density of the surface data. Default '0p5mm'.
+
+       Returns
+       -------
+       metricnull : Null distribution of the specified metric
+       permutedimg : All permuted spatial maps at 'unfoldiso' density.
+       r_obs :  The observed association between the two aligned maps.
+
+       pval : p-value based on metricnull r_obs.
+       """
+    if type(imgfix) == str:
+        imgfix = nib.load(imgfix).agg_data()
+    if type(imgperm) == str:
+        imgperm = nib.load(imgperm).agg_data()
+    
+    # load reference surface to get geodesic distance
+    surf = read_surface(f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-hipp_midthickness.surf.gii")
+    # wrap concenient brainspace function for weights (geodesic distance) and MRS
+    weights = me.get_ring_distance(surf, n_ring=1)
+    weights.data **= -1
+    msr = MoranRandomization(n_rep=nperm, spectrum='all')
+    msr.fit(weights)
+
+    # get observed correlation
+    r_obs = spearmanr(imgfix, imgperm, nan_policy='omit')[0]
+
+    # randomize
+    imgperm_rand = msr.randomize(imgperm)
+    metricnull = np.empty((nperm))
+    for d in range(nperm):
+        metricnull[d] = spearmanr(imgfix, imgperm_rand[d,:])[0]
+
+    # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
+    pval = np.mean(np.abs(metricnull) >= np.abs(r_obs))  
+
+    return metricnull, imgperm_rand, pval, r_obs
 
 def contextualize2D(taskMaps, n_topComparison=3, permTest=True, nperm=1000, plot2D=True):
     """
