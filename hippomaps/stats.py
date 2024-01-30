@@ -199,7 +199,7 @@ def contextualize2D(taskMaps, n_topComparison=3, permTest=True, nperm=1000, plot
         for i in range(taskMaps.shape[1]):
             for j in range(len(contextHM['features'])):
                 if permTest:
-                    _,_,p[i,j],R[i,j] = hippomaps.stats.spin_test(taskMapsresamp[:,i],contextHM['featureData'][:,j], nperm, space='orig')
+                    _,_,p[i,j],R[i,j] = hippomaps.stats.spin_test(taskMapsresamp[:,i],contextHM['featureData'][:,j], nperm)
                 else:
                     R[i,j],p[i,j] = pearsonr(taskMapsresamp[:,i],contextHM['featureData'][:,j])
         # get ordering of the closest n_topComparison neighbours

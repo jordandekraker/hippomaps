@@ -7,7 +7,6 @@ import warnings
 from scipy.interpolate import griddata
 from scipy.interpolate import NearestNDInterpolator
 import nibabel as nib
-from scipy.ndimage.filters import gaussian_filter
 from scipy.interpolate import interp1d
 from scipy.interpolate import interpn
 from numpy.matlib import repmat

@@ -2,6 +2,8 @@ import numpy as np
 import nibabel as nib
 import copy
 import glob
+from scipy.ndimage.filters import gaussian_filter
+from numpy.matlib import repmat
 from brainspace.mesh.mesh_io import read_surface
 from brainspace.plotting import plot_hemispheres, plot_surf, build_plotter
 from brainspace.mesh import mesh_creation as mc
@@ -50,13 +52,13 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentat
     rh = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-hipp_midthickness.surf.gii')
     ru = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-hipp_midthickness.surf.gii')
     ru.Points = ru.Points[:,[1,0,2]] # reorient unfolded
-    if unfoldAPrescale: ru.Points = hippomaps.utils.area_rescale(ru.Points,den,'hipp',APaxis=1)
+    if unfoldAPrescale: ru.Points = area_rescale(ru.Points,den,'hipp',APaxis=1)
     if len(labels)==2:
         ud = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-dentate_midthickness.surf.gii')
         hd = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-dentate_midthickness.surf.gii')
         ud.Points = ud.Points[:,[1,0,2]] # reorient unfolded
         ud.Points = ud.Points + [22, 0, 0] # translate unfolded dg
-        if unfoldAPrescale: ud.Points = hippomaps.utils.area_rescale(ud.Points,den,'dentate',APaxis=1)
+        if unfoldAPrescale: ud.Points = area_rescale(ud.Points,den,'dentate',APaxis=1)
         # add to original
         npts = rh.n_points
         rh = mc.build_polydata(np.concatenate((rh.Points.copy(), hd.Points.copy())),
@@ -75,7 +77,7 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L','R'], labels=['hipp','dentat
     if len(cdata.shape) == 2: cdata = np.expand_dims(t,axis=2)
     if tighten_cwindow>0:
         for i in range(0,cdata.shape[2]):
-            cdata[:,:,i] = hippomaps.utils.bound_cdata(cdata[:,:,i])
+            cdata[:,:,i] = bound_cdata(cdata[:,:,i])
 
     # set up layout
     surfDict = {'Lf':lh, 'Lu':lu, 'Rf':rh, 'Ru':ru}
@@ -176,7 +178,7 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'],
                     nptsHipp = s.n_points
                 if space=='unfold':
                     s.Points = s.Points[:,[1,0,2]] # reorient unfold
-                    if unfoldAPrescale: s.Points = hippomaps.utils.area_rescale(s.Points,den,label,APaxis=1)
+                    if unfoldAPrescale: s.Points = area_rescale(s.Points,den,label,APaxis=1)
                     if label=='dentate':
                         s.Points = s.Points + [22,0,0] # translate DG
                 if hemi=="L" and space=='unfold': # flip L unfolded
@@ -225,7 +227,7 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L','R'],
             cmaps[f,:] = ('jet')
         else:
             if tighten_cwindow>0:
-                cdata[:,:,f] = hippomaps.utils.bound_cdata(cdata[:,:,f])
+                cdata[:,:,f] = bound_cdata(cdata[:,:,f])
 
     # set up layout
     surfDict = {}
