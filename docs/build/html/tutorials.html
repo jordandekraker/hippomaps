@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorials &mdash; Hippomaps 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=e031e9a9"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Overview" href="tutorials/Morphology.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Hippomaps
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Morphology.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Morphology.html#Histology">Histology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Morphology.html#7T-MRI">7T MRI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Morphology.html#3T-MRI">3T MRI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#0)-Map-volumetric-data-to-surfaces-and-load-(optional)">0) Map volumetric data to surfaces and load (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#1)-Load-and-plot-all-surface-data">1) Load and plot all surface data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#2)-Average-eqivalent-samples-and-view-profiles">2) Average eqivalent samples and view profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-7T-struct.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-7T-struct.html#0)-Map-volumetric-data-to-surfaces-and-load-(optional)">0) Map volumetric data to surfaces and load (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-7T-struct.html#1)-Load-and-plot-all-surface-data">1) Load and plot all surface data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#3)-tSNR-(TODO:-get-volumetric-version-generated-from-micapipe)">3) tSNR (TODO: get volumetric version generated from micapipe)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#5)-Check-consistency-for-all-of-the-above">5) Check consistency for all of the above</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#save">save</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/DimReduct.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/DimReduct.html#1)-Load-and-resample">1) Load and resample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/DimReduct.html#2)-Check-for-correlations-with-AP,-PD,-or-subfield-organizations">2) Check for correlations with AP, PD, or subfield organizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/DimReduct.html#3)-Gradient-decomposition">3) Gradient decomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#Now-that-we've-run-through-a-full-example-for-one-subject,-we'll-loop-through-all-subjects-and-save-the-data:">Now that we’ve run through a full example for one subject, we’ll loop through all subjects and save the data:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#significance-testing">significance testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#Additional-consistency-checks">Additional consistency checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#1.3)-Consider-neocortical-results">1.3) Consider neocortical results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#1.4)-Compare-to-previously-mapped-features">1.4) Compare to previously mapped features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#2.3)-Consider-the-neocortex">2.3) Consider the neocortex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#3.3)-Consider-the-neocortex">3.3) Consider the neocortex</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Overview of functions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Hippomaps</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorials</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorials.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this heading"></a></h1>
+<p>These tutorials reproduce the fifures found in HippoMaps (DeKraker et al). They are also meant to serve as examples for common analyses, and to showcase ways of using HippoMaps tools.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Morphology:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/Morphology.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/Morphology.html#Histology">Histology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/Morphology.html#7T-MRI">7T MRI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/Morphology.html#3T-MRI">3T MRI</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Histology-MRI-9p4T:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#0)-Map-volumetric-data-to-surfaces-and-load-(optional)">0) Map volumetric data to surfaces and load (optional)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#1)-Load-and-plot-all-surface-data">1) Load and plot all surface data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#Preprocessing">Preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#2)-Average-eqivalent-samples-and-view-profiles">2) Average eqivalent samples and view profiles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#Laminar-profiles-(Prox-to-Dist)-and-then-(Ant-to-Post)">Laminar profiles (Prox to Dist) and then (Ant to Post)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#4)-Summarize-data-according-to-primary-gradients">4) Summarize data according to primary gradients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Histology-MRI-9p4T.html#save">save</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">MRI-7T-struct:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-7T-struct.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-7T-struct.html#0)-Map-volumetric-data-to-surfaces-and-load-(optional)">0) Map volumetric data to surfaces and load (optional)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-7T-struct.html#1)-Load-and-plot-all-surface-data">1) Load and plot all surface data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-7T-struct.html#2)-Stability-between-subjects">2) Stability between subjects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-7T-struct.html#3)-lets-add-another-dataset-(9.4T-data)">3) lets add another dataset (9.4T data)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-7T-struct.html#4)-Make-a-summary-plot-of-consistency">4) Make a summary plot of consistency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-7T-struct.html#4)-Summarize-data-according-to-primary-gradients">4) Summarize data according to primary gradients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-7T-struct.html#save">save</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">MRI-3T-rsfMRI:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#0.-Map-rsfMRI-data-to-hippocampal-surfaces">0. Map rsfMRI data to hippocampal surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#1.-Intrinsic-Timescale-of-hippocampal-rsfMRI">1. Intrinsic Timescale of hippocampal rsfMRI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#2.-Calcualte-Regional-Homogeneity">2. Calcualte Regional Homogeneity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#3)-tSNR-(TODO:-get-volumetric-version-generated-from-micapipe)">3) tSNR (TODO: get volumetric version generated from micapipe)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#4)-Functional-connectivity-of-the-hippocampus-to-neocortex">4) Functional connectivity of the hippocampus to neocortex</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#5)-Check-consistency-for-all-of-the-above">5) Check consistency for all of the above</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#4.-Gradients-of-differential-hippocampal-FC">4. Gradients of differential hippocampal FC</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-rsfMRI.html#save">save</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">iEEG:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/iEEG.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html#0)-Map-data-to-hippocampal-surfaces">0) Map data to hippocampal surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html#1)-Load-the-data-and-examine-attributes">1) Load the data and examine attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html#Spatial-distribution-of-hippocampal-adjacent-channels">Spatial distribution of hippocampal-adjacent channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html#Compare-PSDs-from-the-hippocampus-to-all-chennels-to-ensure-they-are-comparable">Compare PSDs from the hippocampus to all chennels to ensure they are comparable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html#Compare-BPs-from-the-hippocampus-to-all-chennels-to-ensure-they-are-comparable">Compare BPs from the hippocampus to all chennels to ensure they are comparable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html#Nicer-ridge-plot,-showing-hippocampal-data-in-colour-and-all-data-in-grey-behaind">Nicer ridge plot, showing hippocampal data in colour and all data in grey behaind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html#Spatial-extrapolation">Spatial extrapolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html#2)-Summarize-data-according-to-primary-gradients">2) Summarize data according to primary gradients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html#save">save</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">DimReduct:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/DimReduct.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/DimReduct.html#1)-Load-and-resample">1) Load and resample</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/DimReduct.html#2)-Check-for-correlations-with-AP,-PD,-or-subfield-organizations">2) Check for correlations with AP, PD, or subfield organizations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/DimReduct.html#3)-Gradient-decomposition">3) Gradient decomposition</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">MRI-3T-taskfMRI:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#0)-Map-data-to-hippocampal-surface">0) Map data to hippocampal surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#1.1)-GLM-fit-pattern-separation2">1.1) GLM fit pattern separation2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#Now-that-we've-run-through-a-full-example-for-one-subject,-we'll-loop-through-all-subjects-and-save-the-data:">Now that we’ve run through a full example for one subject, we’ll loop through all subjects and save the data:</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#1.2)-Group-averaging-and-significance/consistency-testing">1.2) Group-averaging and significance/consistency testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#significance-testing">significance testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#Additional-consistency-checks">Additional consistency checks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#1.3)-Consider-neocortical-results">1.3) Consider neocortical results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#1.4)-Compare-to-previously-mapped-features">1.4) Compare to previously mapped features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#2.1)-GLM-fit-for-episodic-retrieval">2.1) GLM fit for episodic retrieval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#2.2)-Group-averaging-and-significance/consistency-testing">2.2) Group-averaging and significance/consistency testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#2.3)-Consider-the-neocortex">2.3) Consider the neocortex</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#3.1)-GLM-fit-for-episodic-encoding--subsequent-memory">3.1) GLM fit for episodic encoding -subsequent memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#3.2)-Group-averaging-and-significance/consistency-testing">3.2) Group-averaging and significance/consistency testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html#3.3)-Consider-the-neocortex">3.3) Consider the neocortex</a></li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorials/Morphology.html" class="btn btn-neutral float-right" title="Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, DeKraker.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

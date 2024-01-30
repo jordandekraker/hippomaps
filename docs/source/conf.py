@@ -21,7 +21,7 @@ version = '0.1.0'
 # -- General configuration
 
 extensions = [
-#    'nbsphinx',
+    'nbsphinx',
     'sphinx_gallery.load_style',
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
@@ -31,7 +31,14 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.autosectionlabel',
     'sphinx_gallery.gen_gallery',
-    'm2r2',]
+    'myst_parser',
+]
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
+}
 
 # source_suffix = '.rst'
 source_suffix = ['.rst', '.md']

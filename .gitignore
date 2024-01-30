@@ -6,6 +6,5 @@ notebooks/tmp_*
 maps/
 HippoMaps.egg-info/
 hippomaps/__pycache__
-docs/build
-docs/_build
 snapshots
+generated

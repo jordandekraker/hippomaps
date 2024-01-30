@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hippocampal gene expression maps &mdash; Hippomaps 0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=e031e9a9"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Hippomaps
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Overview of functions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Hippomaps</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><strong>Hippocampal gene expression maps</strong></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/tutorials/extras/GeneExpression_AHBA.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Hippocampal-gene-expression-maps">
+<h1><strong>Hippocampal gene expression maps</strong><a class="headerlink" href="#Hippocampal-gene-expression-maps" title="Permalink to this heading"></a></h1>
+<section id="Overview">
+<h2><strong>Overview</strong><a class="headerlink" href="#Overview" title="Permalink to this heading"></a></h2>
+<p>In this notebook, we will generate transcriptomic maps of the hippocampus from the Allen Human Brain Atlas and derive spatial gradients of gene expresion.</p>
+<p><strong>Set up</strong></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import libraries</span>
+<span class="kn">import</span> <span class="nn">abagen</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;/export03/data/opt/hippunfold_toolbox/hippunfold_toolbox&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pygeodesic.geodesic</span> <span class="k">as</span> <span class="nn">geodesic</span>
+<span class="kn">from</span> <span class="nn">hippunfold_toolbox.utils</span> <span class="kn">import</span> <span class="n">density_interp</span>
+
+<span class="kn">from</span> <span class="nn">hippunfold_toolbox</span> <span class="kn">import</span> <span class="n">plotting</span>
+<span class="kn">from</span> <span class="nn">abagen.utils</span> <span class="kn">import</span> <span class="n">flatten_dict</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING: Matplotlib is building the font cache; this may take a moment.
+</pre></div></div>
+</div>
+<p><strong>1 - Derive preprocessed gene expression samples</strong></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define paths and files</span>
+<span class="n">ahba_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mica3/AHBA/&#39;</span>
+<span class="n">rawdata_dir</span> <span class="o">=</span> <span class="n">ahba_dir</span> <span class="o">+</span> <span class="s1">&#39;rawdata/&#39;</span>
+<span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="n">ahba_dir</span> <span class="o">+</span> <span class="s1">&#39;derivatives/hippunfold_v1.4.1/hippunfold/&#39;</span>
+
+<span class="n">files</span> <span class="o">=</span> <span class="p">{</span>
+
+    <span class="s1">&#39;12876&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;microarray&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1009/microarray/MicroarrayExpression.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;ontology&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1009/microarray/Ontology.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;pacall&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1009/microarray/PACall.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;probes&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1009/microarray/Probes.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;annotation&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1009/microarray/SampleAnnot.csv&#39;</span><span class="p">},</span>
+
+    <span class="s1">&#39;14380&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;microarray&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1012/microarray/MicroarrayExpression.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;ontology&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1012/microarray/Ontology.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;pacall&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1012/microarray/PACall.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;probes&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1012/microarray/Probes.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;annotation&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1012/microarray/SampleAnnot.csv&#39;</span><span class="p">},</span>
+
+    <span class="s1">&#39;15496&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;microarray&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1015/microarray/MicroarrayExpression.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;ontology&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;rawdata/sub-1015/microarray/Ontology.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;pacall&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1015/microarray/PACall.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;probes&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1015/microarray/Probes.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;annotation&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1015/microarray/SampleAnnot.csv&#39;</span><span class="p">},</span>
+
+    <span class="s1">&#39;15697&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;microarray&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1016/microarray/MicroarrayExpression.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;ontology&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1016/microarray/Ontology.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;pacall&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1016/microarray/PACall.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;probes&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1016/microarray/Probes.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;annotation&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-1016/microarray/SampleAnnot.csv&#39;</span><span class="p">},</span>
+
+    <span class="s1">&#39;9861&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;microarray&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2001/microarray/MicroarrayExpression.csv&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;ontology&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2001/microarray/Ontology.csv&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;pacall&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2001/microarray/PACall.csv&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;probes&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2001/microarray/Probes.csv&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;annotation&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2001/microarray/SampleAnnot.csv&#39;</span><span class="p">},</span>
+
+    <span class="s1">&#39;10021&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;microarray&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2002/microarray/MicroarrayExpression.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;ontology&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2002/microarray/Ontology.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;pacall&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2002/microarray/PACall.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;probes&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2002/microarray/Probes.csv&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;annotation&#39;</span><span class="p">:</span> <span class="n">rawdata_dir</span> <span class="o">+</span> <span class="s1">&#39;sub-2002/microarray/SampleAnnot.csv&#39;</span><span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get &quot;native&quot; MRI coordinates and voxels</span>
+<span class="k">for</span> <span class="n">donor</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">annot</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;annotation&#39;</span><span class="p">])</span>
+    <span class="n">files</span><span class="p">[</span><span class="n">donor</span><span class="p">][</span><span class="s1">&#39;annotation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">annot</span>
+
+<span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;well_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mni_x&#39;</span><span class="p">,</span> <span class="s1">&#39;mni_y&#39;</span><span class="p">,</span> <span class="s1">&#39;mni_z&#39;</span><span class="p">]</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">flatten_dict</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;annotation&#39;</span><span class="p">))[</span><span class="n">cols</span><span class="p">])</span>
+<span class="n">well_id</span><span class="p">,</span> <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;int&#39;</span><span class="p">),</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">well_id</span><span class="p">)</span>
+
+<span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;well_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mri_voxel_x&#39;</span><span class="p">,</span> <span class="s1">&#39;mri_voxel_y&#39;</span><span class="p">,</span> <span class="s1">&#39;mri_voxel_z&#39;</span><span class="p">]</span>
+<span class="n">voxels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">flatten_dict</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;annotation&#39;</span><span class="p">))[</span><span class="n">cols</span><span class="p">])</span>
+<span class="n">well_id</span><span class="p">,</span> <span class="n">voxels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">voxels</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;int&#39;</span><span class="p">),</span> <span class="n">voxels</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
+<span class="n">voxels</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">voxels</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">well_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate atlas image where each voxel with sample has value of 1</span>
+<span class="n">affine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">affine</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">affine</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all expression data and drop sample coordinates that weren&#39;t in atlas</span>
+<span class="n">microarray</span> <span class="o">=</span> <span class="n">abagen</span><span class="o">.</span><span class="n">get_expression_data</span><span class="p">(</span><span class="n">data_dir</span><span class="o">=</span><span class="s1">&#39;/data/mica3/AHBA/microarray/&#39;</span><span class="p">,</span>
+                                        <span class="n">donors</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+                                        <span class="n">atlas</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
+                                        <span class="n">atlas_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                        <span class="n">region_agg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                        <span class="n">return_donors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">norm_matched</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                        <span class="n">probe_selection</span><span class="o">=</span><span class="s1">&#39;rnaseq&#39;</span><span class="p">)</span>
+
+<span class="n">microarray</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">donor</span><span class="p">:</span> <span class="n">micro</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">donor</span><span class="p">,</span> <span class="n">micro</span> <span class="ow">in</span> <span class="n">microarray</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="n">coords</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">donor</span><span class="p">:</span> <span class="n">coords</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">micro</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">donor</span><span class="p">,</span> <span class="n">micro</span> <span class="ow">in</span> <span class="n">microarray</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="n">voxels</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">donor</span><span class="p">:</span> <span class="n">voxels</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">micro</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">donor</span><span class="p">,</span> <span class="n">micro</span> <span class="ow">in</span> <span class="n">microarray</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/host/yeatman/local_raid/ango/anaconda3/envs/py3/lib/python3.9/site-packages/abagen/probes_.py:66: FutureWarning: In a future version, `df.iloc[:, i] = newvals` will attempt to set the values inplace instead of always setting a new array. To retain the old behavior, use either `df[df.columns[i]] = newvals` or, if columns are non-unique, `df.isetitem(i, newvals)`
+  reannotated.loc[:, &#39;entrez_id&#39;] = reannotated[&#39;entrez_id&#39;].astype(&#39;int&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Dataset created in /home/bic/ango/abagen-data/rnaseq
+
+Downloading data from https://human.brain-map.org/api/v2/well_known_file_download/278447594 ...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Downloaded 23127642 of 23127642 bytes (100.0%,    0.0s remaining) ...done. (7 seconds, 0 min)
+Extracting data from /home/bic/ango/abagen-data/rnaseq/ad34df880e08700364530a3299829aa4/rnaseq_donor9861/donor9861.zip..... done.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Downloading data from https://human.brain-map.org/api/v2/well_known_file_download/278448166 ...
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Downloaded 23525019 of 23525019 bytes (100.0%,    0.0s remaining) ...done. (7 seconds, 0 min)
+Extracting data from /home/bic/ango/abagen-data/rnaseq/ad34df880e08700364530a3299829aa4/rnaseq_donor10021/donor10021.zip..... done.
+</pre></div></div>
+</div>
+<p><strong>2 - Extract samples that are within hippocampal gray matter</strong></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">donor_list</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;12876&#39;</span><span class="p">:</span><span class="s1">&#39;sub-1009&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;14380&#39;</span><span class="p">:</span><span class="s1">&#39;sub-1012&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;15496&#39;</span><span class="p">:</span><span class="s1">&#39;sub-1015&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;15697&#39;</span><span class="p">:</span><span class="s1">&#39;sub-1016&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;9861&#39;</span><span class="p">:</span><span class="s1">&#39;sub-2001&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;10021&#39;</span><span class="p">:</span><span class="s1">&#39;sub-2002&#39;</span>
+             <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get samples that are in one of the subfields</span>
+<span class="n">hipp_microarray</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">hipp_voxels</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">hipp_coords</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">donor</span><span class="p">,</span> <span class="n">micro</span> <span class="ow">in</span> <span class="n">microarray</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">donor</span><span class="p">]</span>
+
+    <span class="n">hipp_l_subfields</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">hippunfold_dir</span> <span class="o">+</span> <span class="n">sub</span> <span class="o">+</span> <span class="s1">&#39;/anat/&#39;</span> <span class="o">+</span> <span class="n">sub</span> <span class="o">+</span> <span class="s1">&#39;_hemi-L_space-T1w_desc-subfields_atlas-multihist7_dseg.nii.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">()</span>
+    <span class="n">hipp_r_subfields</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">hippunfold_dir</span> <span class="o">+</span> <span class="n">sub</span> <span class="o">+</span> <span class="s1">&#39;/anat/&#39;</span> <span class="o">+</span> <span class="n">sub</span> <span class="o">+</span> <span class="s1">&#39;_hemi-R_space-T1w_desc-subfields_atlas-multihist7_dseg.nii.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">()</span>
+
+    <span class="n">hipp_subfields</span> <span class="o">=</span> <span class="n">hipp_l_subfields</span> <span class="o">+</span> <span class="n">hipp_r_subfields</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">voxels</span><span class="p">[</span><span class="n">donor</span><span class="p">][</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">voxels</span><span class="p">[</span><span class="n">donor</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">voxels</span><span class="p">[</span><span class="n">donor</span><span class="p">][</span><span class="s1">&#39;z&#39;</span><span class="p">]</span>
+
+    <span class="n">hipp_microarray</span> <span class="o">|=</span> <span class="p">{</span><span class="n">donor</span><span class="p">:</span> <span class="n">micro</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">hipp_subfields</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">],</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])]}</span>
+    <span class="n">hipp_voxels</span> <span class="o">|=</span> <span class="p">{</span><span class="n">donor</span><span class="p">:</span> <span class="n">voxels</span><span class="p">[</span><span class="n">donor</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">hipp_subfields</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">],</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])]}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save hippocampal gene expression</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_microarray.npy&#39;</span><span class="p">,</span> <span class="n">hipp_microarray</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_voxels.npy&#39;</span><span class="p">,</span> <span class="n">hipp_voxels</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><strong>3 - Project samples to the hippocampal surface</strong></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
+<span class="n">hipp_microarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_microarray.npy&#39;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">hipp_voxels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_voxels.npy&#39;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">hipp_microarray</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">hipp_microarray</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">1</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">hipp_voxels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">hipp_voxels</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">1</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set distance threshold (mm)</span>
+<span class="n">dist_threshold</span> <span class="o">=</span> <span class="mf">2.5</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Left hemisphere</span>
+<span class="n">hipp_data_lh</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">coord</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">donor_list</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">hipp_microarray</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="n">hipp_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="mi">13561</span><span class="p">])</span>
+    <span class="n">hipp_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">])</span>
+    <span class="n">hipp_exp_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">])</span>
+
+    <span class="n">surf</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">hippunfold_dir</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/surf/&#39;</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_hemi-L_space-T1w_den-2mm_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
+    <span class="n">affine</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">hippunfold_dir</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/anat/&#39;</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_hemi-L_space-T1w_desc-subfields_atlas-multihist7_dseg.nii.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">affine</span>
+    <span class="n">vertices</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">surf</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="c1"># Convert voxels to vertices</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hipp_voxels</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">c</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">))),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">affine</span> <span class="o">@</span> <span class="n">c</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="p">[:</span><span class="mi">3</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">dist_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+        <span class="n">coord_x</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coord_y</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">coord_z</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">coord_x</span><span class="p">,</span> <span class="n">coord_y</span><span class="p">,</span> <span class="n">coord_z</span><span class="p">])</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">dist_threshold</span><span class="p">:</span>
+                <span class="n">hipp_exp</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hipp_microarray</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">hipp_sample</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">hipp_exp_count</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">hipp_data_lh</span> <span class="o">|=</span> <span class="p">{</span><span class="n">d</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;expression&#39;</span><span class="p">:</span> <span class="n">hipp_exp</span><span class="p">,</span> <span class="s1">&#39;sample_location&#39;</span><span class="p">:</span> <span class="n">hipp_sample</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">hipp_exp_count</span><span class="p">}</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Right hemisphere</span>
+<span class="n">hipp_data_rh</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">donor_list</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">hipp_microarray</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="n">hipp_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="mi">13561</span><span class="p">])</span>
+    <span class="n">hipp_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">])</span>
+    <span class="n">hipp_exp_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">])</span>
+
+    <span class="n">surf</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">hippunfold_dir</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/surf/&#39;</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_hemi-R_space-T1w_den-2mm_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
+    <span class="n">affine</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">hippunfold_dir</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/anat/&#39;</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_hemi-R_space-T1w_desc-subfields_atlas-multihist7_dseg.nii.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">affine</span>
+    <span class="n">vertices</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">surf</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="c1"># Convert voxels to vertices</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hipp_voxels</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">c</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">))),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">affine</span> <span class="o">@</span> <span class="n">c</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="p">[:</span><span class="mi">3</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+        <span class="n">coord_x</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coord_y</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">coord_z</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">coord_x</span><span class="p">,</span> <span class="n">coord_y</span><span class="p">,</span> <span class="n">coord_z</span><span class="p">])</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">dist_threshold</span><span class="p">:</span>
+                <span class="n">hipp_exp</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hipp_microarray</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">hipp_sample</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">hipp_exp_count</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">hipp_data_rh</span> <span class="o">|=</span> <span class="p">{</span><span class="n">d</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;expression&#39;</span><span class="p">:</span> <span class="n">hipp_exp</span><span class="p">,</span> <span class="s1">&#39;sample_location&#39;</span><span class="p">:</span> <span class="n">hipp_sample</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">hipp_exp_count</span><span class="p">}</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot sample location of an individual</span>
+
+<span class="c1"># Donor list:</span>
+<span class="c1"># &#39;12876&#39; : &#39;sub-1009&#39;</span>
+<span class="c1"># &#39;14380&#39; : &#39;sub-1012&#39;</span>
+<span class="c1"># &#39;15496&#39; : &#39;sub-1015&#39;</span>
+<span class="c1"># &#39;15697&#39; : &#39;sub-1016&#39;</span>
+<span class="c1"># &#39;9861&#39;  : &#39;sub-2001&#39;</span>
+<span class="c1"># &#39;10021&#39; : &#39;sub-2002&#39;</span>
+<span class="n">d</span> <span class="o">=</span> <span class="s1">&#39;12876&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hipp_data_lh</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="s1">&#39;sample_location&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">7262</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">x_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">hipp_data_lh</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="s1">&#39;sample_location&#39;</span><span class="p">][:,</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">x_</span> <span class="o">=</span> <span class="n">density_interp</span><span class="p">(</span><span class="s1">&#39;2mm&#39;</span><span class="p">,</span> <span class="s1">&#39;0p5mm&#39;</span><span class="p">,</span> <span class="n">x_</span><span class="p">,</span> <span class="s1">&#39;hipp&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">location</span><span class="p">[</span><span class="n">x_</span><span class="o">==</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">x_</span><span class="p">[</span><span class="n">x_</span><span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">x_</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;hipp&#39;</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">color_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">nan_color</span><span class="o">=</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">den</span><span class="o">=</span><span class="s1">&#39;0p5mm&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">screenshot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/host/yeatman/local_raid/ango/HippoMaps_Gene/probes_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+12876 sub-1009
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/host/yeatman/local_raid/ango/anaconda3/envs/py3/lib/python3.9/site-packages/brainspace-0.1.4-py3.9.egg/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
+  warnings.warn(&#34;Interactive mode requires &#39;panel&#39;. &#34;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot count</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="n">x</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">hipp_data_lh</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span>
+<span class="n">x</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">hipp_data_rh</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span>
+<span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;hipp&#39;</span><span class="p">],</span> <span class="n">den</span><span class="o">=</span><span class="s1">&#39;2mm&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_GeneExpression_AHBA_19_0.png" src="../../_images/tutorials_extras_GeneExpression_AHBA_19_0.png" />
+</div>
+</div>
+<p><strong>4 - Interpolate and smooth gene expression data (takes a while to run)</strong></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Left hemisphere</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">donor_list</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">hipp_microarray</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_genes</span> <span class="o">=</span> <span class="n">hipp_microarray</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">d_sample</span> <span class="o">=</span> <span class="n">hipp_data_lh</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="s1">&#39;sample_location&#39;</span><span class="p">]</span>
+    <span class="n">d_expression</span> <span class="o">=</span> <span class="n">hipp_data_lh</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="s1">&#39;expression&#39;</span><span class="p">]</span>
+
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">interp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="n">n_genes</span><span class="p">])</span>
+
+    <span class="c1"># Compute geodesic distance between all vertice and the sample location</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">d_sample</span><span class="p">[:,</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># If probe is on the right hemisphere, then assign weight 0 to all vertices</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">[:,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">continue</span>
+
+        <span class="n">surf</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">hippunfold_dir</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/surf/&#39;</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_hemi-L_space-T1w_den-2mm_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">surf</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">surf</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_TRIANGLE&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">geoalg</span> <span class="o">=</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">PyGeodesicAlgorithmExact</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">dist</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">geoalg</span><span class="o">.</span><span class="n">geodesicDistances</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">weight</span><span class="p">[:,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">dist</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+
+    <span class="c1"># Interpolate/extrapolate gene expression data</span>
+    <span class="n">total_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">419</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">weight</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">total_weight</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_genes</span><span class="p">):</span>
+                    <span class="n">exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">d_expression</span><span class="p">[:,</span> <span class="n">s</span><span class="p">,</span> <span class="n">g</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">exp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">interp</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">g</span><span class="p">]</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">exp</span>
+
+    <span class="n">hipp_data_lh</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="s1">&#39;interp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+12876
+14380
+15496
+15697
+9861
+10021
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Right hemisphere</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">donor_list</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">hipp_microarray</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_genes</span> <span class="o">=</span> <span class="n">hipp_microarray</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">d_sample</span> <span class="o">=</span> <span class="n">hipp_data_rh</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="s1">&#39;sample_location&#39;</span><span class="p">]</span>
+    <span class="n">d_expression</span> <span class="o">=</span> <span class="n">hipp_data_rh</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="s1">&#39;expression&#39;</span><span class="p">]</span>
+
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">interp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">419</span><span class="p">,</span> <span class="n">n_genes</span><span class="p">])</span>
+
+    <span class="c1"># Compute geodesic distance between all vertice and the sample location</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">d_sample</span><span class="p">[:,</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># If probe is on the left hemisphere, then assign weight 0 to all vertices</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">[:,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">continue</span>
+
+        <span class="n">surf</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">hippunfold_dir</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/surf/&#39;</span> <span class="o">+</span> <span class="n">donor_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_hemi-R_space-T1w_den-2mm_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">surf</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">surf</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_TRIANGLE&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">geoalg</span> <span class="o">=</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">PyGeodesicAlgorithmExact</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">dist</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">geoalg</span><span class="o">.</span><span class="n">geodesicDistances</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">weight</span><span class="p">[:,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">dist</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+
+    <span class="c1"># Interpolate/extrapolate gene expression data</span>
+    <span class="n">total_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">419</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">weight</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">total_weight</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_genes</span><span class="p">):</span>
+                    <span class="n">exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">d_expression</span><span class="p">[:,</span> <span class="n">s</span><span class="p">,</span> <span class="n">g</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">exp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">interp</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">g</span><span class="p">]</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">exp</span>
+
+    <span class="n">hipp_data_rh</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="s1">&#39;interp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+12876
+14380
+15496
+15697
+9861
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/tmp/ipykernel_14059/3848945158.py:37: RuntimeWarning: invalid value encountered in double_scalars
+  w = weight[v,s] / total_weight[v]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+10021
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save interpolated gene expression</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_data_lh.npy&#39;</span><span class="p">,</span> <span class="n">hipp_data_lh</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_data_rh.npy&#39;</span><span class="p">,</span> <span class="n">hipp_data_rh</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><strong>5 - Generate atlas of gene expression data (mean across donors)</strong></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
+<span class="n">hipp_data_lh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_data_lh.npy&#39;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">hipp_data_rh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_data_rh.npy&#39;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">hipp_data_lh</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">hipp_data_lh</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">1</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">hipp_data_rh</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">hipp_data_rh</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">1</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Left hippocampus</span>
+<span class="n">hipp_lh_expression</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;interp&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">hipp_data_lh</span><span class="o">.</span><span class="n">values</span><span class="p">()]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Right hippocampus</span>
+<span class="n">hipp_rh_expression</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;interp&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">hipp_data_rh</span><span class="o">.</span><span class="n">values</span><span class="p">()]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save averaged gene expression maps as a csv</span>
+<span class="n">gene_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">hipp_microarray</span><span class="p">[</span><span class="s1">&#39;9861&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="c1"># Same for every donor</span>
+
+<span class="n">df_hipp_lh_expression</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">hipp_lh_expression</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">gene_list</span><span class="p">)</span>
+<span class="n">df_hipp_rh_expression</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">hipp_rh_expression</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">gene_list</span><span class="p">)</span>
+
+<span class="n">df_hipp_lh_expression</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_lh_expression.csv&#39;</span><span class="p">)</span>
+<span class="n">df_hipp_rh_expression</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;/data/mica3/AHBA/scripts/hipp_rh_expression.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, DeKraker.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

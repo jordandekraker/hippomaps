@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview of functions &mdash; Hippomaps 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=e031e9a9"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Overview" href="tutorials/MRI-3T-taskfMRI.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Hippomaps
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview of functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#plotting">Plotting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.plotting.area_rescale"><code class="docutils literal notranslate"><span class="pre">area_rescale()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.plotting.bound_cdata"><code class="docutils literal notranslate"><span class="pre">bound_cdata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.plotting.surfplot_canonical_foldunfold"><code class="docutils literal notranslate"><span class="pre">surfplot_canonical_foldunfold()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.plotting.surfplot_sub_foldunfold"><code class="docutils literal notranslate"><span class="pre">surfplot_sub_foldunfold()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-hippomaps.stats">Stats</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.stats.contextualize2D"><code class="docutils literal notranslate"><span class="pre">contextualize2D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.stats.moran_test"><code class="docutils literal notranslate"><span class="pre">moran_test()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.stats.spin_test"><code class="docutils literal notranslate"><span class="pre">spin_test()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-hippomaps.fetcher">Fetcher</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.fetcher.GlobDict"><code class="docutils literal notranslate"><span class="pre">GlobDict</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#hippomaps.fetcher.GlobDict.glob"><code class="docutils literal notranslate"><span class="pre">GlobDict.glob()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.fetcher.tree_osf_hashes"><code class="docutils literal notranslate"><span class="pre">tree_osf_hashes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-hippomaps.utils">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.utils.avg_neighbours"><code class="docutils literal notranslate"><span class="pre">avg_neighbours()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.utils.density_interp"><code class="docutils literal notranslate"><span class="pre">density_interp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.utils.fillnanvertices"><code class="docutils literal notranslate"><span class="pre">fillnanvertices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.utils.laplace_solver"><code class="docutils literal notranslate"><span class="pre">laplace_solver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.utils.profile_align"><code class="docutils literal notranslate"><span class="pre">profile_align()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.utils.surface_to_volume"><code class="docutils literal notranslate"><span class="pre">surface_to_volume()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hippomaps.utils.surfdat_smooth"><code class="docutils literal notranslate"><span class="pre">surfdat_smooth()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Hippomaps</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Overview of functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="overview-of-functions">
+<h1>Overview of functions<a class="headerlink" href="#overview-of-functions" title="Permalink to this heading"></a></h1>
+<section id="plotting">
+<h2>Plotting<a class="headerlink" href="#plotting" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-hippomaps.plotting"></span><dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.plotting.area_rescale">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.plotting.</span></span><span class="sig-name descname"><span class="pre">area_rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">den</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">APaxis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.plotting.area_rescale" title="Permalink to this definition"></a></dt>
+<dd><p>Rescales unfolded surface vertices to account for overrepresentation of anterior and posterior regions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vertices</strong> (<em>Unfolded surface vertices.</em>) – </p></li>
+<li><p><strong>den</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Density of the unfolded space. One of ‘0p5mm’, ‘1mm’, ‘2mm’, or ‘unfoldiso’.</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Surface label. Either ‘hipp’ or ‘dentate’.</p></li>
+<li><p><strong>APaxis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Axis along the anterior-posterior direction. Default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rescaled unfolded surface vertices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.plotting.bound_cdata">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.plotting.</span></span><span class="sig-name descname"><span class="pre">bound_cdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.plotting.bound_cdata" title="Permalink to this definition"></a></dt>
+<dd><p>Returns upper and lower X percent interval values.
+:param cdata:
+:type cdata: List of values.
+:param cutoff:
+:type cutoff: Default is 0.05.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Values within the upper and lower X percent interval.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.plotting.surfplot_canonical_foldunfold">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.plotting.</span></span><span class="sig-name descname"><span class="pre">surfplot_canonical_foldunfold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hemis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['L',</span> <span class="pre">'R']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['hipp',</span> <span class="pre">'dentate']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unfoldAPrescale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">den</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0p5mm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tighten_cwindow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resourcesdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/export03/data/hippomaps/resources'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[350,</span> <span class="pre">300]</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">qwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.plotting.surfplot_canonical_foldunfold" title="Permalink to this definition"></a></dt>
+<dd><p>Plots canonical folded and unfolded surfaces for hippocampus and dentate gyrus.
+:param cdata: Array with the shape Vx2xF, where V is the number of vertices (including DG unless specified),</p>
+<blockquote>
+<div><p>2 is the number of hemispheres (unless specified), and F is the number of rows/features.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hemis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – List of hemispheres to visualize. Default is [‘L’, ‘R’].</p></li>
+<li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – List of labels for different structures. Default is [‘hipp’, ‘dentate’].</p></li>
+<li><p><strong>unfoldAPrescale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to pre-scale the anterior-posterior axis during unfolding. Default is False.</p></li>
+<li><p><strong>den</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Density parameter for surface plot. Default is ‘0p5mm’.</p></li>
+<li><p><strong>tighten_cwindow</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to tighten the color window for the surface plot. Default is False.</p></li>
+<li><p><strong>resourcesdir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Directory path containing additional resources. Default is the value of resourcesdir.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Size of the surface plot. Default is [350, 300].</p></li>
+<li><p><strong>**qwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments for customization.
+See <a class="reference external" href="https://brainspace.readthedocs.io/en/latest/generated/brainspace.plotting.surface_plotting.plot_surf.html#brainspace.plotting.surface_plotting.plot_surf">https://brainspace.readthedocs.io/en/latest/generated/brainspace.plotting.surface_plotting.plot_surf.html#brainspace.plotting.surface_plotting.plot_surf</a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Figure object for the generated surface plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function is suitable for plotting canonical folded and unfolded surfaces, and it is particularly useful
+when the data (<cite>cdata</cite>) isn’t specific to one subject (e.g., maybe it has been averaged across many subjects).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.plotting.surfplot_sub_foldunfold">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.plotting.</span></span><span class="sig-name descname"><span class="pre">surfplot_sub_foldunfold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hippunfold_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hemis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['L',</span> <span class="pre">'R']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['hipp',</span> <span class="pre">'dentate']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flipRcurv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unfoldAPrescale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">den</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0p5mm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'T1w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tighten_cwindow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resourcesdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/export03/data/hippomaps/resources'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[350,</span> <span class="pre">230]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">qwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.plotting.surfplot_sub_foldunfold" title="Permalink to this definition"></a></dt>
+<dd><p>Plots subject-specific folded and unfolded surfaces (hipp/dentate; folded/unfolded).
+:param hippunfold_dir: Directory path containing unfolded hippocampus data.
+:type hippunfold_dir: str
+:param sub: Subject ID. Inputs are path/filenames
+:type sub: str
+:param ses: Session ID. Inputs are path/filenames
+:type ses: str
+:param features: Feature or measurement to visualize on the surface plot.list of strings. Can include thickness, curvature, gyrification, subfields, or other added data that follows the same naming convention
+:type features: str
+:param hemis: List of hemispheres to visualize. Default is [‘L’, ‘R’].
+:type hemis: list of str, optional
+:param labels: List of labels for different structures. Default is [‘hipp’, ‘dentate’].
+:type labels: list of str, optional
+:param flipRcurv: Whether to flip the curvature map for the right hemisphere. Default is True.
+:type flipRcurv: bool, optional
+:param unfoldAPrescale: Whether to pre-scale the anterior-posterior axis during unfolding. Default is False.
+:type unfoldAPrescale: bool, optional
+:param den: Density parameter for surface plot. Default is ‘0p5mm’.
+:type den: str, optional
+:param modality: Imaging modality (e.g., ‘T1w’). Default is ‘T1w’.
+:type modality: str, optional
+:param tighten_cwindow: Whether to tighten the color window for the surface plot. Default is True.
+:type tighten_cwindow: bool, optional
+:param rotate: Whether to rotate the surface plot. Default is True.
+:type rotate: bool, optional
+:param resourcesdir: Directory path containing additional resources. Default is the value of resourcesdir.
+:type resourcesdir: str, optional
+:param size: Size of the surface plot. Default is [350, 230].
+:type size: list of int, optional
+:param cmap: Colormap for the surface plot. Default is ‘viridis’.
+:type cmap: str, optional
+:param **qwargs: Additional keyword arguments for customization.
+:type **qwargs: dict, optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The function generates a surface plot for the specified subject’s folded and unfolded hippocampus.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-hippomaps.stats">
+<span id="stats"></span><h2>Stats<a class="headerlink" href="#module-hippomaps.stats" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.stats.contextualize2D">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.stats.</span></span><span class="sig-name descname"><span class="pre">contextualize2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskMaps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_topComparison</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permTest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nperm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot2D</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.stats.contextualize2D" title="Permalink to this definition"></a></dt>
+<dd><p>Compares the present maps to thoes in the inital HippoMaps release</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>taskMaps</strong> (<em>a VxT matrix</em><em> of </em><em>intensities. T is the number</em><em> of </em><em>maps to examine</em>) – </p></li>
+<li><p><strong>n_topComparison</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Top N features for which to reurn comparisons (Pearson’s R and p)</p></li>
+<li><p><strong>plot2D</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether to plot the new maps in context of other maps</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>topFeatures</strong> (<em>Names of most similar intialized features</em>)</p></li>
+<li><p><strong>topR</strong> (<em>Correpsonding Pearson’s R values</em>)</p></li>
+<li><p><strong>topP</strong> (<em>Corresponding p values (spin test)</em>)</p></li>
+<li><p><strong>APcorr</strong> (<em>Correlation with AP coordinates</em>)</p></li>
+<li><p><strong>Subfscorr</strong> (<em>Max correlation with subfields (Spearmann)</em>)</p></li>
+<li><p><strong>ax</strong> (<em>axis handle</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.stats.moran_test">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.stats.</span></span><span class="sig-name descname"><span class="pre">moran_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgfix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgperm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nperm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pearson'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hipp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">den</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0p5mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.stats.moran_test" title="Permalink to this definition"></a></dt>
+<dd><p>Moran Spectral Randomization
+Moran Spectral Randomization (MSR) computes Moran’s I, a metric for spatial auto-correlation and generates normally distributed data with similar auto-correlation. MSR relies on a weight matrix denoting the spatial proximity of features to one another. Within neuroimaging, one straightforward example of this is inverse geodesic distance i.e. distance along the cortical surface.</p>
+<p>Code from BrainSpace <a class="reference external" href="https://brainspace.readthedocs.io/en/latest/python_doc/auto_examples/plot_tutorial3.html">https://brainspace.readthedocs.io/en/latest/python_doc/auto_examples/plot_tutorial3.html</a>
+Vos de Wael, Reinder, Oualid Benkarim, Casey Paquola, Sara Lariviere, Jessica Royer, Shahin Tavakol, Ting Xu et al. “BrainSpace: a toolbox for the analysis of macroscale gradients in neuroimaging and connectomics datasets.” Communications biology 3, no. 1 (2020): 103.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>imgfix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>array</em>) – Path to the fixed map, or fixed array map.</p></li>
+<li><p><strong>imgperm</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>array</em>) – Path to the fixed map to be permuted, or array map to be permuted.</p></li>
+<li><p><strong>nperm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of permutations to perform.</p></li>
+<li><p><strong>metric</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Metric for comparing maps (one of pearson, spearman, adjusted rand, or adjusted mutual info).
+Default is ‘pearson’.</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Label for the hippocampus (‘hipp’ or ‘dentate’). Default is ‘hipp’.</p></li>
+<li><p><strong>den</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Density of the surface data. Default ‘0p5mm’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>metricnull</strong> (<em>Null distribution of the specified metric</em>)</p></li>
+<li><p><strong>permutedimg</strong> (<em>All permuted spatial maps at ‘unfoldiso’ density.</em>)</p></li>
+<li><p><strong>r_obs</strong> (<em>The observed association between the two aligned maps.</em>)</p></li>
+<li><p><strong>pval</strong> (<em>p-value based on metricnull r_obs.</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.stats.spin_test">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.stats.</span></span><span class="sig-name descname"><span class="pre">spin_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgfix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgperm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nperm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pearson'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hipp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">den</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0p5mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.stats.spin_test" title="Permalink to this definition"></a></dt>
+<dd><p>Permutation testing of unfolded hippocampus maps.</p>
+<p>Original code by Bradley Karat at <a class="reference external" href="https://github.com/Bradley-Karat/Hippo_Spin_Testing">https://github.com/Bradley-Karat/Hippo_Spin_Testing</a>
+Karat, B. G., DeKraker, J., Hussain, U., Köhler, S., &amp; Khan, A. R. (2023).
+Mapping the macrostructure and microstructure of the in vivo human hippocampus using diffusion MRI.
+Human Brain Mapping. <a class="reference external" href="https://doi.org/10.1002/hbm.26461">https://doi.org/10.1002/hbm.26461</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>imgfix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>array</em>) – Path to the fixed map, or fixed array map.</p></li>
+<li><p><strong>imgperm</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>array</em>) – Path to the fixed map to be permuted, or array map to be permuted.</p></li>
+<li><p><strong>nperm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of permutations to perform.</p></li>
+<li><p><strong>metric</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Metric for comparing maps (one of pearson, spearman, adjusted rand, or adjusted mutual info).
+Default is ‘pearson’.</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Label for the hippocampus (‘hipp’ or ‘dentate’). Default is ‘hipp’.</p></li>
+<li><p><strong>den</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Density of the surface data. Default ‘0p5mm’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>metricnull</strong> (<em>Null distribution of the specified metric</em>)</p></li>
+<li><p><strong>permutedimg</strong> (<em>All permuted spatial maps at ‘unfoldiso’ density.</em>)</p></li>
+<li><p><strong>r_obs</strong> (<em>The observed association between the two aligned maps.</em>)</p></li>
+<li><p><strong>pval</strong> (<em>p-value based on metricnull r_obs.</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-hippomaps.fetcher">
+<span id="fetcher"></span><h2>Fetcher<a class="headerlink" href="#module-hippomaps.fetcher" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hippomaps.fetcher.GlobDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hippomaps.fetcher.</span></span><span class="sig-name descname"><span class="pre">GlobDict</span></span><a class="headerlink" href="#hippomaps.fetcher.GlobDict" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hippomaps.fetcher.GlobDict.glob">
+<span class="sig-name descname"><span class="pre">glob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.fetcher.GlobDict.glob" title="Permalink to this definition"></a></dt>
+<dd><p>Glob-style pattern matching for the dictionary keys.&#64;match should be a glob style pattern match (e.g. ‘<a href="#id1"><span class="problematic" id="id2">*</span></a>.txt’)
+:param match: The glob-style pattern to match keys.
+:type match: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A filtered dictionary with keys matching the specified pattern.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.fetcher.tree_osf_hashes">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.fetcher.</span></span><span class="sig-name descname"><span class="pre">tree_osf_hashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repoID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_hashes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxdepth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_hash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.fetcher.tree_osf_hashes" title="Permalink to this definition"></a></dt>
+<dd><p>Recursively fetches file hashes from the OSF repository. Verify with jordan
+:param repoID: The ID of the repository.
+:type repoID: str
+:param name_hashes: A dictionary to store file names and their corresponding hashes.
+:type name_hashes: dict
+:param maxdepth: The maximum depth to traverse the file tree.
+:type maxdepth: int
+:param current_hash: The hash of the current file or directory.
+:type current_hash: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The function populates the name_hashes dictionary with file names and their corresponding hashes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-hippomaps.utils">
+<span id="utils"></span><h2>Utils<a class="headerlink" href="#module-hippomaps.utils" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.utils.avg_neighbours">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.utils.</span></span><span class="sig-name descname"><span class="pre">avg_neighbours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">invar</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.utils.avg_neighbours" title="Permalink to this definition"></a></dt>
+<dd><p>Averages vertex-wise data at vertex n with its neighboring vertices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>invar</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – <p>A tuple containing the following elements:
+- F: tuple
+- cdat: tuple
+- n: int</p>
+<blockquote>
+<div><p>Vertex index for which the data will be averaged with its neighboring vertices.</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average value of the vertex-wise data at vertex n and its neighboring vertices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.utils.density_interp">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.utils.</span></span><span class="sig-name descname"><span class="pre">density_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indensity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdensity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resourcesdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/export03/data/hippomaps/resources'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.utils.density_interp" title="Permalink to this definition"></a></dt>
+<dd><p>Interpolates data from one surface density onto another via unfolded space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indensity</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – One of ‘0p5mm’, ‘1mm’, ‘2mm’, or ‘unfoldiso’.</p></li>
+<li><p><strong>outdensity</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – One of ‘0p5mm’, ‘1mm’, ‘2mm’, or ‘unfoldiso’.</p></li>
+<li><p><strong>cdata</strong> (<em>numpy.ndarray</em><em> (</em><em>true</em><em>)</em>) – Data to be interpolated (same number of vertices, N, as indensity).</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – ‘hipp’ or ‘dentate’.</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Interpolation method. Options are ‘nearest’, ‘linear’, or ‘cubic’. Default is ‘linear’. (true?)</p></li>
+<li><p><strong>resourcesdir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Path to the hippunfold resources folder.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>interp</strong> (<em>interpolated data</em>)</p></li>
+<li><p><strong>faces</strong> (<em>face connectivity from new surface density</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.utils.fillnanvertices">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.utils.</span></span><span class="sig-name descname"><span class="pre">fillnanvertices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.utils.fillnanvertices" title="Permalink to this definition"></a></dt>
+<dd><p>Fills NaNs by iteratively computing the nanmean of nearest neighbors until no NaNs remain.
+Can be used to fill missing vertices OR missing vertex cdata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>F</strong> (<em>Faces</em><em> of </em><em>a surface mesh.</em>) – </p></li>
+<li><p><strong>V</strong> (<em>Vertex coordinates</em><em> or </em><em>vertex-wise data with potential NaN values.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>The array with NaN values filled by the nanmean of nearest neighbors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.utils.laplace_solver">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.utils.</span></span><span class="sig-name descname"><span class="pre">laplace_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">faces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.utils.laplace_solver" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the Laplace equation along vertices of a surface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>faces</strong> (<em>Faces</em><em> of </em><em>a surface mesh.</em>) – </p></li>
+<li><p><strong>init</strong> (<em>Initial vertex-wise values. Source</em><em>(</em><em>s</em><em>) </em><em>should have a value</em><em> of </em><em>0</em><em>, </em><em>Sink</em><em>(</em><em>s</em><em>) </em><em>should have a value</em><em> of </em><em>1. NaN values will be masked. Time required scales with the number</em><em> of </em><em>unmasked vertices.</em>) – </p></li>
+<li><p><strong>maxiters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum iterations to run. Default is 1e4.</p></li>
+<li><p><strong>conv</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Convergence criterion. Default is 1e-6.</p></li>
+<li><p><strong>cores</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of CPU cores to use (per iteration). Default is 8.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>LP</strong> (<em>Laplace solution (vertex-wise).</em>)</p></li>
+<li><p><strong>change</strong> (<em>sum of absolute changes per iteration (should converge towards 0)</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.utils.profile_align">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.utils.</span></span><span class="sig-name descname"><span class="pre">profile_align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patchdist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxroll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.utils.profile_align" title="Permalink to this definition"></a></dt>
+<dd><p>Aligns microstructural profiles in the depth direction across a set of surfaces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P</strong> (<em>A VxD matrix</em><em> of </em><em>intensities</em><em> (</em><em>vertices x depths</em><em>)</em><em>.</em>) – </p></li>
+<li><p><strong>V</strong> (<em>The midthickness surface vertices.</em>) – </p></li>
+<li><p><strong>F</strong> (<em>The midthickness surface faces.</em>) – </p></li>
+<li><p><strong>patchdist</strong> (<em>Radius</em><em> (</em><em>in mm</em><em>) of </em><em>geodesic distance to compute the average profile.</em>) – If None, then all profiles are used. Default is None.</p></li>
+<li><p><strong>maxroll</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Maximum shift.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>with the patch average is achieved.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A matrix the same size as P, pads profiles by maxroll, then rolls them by +/- maxroll until maximum overlap</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If patchdist is None, the function aligns profiles based on the mean profile across all vertices.</p></li>
+<li><p>If patchdist is specified, the function aligns profiles based on the mean profile within a geodesic patch around each vertex.</p></li>
+<li><p>The alignment is performed by rolling the profiles to achieve maximum correlation with the reference profile.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.utils.surface_to_volume">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.utils.</span></span><span class="sig-name descname"><span class="pre">surface_to_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surf_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indensity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hippunfold_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hemi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hipp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_out_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.utils.surface_to_volume" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Labels voxels using data on a folded/unfolded surface and native space coordinates images.</dt><dd><p>from <a class="reference external" href="https://github.com/khanlab/hippunfold/blob/master/hippunfold/workflow/scripts/label_subfields_from_vol_coords.py">https://github.com/khanlab/hippunfold/blob/master/hippunfold/workflow/scripts/label_subfields_from_vol_coords.py</a>
+this function labels voxels using data on a folded/unfolded surface (midthickness or any), and native space coords (ap, pd) images
+TODO: consider trying to simplify inputs specifying the coords paths?</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surf_data</strong> (<em>Data on the folded/unfolded surface</em><em> (</em><em>midthickness</em><em> or </em><em>any</em><em>)</em><em>.</em>) – </p></li>
+<li><p><strong>indensity</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Density of the unfolded space. One of ‘0p5mm’, ‘1mm’, ‘2mm’, or ‘unfoldiso’.</p></li>
+<li><p><strong>hippunfold_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Directory path to the HippUnfold output.</p></li>
+<li><p><strong>sub</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Subject identifier.</p></li>
+<li><p><strong>ses</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Session identifier.</p></li>
+<li><p><strong>hemi</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Hemisphere. Either ‘L’ or ‘R’.</p></li>
+<li><p><strong>space</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Default is ‘*’.</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Default is ‘hipp’.</p></li>
+<li><p><strong>save_out_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Output file name to save the label image. Default is None.</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Interpolation method. Options are ‘nearest’, ‘linear’, or ‘cubic’. Default is ‘nearest’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Labeled voxel data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hippomaps.utils.surfdat_smooth">
+<span class="sig-prename descclassname"><span class="pre">hippomaps.utils.</span></span><span class="sig-name descname"><span class="pre">surfdat_smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.utils.surfdat_smooth" title="Permalink to this definition"></a></dt>
+<dd><p>Smooths surface data across neighboring vertices.
+TODO: convert to mm vis calibration curves in <a class="reference external" href="https://github.com/MELDProject/meld_classifier/blob/9d3d364de86dc207d3a1e5ec11dcab3ef012ebcb/meld_classifier/mesh_tools.py#L17">https://github.com/MELDProject/meld_classifier/blob/9d3d364de86dc207d3a1e5ec11dcab3ef012ebcb/meld_classifier/mesh_tools.py#L17</a>’’’
+This function assumes that vertices are evenly spaced and evenly connected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>F</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>cdata</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>iters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>cores</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Smoothed surface data across neighboring vertices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorials/MRI-3T-taskfMRI.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, DeKraker.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

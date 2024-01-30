@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Localization &mdash; Hippomaps 0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=e031e9a9"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Hippomaps
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Overview of functions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Hippomaps</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Localization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/tutorials/extras/iEEG_MICs.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p>This notebook maps electrode channels (the midpoint between two contacts) to hippocmapal surfaces. HippUnfold is run in space-nativepro, which is then registered to space-implant. Distances are calculated between chennel centroids and hippocampal surfaces, and all vertices within 5mm are given that channel bandpower values.</p>
+<p>For a more detailed explanation of code, see <code class="docutils literal notranslate"><span class="pre">notebooks/iEEG.ipynb</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">pl</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;/export03/data/opt/hippunfold_toolbox/hippunfold_toolbox&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">plotting</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">scipy.io</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">periodogram</span>
+<span class="kn">import</span> <span class="nn">pygeodesic.geodesic</span> <span class="k">as</span> <span class="nn">geodesic</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">micapipe_dir</span> <span class="o">=</span> <span class="s1">&#39;../sourcedata/Micapipe_MICs&#39;</span>
+<span class="n">ieeg_dir</span> <span class="o">=</span> <span class="s1">&#39;/host/oncilla/local_raid/iEEG-BIDS&#39;</span> <span class="c1">#(no ses)</span>
+<span class="n">ieeg_local</span> <span class="o">=</span> <span class="s1">&#39;../sourcedata/iEEG-local/&#39;</span>
+<span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mica3/BIDS_MICs/derivatives/hippunfold_v1.3.0/hippunfold/&#39;</span>
+<span class="n">subs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PX001&#39;</span><span class="p">,</span> <span class="s1">&#39;PX005&#39;</span><span class="p">,</span> <span class="s1">&#39;PX007&#39;</span><span class="p">,</span> <span class="s1">&#39;PX009&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PX010&#39;</span><span class="p">,</span> <span class="s1">&#39;PX012&#39;</span><span class="p">,</span> <span class="s1">&#39;PX015&#39;</span><span class="p">,</span> <span class="s1">&#39;PX019&#39;</span><span class="p">,</span> <span class="s1">&#39;PX023&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PX028&#39;</span><span class="p">,</span> <span class="s1">&#39;PX029&#39;</span><span class="p">,</span> <span class="s1">&#39;PX031&#39;</span><span class="p">,</span> <span class="s1">&#39;PX034&#39;</span><span class="p">,</span> <span class="s1">&#39;PX040&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PX041&#39;</span><span class="p">,</span> <span class="s1">&#39;PX045&#39;</span><span class="p">,</span> <span class="s1">&#39;PX050&#39;</span><span class="p">,</span> <span class="s1">&#39;PX051&#39;</span><span class="p">,</span> <span class="s1">&#39;PX053&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PX065&#39;</span><span class="p">]</span> <span class="c1"># omit PX004 because previous implant</span>
+<span class="n">ses</span> <span class="o">=</span> <span class="s1">&#39;ses-01&#39;</span>
+<span class="n">hemis</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;R&#39;</span><span class="p">]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;hipp&#39;</span><span class="p">]</span><span class="c1">#,&#39;dentate&#39;]</span>
+<span class="n">den</span><span class="o">=</span><span class="s1">&#39;2mm&#39;</span>
+<span class="n">ind</span> <span class="o">=</span> <span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">419</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">419</span><span class="p">,</span><span class="mi">483</span><span class="p">)]</span> <span class="c1"># index of how many dentate and hipp vertices are</span>
+<span class="n">shp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">419</span><span class="p">]</span><span class="c1">#,64]</span>
+<span class="n">freq</span> <span class="o">=</span> <span class="mi">200</span> <span class="c1">#Hz</span>
+<span class="n">bands</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;delta&#39;</span><span class="p">,</span> <span class="s1">&#39;theta&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="s1">&#39;gamma&#39;</span><span class="p">]</span>
+<span class="n">band_lims</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">13</span><span class="p">],</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span><span class="mi">30</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span><span class="mi">80</span><span class="p">]])</span>
+<span class="n">sampspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">80</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">dist_threshold</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1">#mm</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">sampspace</span><span class="p">),</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">cnames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/host/oncilla/local_raid/jessica/microstructure_iEEG/data/ieeg-mni/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_clean_ts.mat&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="p">,</span><span class="n">p</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">welch</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s1">&#39;dataclean&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">n1</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;dataLabels&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">c</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">n2</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;dataLabels&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">c</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">cnames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">cnames</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">sub</span><span class="p">,</span><span class="n">n1</span><span class="p">,</span><span class="n">n2</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">interpolator</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">f</span><span class="o">*</span><span class="n">freq</span><span class="p">,</span><span class="n">p</span><span class="p">[</span><span class="n">c</span><span class="p">,:]</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">c</span><span class="p">,:]))</span>
+        <span class="n">pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pxx</span><span class="p">,</span><span class="n">interpolator</span><span class="p">(</span><span class="n">sampspace</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(159, 2507)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sampspace</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="s1">&#39;k-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">sampspace</span><span class="p">,</span> <span class="n">y</span><span class="o">-</span><span class="n">err</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="n">err</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">band_lims</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span><span class="n">colors</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.4, 100)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_5_1.png" src="../../_images/tutorials_extras_iEEG_MICs_5_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">sampspace</span><span class="o">&gt;</span><span class="n">band_lims</span><span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">sampspace</span><span class="o">&lt;</span><span class="n">band_lims</span><span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">bp</span><span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">pxx</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span><span class="n">c</span><span class="p">],</span><span class="n">sampspace</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">color_discrete</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Set1</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">l</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;delta&#39;</span><span class="p">,</span> <span class="s1">&#39;theta&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="s1">&#39;gamma&#39;</span><span class="p">]</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="p">[</span><span class="n">ax</span><span class="p">]</span>
+<span class="n">n</span><span class="o">=</span><span class="mi">0</span>
+<span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="o">+</span> <span class="p">[</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">()]</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">bp</span><span class="p">[:,</span><span class="n">b</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dat</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">color_discrete</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">50</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+               <span class="n">color</span><span class="o">=</span><span class="n">color_discrete</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="n">b</span><span class="p">]);</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/data/mica1/01_programs/tmp/ipykernel_43097/3041265054.py:16: UserWarning: Legend does not support &lt;AxesSubplot:&gt; instances.
+A proxy artist may be used instead.
+See: https://matplotlib.org/users/legend_guide.html#creating-artists-specifically-for-adding-to-the-legend-aka-proxy-artists
+  plt.legend(handles=ax[1:])
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.legend.Legend at 0x7f98044c4850&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_7_2.png" src="../../_images/tutorials_extras_iEEG_MICs_7_2.png" />
+</div>
+</div>
+<section id="Localization">
+<h1>Localization<a class="headerlink" href="#Localization" title="Permalink to this heading"></a></h1>
+<p>Here, we have the vertices associated with each channel that falls within 5mm of the hippocampus.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Register hippunfold surfaces to implant space</span>
+<span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
+    <span class="n">cmd1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;antsRegistrationSyNQuick.sh -d 3 -t r &#39;</span>\
+    <span class="sa">f</span><span class="s1">&#39;-m </span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/anat/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_space-nativepro_t1w.nii.gz &#39;</span>\
+    <span class="sa">f</span><span class="s1">&#39;-f </span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/anat/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_implanted.nii &#39;</span>\
+    <span class="sa">f</span><span class="s1">&#39;-o </span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/xfms/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_space-nativepro-to-implanted_desc-rigid_&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/xfms/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_space-nativepro-to-implanted_desc-rigid_0GenericAffine.mat&#39;</span><span class="p">):</span>
+        <span class="o">!{</span>cmd1<span class="o">}</span>
+    <span class="n">cmd2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;c3d_affine_tool &#39;</span>\
+        <span class="sa">f</span><span class="s1">&#39;-itk </span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/xfms/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_space-nativepro-to-implanted_desc-rigid_0GenericAffine.mat &#39;</span>\
+        <span class="sa">f</span><span class="s1">&#39;-inv &#39;</span>\
+        <span class="sa">f</span><span class="s1">&#39;-o </span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/xfms/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_space-nativepro-to-implanted_desc-rigid_0GenericAffine.txt&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/xfms/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_space-nativepro-to-implanted_desc-rigid_0GenericAffine.txt&#39;</span><span class="p">):</span>
+        <span class="o">!{</span>cmd2<span class="o">}</span>
+    <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+            <span class="n">cmd3</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -surface-apply-affine &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_midthickness.surf.gii &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/xfms/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_space-nativepro-to-implanted_desc-rigid_0GenericAffine.txt &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/tmp/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-implant_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_midthickness.surf.gii&#39;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/tmp/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-implant_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_midthickness.surf.gii&#39;</span><span class="p">):</span>
+                <span class="o">!{</span>cmd3<span class="o">}</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">insensitive_glob</span><span class="p">(</span><span class="n">pattern</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">either</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;[</span><span class="si">%s%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="k">else</span> <span class="n">c</span>
+    <span class="k">return</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">either</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">change_table</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;filenames&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sub-PX015/anat/electrode_LOTj.csv&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;sub-PX028/anat/electrode_LHa.csv&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;sub-PX028/anat/electrode_RFug.csv&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;sub-PX031/anat/electrode_LA.csv&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;sub-PX045/anat/electrode_LEC.csv&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;sub-PX065/anat/electrode_RCP.csv&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;sub-PX065/anat/electrode_RPt.csv&#39;</span><span class="p">],</span>
+               <span class="s1">&#39;electrodenames&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;LTOJ&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;LH&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;RFus&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;LIa&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;LE&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;RPC&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;RTp&#39;</span><span class="p">]}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="nb">sum</span><span class="p">(</span><span class="n">shp</span><span class="p">),</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">hipp_pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="nb">sum</span><span class="p">(</span><span class="n">shp</span><span class="p">),</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">sampspace</span><span class="p">),</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">missing_electrodes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">sub</span> <span class="o">=</span> <span class="n">cnames</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">c</span><span class="p">]</span>
+        <span class="n">surf</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/tmp/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-implant_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_midthickness.surf.gii&#39;</span><span class="p">)</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="n">surf</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">ename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cnames</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()])</span>
+        <span class="n">electrode</span> <span class="o">=</span> <span class="n">insensitive_glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/anat/electrode_</span><span class="si">{</span><span class="n">ename</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+        <span class="c1">## this block sucks but we need to rename some electrodes</span>
+        <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/anat/electrode_</span><span class="si">{</span><span class="n">ename</span><span class="si">}</span><span class="s1">.csv&#39;</span> <span class="ow">in</span> <span class="n">change_table</span><span class="p">[</span><span class="s1">&#39;filenames&#39;</span><span class="p">]:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">change_table</span><span class="p">[</span><span class="s1">&#39;filenames&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/anat/electrode_</span><span class="si">{</span><span class="n">ename</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+            <span class="n">ename</span> <span class="o">=</span> <span class="n">change_table</span><span class="p">[</span><span class="s1">&#39;electrodenames&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">enum</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cnames</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()])</span>
+            <span class="n">cnames</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">ename</span><span class="o">+</span><span class="n">enum</span>
+            <span class="n">enum</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cnames</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()])</span>
+            <span class="n">cnames</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">ename</span><span class="o">+</span><span class="n">enum</span>
+            <span class="n">electrode</span> <span class="o">=</span> <span class="n">insensitive_glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ieeg_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/anat/electrode_</span><span class="si">{</span><span class="n">ename</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+        <span class="c1">## end sucky block</span>
+        <span class="k">if</span> <span class="n">electrode</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">electrode</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;[contact],</span><span class="si">{</span><span class="n">cnames</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                        <span class="n">xyz1</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">3</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="sa">f</span><span class="s1">&#39;[contact],</span><span class="si">{</span><span class="n">cnames</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                        <span class="n">xyz2</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">3</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">xyz</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">xyz1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">xyz2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)):</span>
+                    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">xyz</span><span class="o">-</span><span class="n">vertices</span><span class="p">[</span><span class="n">v</span><span class="p">,:])</span>
+                    <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">dist_threshold</span><span class="p">:</span>
+                        <span class="n">hipp_bp</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">h</span><span class="p">,:,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="p">[</span><span class="n">c</span><span class="p">,:]</span>
+                        <span class="n">hipp_pxx</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">h</span><span class="p">,:,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">pxx</span><span class="p">[:,</span><span class="n">c</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/anat/electrode_</span><span class="si">{</span><span class="n">ename</span><span class="si">}</span><span class="s1">.csv contact </span><span class="si">{</span><span class="n">cnames</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="p">]</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">cnames</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="p">]</span><span class="si">}</span><span class="s1"> not found at </span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">missing_electrodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/anat/electrode_</span><span class="si">{</span><span class="n">ename</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="n">missing_electrodes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+set()
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_pxx</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(419, 2, 159, 2507)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_bp</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(419, 2, 5, 2507)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;number of L hemis: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">])))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;number of R hemis: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">])))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+number of L hemis: 7
+number of R hemis: 37
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_bp_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">hipp_bp_count</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="s1">&#39;2mm&#39;</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/export03/data/opt/venv/lib/python3.8/site-packages/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
+  warnings.warn(&#34;Interactive mode requires &#39;panel&#39;. &#34;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_16_1.png" src="../../_images/tutorials_extras_iEEG_MICs_16_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">hipp_pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">hipp_pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sampspace</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="s1">&#39;k-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">sampspace</span><span class="p">,</span> <span class="n">y</span><span class="o">-</span><span class="n">err</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="n">err</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">band_lims</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span><span class="n">colors</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.4, 100)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_17_1.png" src="../../_images/tutorials_extras_iEEG_MICs_17_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">color_discrete</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Set1</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">l</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;delta&#39;</span><span class="p">,</span> <span class="s1">&#39;theta&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="s1">&#39;gamma&#39;</span><span class="p">]</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="p">[</span><span class="n">ax</span><span class="p">]</span>
+<span class="n">n</span><span class="o">=</span><span class="mi">0</span>
+<span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="o">+</span> <span class="p">[</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">()]</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">hipp_bp</span><span class="p">[:,:,</span><span class="n">b</span><span class="p">,:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dat</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">color_discrete</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">50</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+               <span class="n">color</span><span class="o">=</span><span class="n">color_discrete</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="n">b</span><span class="p">]);</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/data/mica1/01_programs/tmp/ipykernel_37650/818807886.py:16: UserWarning: Legend does not support &lt;AxesSubplot:&gt; instances.
+A proxy artist may be used instead.
+See: https://matplotlib.org/users/legend_guide.html#creating-artists-specifically-for-adding-to-the-legend-aka-proxy-artists
+  plt.legend(handles=ax[1:])
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.legend.Legend at 0x7fb36c608790&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_18_2.png" src="../../_images/tutorials_extras_iEEG_MICs_18_2.png" />
+</div>
+</div>
+</section>
+<section id="Extrapolation">
+<h1>Extrapolation<a class="headerlink" href="#Extrapolation" title="Permalink to this heading"></a></h1>
+<p>We can see that simply averaging over all channels doesn’t give a good idea of the spatial distribution of band power, since so much data is missing. Thus, we will extrapolate each channel over the whole hippocampus and then use the distance from the channel as a weighting when performing weighted averaging across channels. See <code class="docutils literal notranslate"><span class="pre">../extras</span></code> for an example visualization.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">importlib</span>
+<span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">utils</span><span class="p">)</span>
+<span class="n">resorcesdir</span> <span class="o">=</span> <span class="s1">&#39;/export03/data/opt/hippunfold_toolbox/resources&#39;</span>
+<span class="n">gii</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">resorcesdir</span><span class="si">}</span><span class="s1">/canonical_surfs/tpl-avg_space-canonical_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_TRIANGLE&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">gii</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">resorcesdir</span><span class="si">}</span><span class="s1">/canonical_surfs/tpl-avg_space-canonical_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-dentate_midthickness.surf.gii&#39;</span><span class="p">)</span>
+<span class="n">vdg</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">fdg</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_TRIANGLE&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">F</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">,</span> <span class="n">fdg</span><span class="p">]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">vdg</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># cominbing BP across channels and vertices for visualization</span>
+<span class="c1"># here, we exctrapoalte the data from any channel across the entire hippocampus, and then average across all channels. However, the average across channels is weighted by distance to the actual channel contact.</span>
+
+<span class="n">weights_hipp_bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">hipp_bp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">2</span><span class="p">,</span><span class="n">hipp_bp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">interp_hipp_bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">hipp_bp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">interp_hipp_perio_dat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">hipp_bp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="nb">len</span><span class="p">(</span><span class="n">pxx</span><span class="p">)])</span>
+
+<span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hipp_bp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">c</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                <span class="n">geoalg</span> <span class="o">=</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">PyGeodesicAlgorithmExact</span><span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">l</span><span class="p">])</span>
+                <span class="n">sd</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">geoalg</span><span class="o">.</span><span class="n">geodesicDistances</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">weights_hipp_bp</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">sd</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sd</span><span class="p">))</span>
+<span class="n">totweights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">weights_hipp_bp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">weights_hipp_bp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hipp_bp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">weights_hipp_bp</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="o">/</span> <span class="n">totweights</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">w</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">interp_hipp_bp</span><span class="p">[</span><span class="n">v</span><span class="p">,:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">[:,</span><span class="n">h</span><span class="p">,:,</span><span class="n">c</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span>
+                <span class="n">interp_hipp_perio_dat</span><span class="p">[</span><span class="n">v</span><span class="p">,:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">hipp_pxx</span><span class="p">[:,</span><span class="n">h</span><span class="p">,:,</span><span class="n">c</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">interp_hipp_bp</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/export03/data/opt/venv/lib/python3.8/site-packages/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
+  warnings.warn(&#34;Interactive mode requires &#39;panel&#39;. &#34;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_22_1.png" src="../../_images/tutorials_extras_iEEG_MICs_22_1.png" />
+</div>
+</div>
+</section>
+<section id="example-of-how-data-gets-extrapolated-along-a-geodesic-distance">
+<h1>example of how data gets extrapolated along a geodesic distance<a class="headerlink" href="#example-of-how-data-gets-extrapolated-along-a-geodesic-distance" title="Permalink to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="n">hd</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">)</span>
+<span class="n">wd</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">weights_hipp_bp</span><span class="p">)</span>
+<span class="n">hd</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hd</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">wd</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">wd</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">h</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">c</span><span class="o">=</span><span class="p">[</span><span class="mi">1201</span><span class="p">,</span><span class="mi">1635</span><span class="p">]</span>
+<span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">hd</span><span class="p">[:,</span><span class="n">h</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">],</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_24_0.png" src="../../_images/tutorials_extras_iEEG_MICs_24_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">wd</span><span class="p">[:,</span><span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">],</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_25_0.png" src="../../_images/tutorials_extras_iEEG_MICs_25_0.png" />
+</div>
+</div>
+</section>
+<section id="Brainspace-gradients">
+<h1>Brainspace gradients<a class="headerlink" href="#Brainspace-gradients" title="Permalink to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">brainspace.gradient</span> <span class="kn">import</span> <span class="n">GradientMaps</span>
+<span class="c1"># gradient decomposition</span>
+<span class="n">bpgm</span> <span class="o">=</span> <span class="n">GradientMaps</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;normalized_angle&#39;</span><span class="p">)</span>
+<span class="n">bpgm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">interp_hipp_perio_dat</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">bpgm</span><span class="o">.</span><span class="n">gradients_</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_28_0.png" src="../../_images/tutorials_extras_iEEG_MICs_28_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bpgm</span><span class="o">.</span><span class="n">lambdas_</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;matplotlib.lines.Line2D at 0x7fb36c0c6d30&gt;]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_29_1.png" src="../../_images/tutorials_extras_iEEG_MICs_29_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vars_to_load</span> <span class="o">=</span> <span class="p">[</span><span class="n">pxx</span><span class="p">,</span> <span class="n">bp</span><span class="p">,</span> <span class="n">hipp_bp</span><span class="p">,</span> <span class="n">hipp_pxx</span><span class="p">]</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;../checkpoints/iEEG_MICs_dat&#39;</span><span class="p">,</span> <span class="n">vars_to_load</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/export03/data/opt/venv/lib/python3.8/site-packages/numpy/lib/npyio.py:528: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray.
+  arr = np.asanyarray(arr)
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<script type="application/vnd.jupyter.widget-state+json">
+{"state": {}, "version_major": 2, "version_minor": 0}
+</script></section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, DeKraker.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

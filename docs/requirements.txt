@@ -7,6 +7,6 @@ pygeodesic
 scipy
 wget
 pywget
-#nbsphinx
+nbsphinx
 sphinx-gallery
-m2r2
+nbsphinx_link
