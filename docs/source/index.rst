@@ -1,4 +1,4 @@
-Welcome to Hippomaps' documentation!
+Welcome to Hippomaps Toolbox!
 ===================================
 
 .. include:: readme_link.rst
@@ -9,7 +9,7 @@ Welcome to Hippomaps' documentation!
    This project is under active development.
 
 Contents
---------
+-------------------------------------
 
 .. toctree::
    :maxdepth: 2
@@ -17,3 +17,4 @@ Contents
    installation
    tutorials
    api
+   acknowledgements
