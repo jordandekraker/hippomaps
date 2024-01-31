@@ -1,5 +1,5 @@
 Tutorials
-=========
+==================
 
 These tutorials reproduce the figures found in HippoMaps (DeKraker et al). They are also meant to serve as examples for common analyses, and to showcase ways of using HippoMaps tools.
 
