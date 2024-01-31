@@ -16,6 +16,11 @@ HippoMaps provides tools for mapping data the folded and unfolded hippocampus ar
 - task-fMRI data mapping with [nilearn](https://nilearn.github.io/stable/index.html)
 - comparison between maps and dimensionality reduction
 
+## Example
+
+![Example](https://github.com/jordandekraker/hippomaps/blob/master/example/Plots.ipynb)
+
+
 These tutorials provide clear examples of how the tools here can be used, but for shorter examples and usage notes, see also [demos](https://github.com/jordandekraker/hippomaps/tree/master/hippomaps/demos).
 
 ## Other relvant repositories
