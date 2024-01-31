@@ -25,6 +25,35 @@ import scipy.special
 import scipy.stats
 
 def build_mpc(data, parc=None, idxExclude=None):
+    """
+        Construct a microstructure profile covariance matrix.
+
+        Parameters:
+        - data (numpy.ndarray): Surfaces x Vertices matrix containing intensity values.
+        - parc (numpy.ndarray or None): 1 x Vertices vector with unique integers corresponding to node assignment.
+                                       Leave empty (None) for a vertex-wise MPC.
+                                       Make sure to provide different parcel numbers for each hemisphere.
+        - idxExclude (list or None): Indices of labels to exclude when calculating mean across columns.
+
+        Returns:
+        - MPC (numpy.ndarray): Microstructural profile covariance matrix.
+        - I (numpy.ndarray): Microstructure intensity profiles (node-wise if parc is given).
+        - problemNodes (list or int): List of indices where intensity profiles have NaN values or 0 if no issue.
+
+        Notes:
+        If parc is not provided, MPC will be computed vertex-wise.
+        The function handles parcellation, averages profiles within nodes, and detects outliers.
+
+        Example:
+        ```python
+        data = np.random.rand(10, 100)  # Example data
+        parc = np.random.randint(1, 5, 100)  # Example parcel information
+        MPC, I, problemNodes = build_mpc(data, parc)
+        ```
+
+        Original script by Casey Paquola, translated to Python by Jessica Royer.
+        Translated from MATLAB: https://github.com/MICA-MNI/micaopen/blob/master/MPC/scripts/build_mpc.m
+        """
     # If no parcellation is provided, MPC will be computed vertexwise
     if parc is None:
         downsample = 0
