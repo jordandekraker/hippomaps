@@ -31,7 +31,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.autosectionlabel',
     'sphinx_gallery.gen_gallery',
-    'myst_parser',
+    'myst_parser'
 ]
 
 source_suffix = {
@@ -56,7 +56,7 @@ sphinx_gallery_conf = {
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 #generate autosummary even if no references
 autosummary_generate = True
@@ -74,6 +74,5 @@ html_theme = 'sphinx_rtd_theme'
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
-
-
-
+html_show_sourcelink = False
+html_copy_source = False
