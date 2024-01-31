@@ -1,7 +1,7 @@
 Tutorials
 =========
 
-These tutorials reproduce the fifures found in HippoMaps (DeKraker et al). They are also meant to serve as examples for common analyses, and to showcase ways of using HippoMaps tools.
+These tutorials reproduce the figures found in HippoMaps (DeKraker et al). They are also meant to serve as examples for common analyses, and to showcase ways of using HippoMaps tools.
 
 .. toctree::
    :maxdepth: 2
@@ -44,3 +44,5 @@ These tutorials reproduce the fifures found in HippoMaps (DeKraker et al). They 
    :caption: MRI-3T-taskfMRI:
 
    tutorials/MRI-3T-taskfMRI.ipynb
+
+
