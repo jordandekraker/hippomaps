@@ -8,3 +8,4 @@ HippoMaps.egg-info/
 hippomaps/__pycache__
 snapshots
 generated
+resources/downloads
