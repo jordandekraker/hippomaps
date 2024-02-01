@@ -1,4 +1,4 @@
-Overview of functions
+Tools Index
 =====================================
 .. _py-genindex:
 
@@ -13,15 +13,6 @@ Plotting
     surfplot_canonical_foldunfold
     surfplot_sub_foldunfold
 
-Building MPC
--------------------------------------
-
-.. currentmodule:: hippomaps.build_mpc
-
-.. autosummary::
-   :toctree:
-
-    build_mpc
 
 Stats
 -------------------------------------
@@ -44,16 +35,8 @@ Fetcher
    :toctree:
 
     tree_osf_hashes
+    get_map
 
-Moran
--------------------------------------
-
-.. currentmodule:: hippomaps.moran
-
-.. autosummary::
-   :toctree:
-
-    moran_randomization
 
 Utils
 -------------------------------------
