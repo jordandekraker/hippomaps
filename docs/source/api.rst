@@ -8,7 +8,7 @@ Plotting
 .. currentmodule:: hippomaps.plotting
 
 .. autosummary::
-   :toctree:
+   :toctree: generated
 
     surfplot_canonical_foldunfold
     surfplot_sub_foldunfold
@@ -20,7 +20,7 @@ Stats
 .. currentmodule:: hippomaps.stats
 
 .. autosummary::
-   :toctree:
+   :toctree: generated
 
     spin_test
     moran_test
@@ -32,7 +32,7 @@ Fetcher
 .. currentmodule:: hippomaps.fetcher
 
 .. autosummary::
-   :toctree:
+   :toctree: generated
 
     tree_osf_hashes
     get_map
@@ -44,10 +44,17 @@ Utils
 .. currentmodule:: hippomaps.utils
 
 .. autosummary::
-   :toctree:
+   :toctree: generated
 
     surfdat_smooth
     profile_align
     laplace_solver
     density_interp
     surface_to_volume
+
+
+
+
+
+
+
