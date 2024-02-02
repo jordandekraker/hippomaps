@@ -66,30 +66,32 @@ glob_dict = GlobDict( **name_hashes )
 # now the main function of interest
 def get_map(repo='HippoMaps-initializationMaps',Dataset='*',Method='*',Modality='*', hemi='*', den='*', extension='.shape.gii'):
     """
-    Searches and loads data from OSF with specified parameters (default '*' unless specified otherwise)
+    Search and load data from OSF with specified parameters.
     See https://osf.io/92p34/ for examples
+
     Parameters
     ----------
-    repo : str
-        Top level repo (default 'HippoMaps-initializationMaps')
-    Dataset : str
-        Source of the map
-    Method : str
-        Method being used (e.g. 'MRI', 'MRI-7T' or 'histology')
-    Modality : str
-        Modality within the Method (e.g. 'qT1', 'FA', or 'Merker')
-    hemi : str
-        Hemisphers (e.g. 'L', '*', or 'mix')
-    den : str
-        Only search for data that is already a given density (e.g. '0p5mm' or 'unfoldiso'). Note that data can always be resampled to a different density after loading!
-    extension : str
-        Typically this is '.shape.gii', but it could also be '.func.gii' or '.label.gii'
+    repo : str, optional
+        Top-level repository name (default: 'HippoMaps-initializationMaps').
+    Dataset : str, optional
+        Source of the map (default: '*').
+    Method : str, optional
+        Method being used (e.g., 'MRI', 'MRI-7T', or 'histology') (default: '*').
+    Modality : str, optional
+        Modality within the Method (e.g., 'qT1', 'FA', or 'Merker') (default: '*').
+    hemi : str, optional
+        Hemisphere (e.g., 'L', '*', or 'mix') (default: '*').
+    den : str, optional
+        Only search for data that is already at a given density (e.g., '0p5mm' or 'unfoldiso'). Note that data can always be resampled to a different density after loading (default: '*').
+    extension : str, optional
+        File extension (e.g., '.shape.gii', '.func.gii', or '.label.gii') (default: '.shape.gii').
+
     Returns
     -------
-    data : list
-        list of arrays containing data that matched search terms
-    names : list
-        list of filenames that matched search terms
+    data : list of arrays
+        List of arrays containing data that matched search terms.
+    names : list of str
+        List of filenames that matched search terms.
     """
     searchstr = f'/{repo}/Dataset-{Dataset}/{Method}-{Modality}*hemi-{hemi}*den-{den}*{extension}'
     globbed_results = glob_dict.glob(searchstr)
