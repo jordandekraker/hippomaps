@@ -17,7 +17,8 @@ maxdepth=4
 current_hash=''
 def tree_osf_hashes(repoID, name_hashes, maxdepth, current_hash):
     """
-    Recursively fetches file hashes from the OSF repository. 
+    Recursively fetch file hashes from the OSF repository.
+
     Parameters
     ----------
     repoID : str
@@ -28,10 +29,11 @@ def tree_osf_hashes(repoID, name_hashes, maxdepth, current_hash):
         The maximum depth to traverse the file tree.
     current_hash : str
         The hash of the current file or directory.
+
     Returns
     -------
     None
-        The function populates the name_hashes dictionary with file names and their corresponding hashes.
+        Populates the name_hashes dictionary with file names and their corresponding hashes.
     """
     with urllib.request.urlopen(f"https://api.osf.io/v2/nodes/{repoID}/files/osfstorage{current_hash}") as url:
         data = json.load(url)['data']
