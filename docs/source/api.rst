@@ -26,18 +26,6 @@ Stats
     moran_test
     contextualize2D
 
-Fetcher
--------------------------------------
-
-.. currentmodule:: hippomaps.fetcher
-
-.. autosummary::
-   :toctree: generated
-
-    tree_osf_hashes
-    get_map
-
-
 Utils
 -------------------------------------
 
