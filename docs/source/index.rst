@@ -1,9 +1,6 @@
 Welcome to Hippomaps Toolbox!
 ===================================
 
-.. include:: readme_link.rst
-
-
 .. note::
 
    This project is under active development.
