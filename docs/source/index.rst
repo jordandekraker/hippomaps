@@ -2,6 +2,7 @@ Welcome to Hippomaps Toolbox!
 ===================================
 
 .. include:: homepage.rst
+.. include:: readme_link.rst
 
 
 .. note::
