@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview &mdash; Hippomaps 0.1 documentation</title>
+  <title>Histology-MRI-9p4T &mdash; Hippomaps 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Overview" href="MRI-7T-struct.html" />
-    <link rel="prev" title="Overview" href="Morphology.html" /> 
+    <link rel="next" title="MRI-7T-struct" href="MRI-7T-struct.html" />
+    <link rel="prev" title="Morphology" href="Morphology.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,58 +57,19 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="Morphology.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Morphology.html#Histology-data">Histology data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Morphology.html#Ultra-high-field-data-at-7T">Ultra-high field data at 7T</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Morphology.html#High-field-data-at-3T">High-field data at 3T</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Map-and-load-volumetric-data-to-surfaces">Map and load volumetric data to surfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Load-and-plot-all-surface-data">Load and plot all surface data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Preprocessing">Preprocessing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Missing-data">Missing data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Alignment-method">Alignment method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Morphology.html">Morphology</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Histology-MRI-9p4T</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#0)-Map-and-load-volumetric-data-to-surfaces">0) Map and load volumetric data to surfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1)-Load,-plot,-and-preprocess-all-surface-data">1) Load, plot, and preprocess all surface data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2)-Group-average-and-laminar-microstrucutural-profiles">2) Group average and laminar microstrucutural profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3)-Summarize-data-according-to-primary-gradients">3) Summarize data according to primary gradients</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Average-equivalent-samples-and-view-profiles">Average equivalent samples and view profiles</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#View-Laminar-profiles">View Laminar profiles</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#Summarize-data-according-to-primary-gradients">Summarize data according to primary gradients</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#save">save</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Map-and-load-volumetric-data-to-surfaces">Map and load volumetric data to surfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Load-and-plot-all-surface-data">Load and plot all surface data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Stability-between-subjects">Stability between subjects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Add-another-dataset-(9.4T-data)">Add another dataset (9.4T data)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Make-a-summary-plot-of-consistency">Make a summary plot of consistency</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Summarize-data-according-to-primary-gradients">Summarize data according to primary gradients</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Map-rsfMRI-data-to-hippocampal-surfaces">Map rsfMRI data to hippocampal surfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Intrinsic-Timescale-of-hippocampal-rsfMRI">Intrinsic Timescale of hippocampal rsfMRI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Calculate-Regional-Homogeneity">Calculate Regional Homogeneity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Calculate-tSNR">Calculate tSNR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Functional-connectivity-of-the-hippocampus-to-neocortex">Functional connectivity of the hippocampus to neocortex</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Check-consistency-for-all-measures">Check consistency for all measures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Gradients-of-differential-hippocampal-FC">Gradients of differential hippocampal FC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#save">save</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iEEG.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iEEG.html#Map-data-to-hippocampal-surfaces">Map data to hippocampal surfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iEEG.html#Load-the-data-and-examine-attributes">Load the data and examine attributes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iEEG.html#Spatial-extrapolation">Spatial extrapolation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iEEG.html#Summarize-data-according-to-primary-gradients">Summarize data according to primary gradients</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DimReduct.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DimReduct.html#Load-all-maps-and-resample">Load all maps and resample</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DimReduct.html#Check-for-correlations-with-AP,-PD,-or-subfield-organizations">Check for correlations with AP, PD, or subfield organizations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DimReduct.html#Gradient-decomposition">Gradient decomposition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Map-data-to-hippocampal-surface">Map data to hippocampal surface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Mnemonic-Similarity-Task-(Pattern-Separation)">Mnemonic Similarity Task (Pattern Separation)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#significance-testing">significance testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Additional-consistency-checks">Additional consistency checks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Episodic-Retrieval">Episodic Retrieval</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Episodic-encoding--subsequent-memory">Episodic encoding -subsequent memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html">MRI-7T-struct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html">MRI-3T-rsfMRI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iEEG.html">iEEG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DimReduct.html">Dimensionality-Reduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html">MRI-3T-taskfMRI</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">Tools Index</a></li>
@@ -130,7 +91,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../tutorials.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">Overview</li>
+      <li class="breadcrumb-item active">Histology-MRI-9p4T</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -139,11 +100,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Overview">
-<h1>Overview<a class="headerlink" href="#Overview" title="Permalink to this heading"></a></h1>
+  <section id="Histology-MRI-9p4T">
+<h1>Histology-MRI-9p4T<a class="headerlink" href="#Histology-MRI-9p4T" title="Permalink to this heading"></a></h1>
+<p><strong>Overview</strong></p>
 <p>This notebook will examine ex-vivo histology data from the BigBrain, 3D PLI, and AHEAD brain datasets. First wewill look at morphological features in unfolded space</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -178,9 +140,8 @@
 </pre></div>
 </div>
 </div>
-</section>
-<section id="Map-and-load-volumetric-data-to-surfaces">
-<h1>Map and load volumetric data to surfaces<a class="headerlink" href="#Map-and-load-volumetric-data-to-surfaces" title="Permalink to this heading"></a></h1>
+<section id="0)-Map-and-load-volumetric-data-to-surfaces">
+<h2>0) Map and load volumetric data to surfaces<a class="headerlink" href="#0)-Map-and-load-volumetric-data-to-surfaces" title="Permalink to this heading"></a></h2>
 <p>As in all tutorials here, this step is OPTIONAL, and provides an example of how data can be mapped to hippocampal surfaces outside of python (using ANTs and/or wb_command). This relies on having the data stored locally, and should be considered example code. This code may differ depending on where/how your data is stored and formatted, and so may require some customization for new projects. For the purposes of this tutorial, we provide a matrix of loaded data at the end, so skip to the next
 step.</p>
 <p>In this example, we loop through samples (that is, subjects and hemipsheres) and generate surfaces at different depths using the <code class="docutils literal notranslate"><span class="pre">wb_command</span></code> tool. Then, we loop through each modality and sample the data to those surfaces. Finally, we load the data from all surfaces into a single matrix.</p>
@@ -236,8 +197,8 @@ step.</p>
 </div>
 </div>
 </section>
-<section id="Load-and-plot-all-surface-data">
-<h1>Load and plot all surface data<a class="headerlink" href="#Load-and-plot-all-surface-data" title="Permalink to this heading"></a></h1>
+<section id="1)-Load,-plot,-and-preprocess-all-surface-data">
+<h2>1) Load, plot, and preprocess all surface data<a class="headerlink" href="#1)-Load,-plot,-and-preprocess-all-surface-data" title="Permalink to this heading"></a></h2>
 <p>Here, we use the data already loaded into a large matrix from the previous step). This matrix <code class="docutils literal notranslate"><span class="pre">hipp_dat</span></code> has a shape of (number of vertices nV) x (number of surface depths) x (number of samples OR features)</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -267,12 +228,9 @@ step.</p>
 <img alt="../_images/tutorials_Histology-MRI-9p4T_8_0.png" src="../_images/tutorials_Histology-MRI-9p4T_8_0.png" />
 </div>
 </div>
-<section id="Preprocessing">
-<h2>Preprocessing<a class="headerlink" href="#Preprocessing" title="Permalink to this heading"></a></h2>
+<p><strong>Preprocessing</strong></p>
 <p>Clearly these images will need some preprocessing to account for issues like missing data, impofect alignment between AHEAD stains, and imperfect surfaces</p>
-</section>
-<section id="Missing-data">
-<h2>Missing data<a class="headerlink" href="#Missing-data" title="Permalink to this heading"></a></h2>
+<p><strong>Missing data</strong></p>
 <p>For this, we will set all background values (sometimes 0, sometimes an integer like 2 or -1) to NaN. Then we will find outliers and also set them to NaN. Then we will dilate the mask of NaNs, because some edge cases are not exactly 0, but are not plausible values either. Then, we will interpolate the NaNs (linear) and extrapolate any remaining values (nearest)</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
@@ -305,9 +263,7 @@ step.</p>
 </pre></div>
 </div>
 </div>
-</section>
-<section id="Alignment-method">
-<h2>Alignment method<a class="headerlink" href="#Alignment-method" title="Permalink to this heading"></a></h2>
+<p><strong>Alignment method</strong></p>
 <p>Here we develop a tool to depth-wise or laminar align profiles, since the grey matter boundaries may not be perfect. We use only translations, and maximize the correlation between each profile and the average. This can be applied either over the whole image or over image patches, and we will illustrate an example using each.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
@@ -339,7 +295,7 @@ step.</p>
 <img alt="../_images/tutorials_Histology-MRI-9p4T_13_1.png" src="../_images/tutorials_Histology-MRI-9p4T_13_1.png" />
 </div>
 </div>
-<p>Note that the very top and very bottom of the data actually come from outside of our original hippocampal bounds, since surfaces were extrapolated out over these areas.</p>
+<p><strong>Note</strong> that the very top and very bottom of the data actually come from outside of our original hippocampal bounds, since surfaces were extrapolated out over these areas.</p>
 <p>Notice how in some areas the profiles are raised or lowered. Ths can happen due to imperfect segmentation - sometimes the hippocampal boundaries may have been inadvertently shifted upwards or downwards. In the AHEAD dataset this can also arise because even when segmentation is perfect, the alignment between the different modalities is still off. This is the problem we aim to correct here.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
@@ -451,9 +407,8 @@ step.</p>
 </div>
 </div>
 </section>
-</section>
-<section id="Average-equivalent-samples-and-view-profiles">
-<h1>Average equivalent samples and view profiles<a class="headerlink" href="#Average-equivalent-samples-and-view-profiles" title="Permalink to this heading"></a></h1>
+<section id="2)-Group-average-and-laminar-microstrucutural-profiles">
+<h2>2) Group average and laminar microstrucutural profiles<a class="headerlink" href="#2)-Group-average-and-laminar-microstrucutural-profiles" title="Permalink to this heading"></a></h2>
 <p>This looks pretty good, so lets run some analyses. First we average within the same stain types, and look at some laminar profiles.</p>
 <p>At this stage we will also discard the bigbrain2 (bbhist2) samples since they require further 3D reconstruction refinement at this time. We will also discard the 9.4T MRI data here. We’ll group that together with the 7T MRI data and examine it in that tutorial</p>
 <div class="nbinput nblast docutils container">
@@ -504,8 +459,7 @@ step.</p>
 <img alt="../_images/tutorials_Histology-MRI-9p4T_26_0.png" src="../_images/tutorials_Histology-MRI-9p4T_26_0.png" />
 </div>
 </div>
-<section id="View-Laminar-profiles">
-<h2>View Laminar profiles<a class="headerlink" href="#View-Laminar-profiles" title="Permalink to this heading"></a></h2>
+<p><strong>View Laminar profiles</strong></p>
 <p>Here we will view laminar profiles averaged within band across the anterior-posterior and then proximal-distal axes of the hippocampus.</p>
 <p>Because we are working with <code class="docutils literal notranslate"><span class="pre">den='unfoldiso'</span></code> surfaces, we can reshape the number of vertices from 32K into 126x254. This way, we can average rows or columns to get a sense of how the profiles are changing in either direction</p>
 <div class="nbinput nblast docutils container">
@@ -598,9 +552,8 @@ step.</p>
 </div>
 <p>Here we see that profiles are relatively constant between rows. This means that profiles don’t differ as greatly across the anterior-posterior extent of the hippocampus.</p>
 </section>
-</section>
-<section id="Summarize-data-according-to-primary-gradients">
-<h1>Summarize data according to primary gradients<a class="headerlink" href="#Summarize-data-according-to-primary-gradients" title="Permalink to this heading"></a></h1>
+<section id="3)-Summarize-data-according-to-primary-gradients">
+<h2>3) Summarize data according to primary gradients<a class="headerlink" href="#3)-Summarize-data-according-to-primary-gradients" title="Permalink to this heading"></a></h2>
 <p>Dimensionality reduction allows us to summarize many maps as primary components, or Gradients. Here we will use BrainSpace to compute nonlinear Gradients using diffusion map embedding. Briefly, this typically consists of computing an affinity matrix (e.g. a correlation between all maps) and then grouping them into a few consistent patterns (Gradients). In this case, we will consider not only the correlation between maps, but also across depths. All depths from a given vertex are sometimes called
 microstructural profiles (MPs), and the similarity between all profiles is thus a microstructural profile covariance (MPC) matrix. In this case we also consider multiple modalities, making a multimodal MPC (mMPC).</p>
 <div class="nbinput nblast docutils container">
@@ -737,8 +690,7 @@ GradientMaps(n_components=5)
 array([0.4627413 , 0.26960774, 0.14327609, 0.07741928, 0.04695559])
 </pre></div></div>
 </div>
-<section id="save">
-<h2>save<a class="headerlink" href="#save" title="Permalink to this heading"></a></h2>
+<p><strong>save</strong></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
@@ -765,8 +717,8 @@ array([0.4627413 , 0.26960774, 0.14327609, 0.07741928, 0.04695559])
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Morphology.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="MRI-7T-struct.html" class="btn btn-neutral float-right" title="Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Morphology.html" class="btn btn-neutral float-left" title="Morphology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="MRI-7T-struct.html" class="btn btn-neutral float-right" title="MRI-7T-struct" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
