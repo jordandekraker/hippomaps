@@ -10,7 +10,7 @@ from brainspace.mesh import mesh_creation as mc
 from pathlib import Path
 
 resourcesdir = str(Path(__file__).parents[1]) + '/resources'
-#import hippomaps.utils
+import hippomaps.utils
 
 
 def surfplot_canonical_foldunfold(cdata, hemis=['L', 'R'], labels=['hipp', 'dentate'], unfoldAPrescale=False,
