@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hippomaps.fetcher.tree_osf_hashes &mdash; Hippomaps 0.1 documentation</title>
@@ -24,9 +24,7 @@
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="hippomaps.fetcher.get_map" href="hippomaps.fetcher.get_map.html" />
-    <link rel="prev" title="hippomaps.stats.contextualize2D" href="hippomaps.stats.contextualize2D.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,23 +49,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="api.html">Tools Index</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="api.html#plotting">Plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#stats">Stats</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="api.html#fetcher">Fetcher</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">hippomaps.fetcher.tree_osf_hashes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#hippomaps.fetcher.tree_osf_hashes"><code class="docutils literal notranslate"><span class="pre">tree_osf_hashes()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="hippomaps.fetcher.get_map.html">hippomaps.fetcher.get_map</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#utils">Utils</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Tools Index</a></li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">References &amp; Acknowledgements</a></li>
 </ul>
 
@@ -85,7 +70,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="api.html">Tools Index</a></li>
       <li class="breadcrumb-item active">hippomaps.fetcher.tree_osf_hashes</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -100,21 +84,21 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="hippomaps.fetcher.tree_osf_hashes">
 <span class="sig-prename descclassname"><span class="pre">hippomaps.fetcher.</span></span><span class="sig-name descname"><span class="pre">tree_osf_hashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repoID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_hashes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxdepth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_hash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.fetcher.tree_osf_hashes" title="Permalink to this definition"></a></dt>
-<dd><p>Recursively fetches file hashes from the OSF repository.
-:param repoID: The ID of the repository.
-:type repoID: str
-:param name_hashes: A dictionary to store file names and their corresponding hashes.
-:type name_hashes: dict
-:param maxdepth: The maximum depth to traverse the file tree.
-:type maxdepth: int
-:param current_hash: The hash of the current file or directory.
-:type current_hash: str</p>
+<dd><p>Recursively fetch file hashes from the OSF repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The function populates the name_hashes dictionary with file names and their corresponding hashes.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repoID</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The ID of the repository.</p></li>
+<li><p><strong>name_hashes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – A dictionary to store file names and their corresponding hashes.</p></li>
+<li><p><strong>maxdepth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The maximum depth to traverse the file tree.</p></li>
+<li><p><strong>current_hash</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The hash of the current file or directory.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Populates the name_hashes dictionary with file names and their corresponding hashes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -124,10 +108,7 @@
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="hippomaps.stats.contextualize2D.html" class="btn btn-neutral float-left" title="hippomaps.stats.contextualize2D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="hippomaps.fetcher.get_map.html" class="btn btn-neutral float-right" title="hippomaps.fetcher.get_map" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

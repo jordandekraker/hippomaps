@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Overview &mdash; Hippomaps 0.1 documentation</title>
@@ -58,33 +58,46 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Histology">Histology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#7T-MRI">7T MRI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#3T-MRI">3T MRI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Histology-data">Histology data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Ultra-high-field-data-at-7T">Ultra-high field data at 7T</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#High-field-data-at-3T">High-field data at 3T</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Histology-MRI-9p4T.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Histology-MRI-9p4T.html#0)-Map-volumetric-data-to-surfaces-and-load-(optional)">0) Map volumetric data to surfaces and load (optional)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Histology-MRI-9p4T.html#1)-Load-and-plot-all-surface-data">1) Load and plot all surface data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Histology-MRI-9p4T.html#2)-Average-eqivalent-samples-and-view-profiles">2) Average eqivalent samples and view profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Histology-MRI-9p4T.html#Map-and-load-volumetric-data-to-surfaces">Map and load volumetric data to surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Histology-MRI-9p4T.html#Load-and-plot-all-surface-data">Load and plot all surface data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Histology-MRI-9p4T.html#Average-equivalent-samples-and-view-profiles">Average equivalent samples and view profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Histology-MRI-9p4T.html#Summarize-data-according-to-primary-gradients">Summarize data according to primary gradients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#0)-Map-volumetric-data-to-surfaces-and-load-(optional)">0) Map volumetric data to surfaces and load (optional)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#1)-Load-and-plot-all-surface-data">1) Load and plot all surface data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Map-and-load-volumetric-data-to-surfaces">Map and load volumetric data to surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Load-and-plot-all-surface-data">Load and plot all surface data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Stability-between-subjects">Stability between subjects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Add-another-dataset-(9.4T-data)">Add another dataset (9.4T data)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Make-a-summary-plot-of-consistency">Make a summary plot of consistency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-7T-struct.html#Summarize-data-according-to-primary-gradients">Summarize data according to primary gradients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#3)-tSNR-(TODO:-get-volumetric-version-generated-from-micapipe)">3) tSNR (TODO: get volumetric version generated from micapipe)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#5)-Check-consistency-for-all-of-the-above">5) Check consistency for all of the above</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Map-rsfMRI-data-to-hippocampal-surfaces">Map rsfMRI data to hippocampal surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Intrinsic-Timescale-of-hippocampal-rsfMRI">Intrinsic Timescale of hippocampal rsfMRI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Calculate-Regional-Homogeneity">Calculate Regional Homogeneity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Calculate-tSNR">Calculate tSNR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Functional-connectivity-of-the-hippocampus-to-neocortex">Functional connectivity of the hippocampus to neocortex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Check-consistency-for-all-measures">Check consistency for all measures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#Gradients-of-differential-hippocampal-FC">Gradients of differential hippocampal FC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-3T-rsfMRI.html#save">save</a></li>
 <li class="toctree-l2"><a class="reference internal" href="iEEG.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iEEG.html#Map-data-to-hippocampal-surfaces">Map data to hippocampal surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iEEG.html#Load-the-data-and-examine-attributes">Load the data and examine attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iEEG.html#Spatial-extrapolation">Spatial extrapolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iEEG.html#Summarize-data-according-to-primary-gradients">Summarize data according to primary gradients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DimReduct.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DimReduct.html#1)-Load-and-resample">1) Load and resample</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DimReduct.html#2)-Check-for-correlations-with-AP,-PD,-or-subfield-organizations">2) Check for correlations with AP, PD, or subfield organizations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DimReduct.html#3)-Gradient-decomposition">3) Gradient decomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DimReduct.html#Load-all-maps-and-resample">Load all maps and resample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DimReduct.html#Check-for-correlations-with-AP,-PD,-or-subfield-organizations">Check for correlations with AP, PD, or subfield organizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DimReduct.html#Gradient-decomposition">Gradient decomposition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Now-that-we've-run-through-a-full-example-for-one-subject,-we'll-loop-through-all-subjects-and-save-the-data:">Now that we’ve run through a full example for one subject, we’ll loop through all subjects and save the data:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Map-data-to-hippocampal-surface">Map data to hippocampal surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Mnemonic-Similarity-Task-(Pattern-Separation)">Mnemonic Similarity Task (Pattern Separation)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#significance-testing">significance testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Additional-consistency-checks">Additional consistency checks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#1.3)-Consider-neocortical-results">1.3) Consider neocortical results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#1.4)-Compare-to-previously-mapped-features">1.4) Compare to previously mapped features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#2.3)-Consider-the-neocortex">2.3) Consider the neocortex</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#3.3)-Consider-the-neocortex">3.3) Consider the neocortex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Episodic-Retrieval">Episodic Retrieval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html#Episodic-encoding--subsequent-memory">Episodic encoding -subsequent memory</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">Tools Index</a></li>
@@ -130,8 +143,8 @@
 </div>
 </div>
 </section>
-<section id="Histology">
-<h1>Histology<a class="headerlink" href="#Histology" title="Permalink to this heading"></a></h1>
+<section id="Histology-data">
+<h1>Histology data<a class="headerlink" href="#Histology-data" title="Permalink to this heading"></a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -189,8 +202,8 @@
 </div>
 </div>
 </section>
-<section id="7T-MRI">
-<h1>7T MRI<a class="headerlink" href="#7T-MRI" title="Permalink to this heading"></a></h1>
+<section id="Ultra-high-field-data-at-7T">
+<h1>Ultra-high field data at 7T<a class="headerlink" href="#Ultra-high-field-data-at-7T" title="Permalink to this heading"></a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -239,8 +252,8 @@
 </div>
 </div>
 </section>
-<section id="3T-MRI">
-<h1>3T MRI<a class="headerlink" href="#3T-MRI" title="Permalink to this heading"></a></h1>
+<section id="High-field-data-at-3T">
+<h1>High-field data at 3T<a class="headerlink" href="#High-field-data-at-3T" title="Permalink to this heading"></a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>

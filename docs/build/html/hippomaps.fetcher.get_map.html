@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hippomaps.fetcher.get_map &mdash; Hippomaps 0.1 documentation</title>
@@ -24,9 +24,7 @@
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="hippomaps.utils.surfdat_smooth" href="hippomaps.utils.surfdat_smooth.html" />
-    <link rel="prev" title="hippomaps.fetcher.tree_osf_hashes" href="hippomaps.fetcher.tree_osf_hashes.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,23 +49,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="api.html">Tools Index</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="api.html#plotting">Plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#stats">Stats</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="api.html#fetcher">Fetcher</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="hippomaps.fetcher.tree_osf_hashes.html">hippomaps.fetcher.tree_osf_hashes</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">hippomaps.fetcher.get_map</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#hippomaps.fetcher.get_map"><code class="docutils literal notranslate"><span class="pre">get_map()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#utils">Utils</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Tools Index</a></li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">References &amp; Acknowledgements</a></li>
 </ul>
 
@@ -85,7 +70,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="api.html">Tools Index</a></li>
       <li class="breadcrumb-item active">hippomaps.fetcher.get_map</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -100,27 +84,24 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="hippomaps.fetcher.get_map">
 <span class="sig-prename descclassname"><span class="pre">hippomaps.fetcher.</span></span><span class="sig-name descname"><span class="pre">get_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HippoMaps-initializationMaps'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Modality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hemi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">den</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.shape.gii'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hippomaps.fetcher.get_map" title="Permalink to this definition"></a></dt>
-<dd><p>Searches and loads data from OSF with specified parameters (default ‘*’ unless specified otherwise)
-See <a class="reference external" href="https://osf.io/92p34/">https://osf.io/92p34/</a> for examples
-:param repo: Top level repo (default ‘HippoMaps-initializationMaps’)
-:type repo: str
-:param Dataset: Source of the map
-:type Dataset: str
-:param Method: Method being used (e.g. ‘MRI’, ‘MRI-7T’ or ‘histology’)
-:type Method: str
-:param Modality: Modality within the Method (e.g. ‘qT1’, ‘FA’, or ‘Merker’)
-:type Modality: str
-:param hemi: Hemisphers (e.g. ‘L’, ‘*’, or ‘mix’)
-:type hemi: str
-:param den: Only search for data that is already a given density (e.g. ‘0p5mm’ or ‘unfoldiso’). Note that data can always be resampled to a different density after loading!
-:type den: str
-:param extension: Typically this is ‘.shape.gii’, but it could also be ‘.func.gii’ or ‘.label.gii’
-:type extension: str</p>
+<dd><p>Search and load data from OSF with specified parameters.
+See <a class="reference external" href="https://osf.io/92p34/">https://osf.io/92p34/</a> for examples</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><strong>data</strong> (<em>list</em>) – list of arrays containing data that matched search terms</p></li>
-<li><p><strong>names</strong> (<em>list</em>) – list of filenames that matched search terms</p></li>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repo</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Top-level repository name (default: ‘HippoMaps-initializationMaps’).</p></li>
+<li><p><strong>Dataset</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Source of the map (default: ‘*’).</p></li>
+<li><p><strong>Method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Method being used (e.g., ‘MRI’, ‘MRI-7T’, or ‘histology’) (default: ‘*’).</p></li>
+<li><p><strong>Modality</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Modality within the Method (e.g., ‘qT1’, ‘FA’, or ‘Merker’) (default: ‘*’).</p></li>
+<li><p><strong>hemi</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Hemisphere (e.g., ‘L’, ‘*’, or ‘mix’) (default: ‘*’).</p></li>
+<li><p><strong>den</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Only search for data that is already at a given density (e.g., ‘0p5mm’ or ‘unfoldiso’). Note that data can always be resampled to a different density after loading (default: ‘*’).</p></li>
+<li><p><strong>extension</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – File extension (e.g., ‘.shape.gii’, ‘.func.gii’, or ‘.label.gii’) (default: ‘.shape.gii’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>data</strong> (<em>list of arrays</em>) – List of arrays containing data that matched search terms.</p></li>
+<li><p><strong>names</strong> (<em>list of str</em>) – List of filenames that matched search terms.</p></li>
 </ul>
 </p>
 </dd>
@@ -132,10 +113,7 @@ See <a class="reference external" href="https://osf.io/92p34/">https://osf.io/92
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="hippomaps.fetcher.tree_osf_hashes.html" class="btn btn-neutral float-left" title="hippomaps.fetcher.tree_osf_hashes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="hippomaps.utils.surfdat_smooth.html" class="btn btn-neutral float-right" title="hippomaps.utils.surfdat_smooth" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

@@ -41,7 +41,7 @@ Other relevant repositories🗂️
 
 `hippunfold_toolbox <https://github.com/jordandekraker/hippunfold_toolbox/>`_
 
-`Hippo_Spin_Testing <hhttps://github.com/Bradley-Karat/Hippo_Spin_Testing/>`_
+`Hippo_Spin_Testing <https://github.com/Bradley-Karat/Hippo_Spin_Testing/>`_
 
 `BrainSpace <https://github.com/MICA-MNI/BrainSpace/>`_
 
