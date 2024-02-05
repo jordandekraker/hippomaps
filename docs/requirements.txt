@@ -5,3 +5,4 @@ sphinx-gallery
 nbsphinx_link
 nbconvert==6.4.5
 myst_parser
+hippomaps
