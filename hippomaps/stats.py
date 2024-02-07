@@ -16,7 +16,7 @@ from brainspace.mesh import mesh_elements as me
 from pathlib import Path
 resourcesdir=str(Path(__file__).parents[1]) + '/resources'
 
-def spin_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den='0p5mm'):
+def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm'):
     """
        Permutation testing of unfolded hippocampus maps.
 
@@ -34,7 +34,7 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den='
        nperm : int
            Number of permutations to perform.
        metric : str, optional
-           Metric for comparing maps (one of pearson, spearman, adjusted rand, or adjusted mutual info).
+           Metric for comparing maps (one of pearsonr, spearmanr, adjusted_mutual_info_score, or adjusted_mutual_info_score).
            Default is 'pearson'.
        label : str, optional
            Label for the hippocampus ('hipp' or 'dentate'). Default is 'hipp'.
@@ -46,7 +46,6 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den='
        metricnull : Null distribution of the specified metric
        permutedimg : All permuted spatial maps at 'unfoldiso' density.
        r_obs :  The observed association between the two aligned maps.
-
        pval : p-value based on metricnull r_obs.
        """
     if type(imgfix) == str:
@@ -74,22 +73,9 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den='
                             prefilter=True)  # translate image
         permutedimg[:, :, ii] = transrotimg  # this is our permuted image at unfoldiso density
 
-    if metric == 'pearson':
-        r_obs = pearsonr(imgfix.flatten(), imgperm.flatten())[0]  
-        for ii in range(nperm):
-            metricnull[ii] = pearsonr(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
-    elif metric == 'spearman':
-        r_obs = spearmanr(imgfix.flatten(), imgperm.flatten())[0]  
-        for ii in range(nperm):
-            metricnull[ii] = spearmanr(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
-    elif metric == 'adjusted rand':
-        r_obs = adjusted_rand_score(imgfix.flatten(), imgperm.flatten())[0]  
-        for ii in range(nperm):
-            metricnull[ii] = adjusted_rand_score(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
-    elif metric == 'adjusted mutual info':
-        r_obs = adjusted_mutual_info(imgfix.flatten(), imgperm.flatten())[0]  
-        for ii in range(nperm):
-            metricnull[ii] = adjusted_mutual_info(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
+    r_obs = pearsonr(imgfix.flatten(), imgperm.flatten())[0]  
+    for ii in range(nperm):
+        metricnull[ii] = eval(metric)(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
     
     # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
     pval = np.mean(np.abs(metricnull) >= np.abs(r_obs))  
@@ -97,7 +83,7 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den='
     return metricnull, permutedimg, pval, r_obs
 
 
-def moran_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den='0p5mm'):
+def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm'):
     """
        Moran Spectral Randomization
        Moran Spectral Randomization (MSR) computes Moran’s I, a metric for spatial auto-correlation and generates normally distributed data with similar auto-correlation. MSR relies on a weight matrix denoting the spatial proximity of features to one another. Within neuroimaging, one straightforward example of this is inverse geodesic distance i.e. distance along the cortical surface.
@@ -114,7 +100,7 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den=
        nperm : int
            Number of permutations to perform.
        metric : str, optional
-           Metric for comparing maps (one of pearson, spearman, adjusted rand, or adjusted mutual info).
+           Metric for comparing maps (one of pearsonr, spearmanr).
            Default is 'pearson'.
        label : str, optional
            Label for the hippocampus ('hipp' or 'dentate'). Default is 'hipp'.
@@ -126,7 +112,6 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den=
        metricnull : Null distribution of the specified metric
        permutedimg : All permuted spatial maps at 'unfoldiso' density.
        r_obs :  The observed association between the two aligned maps.
-
        pval : p-value based on metricnull r_obs.
        """
     if type(imgfix) == str:
@@ -143,13 +128,13 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearson', label='hipp', den=
     msr.fit(weights)
 
     # get observed correlation
-    r_obs = spearmanr(imgfix, imgperm, nan_policy='omit')[0]
+    r_obs = eval(f"{metric}r")(imgfix, imgperm, nan_policy='omit')[0]
 
     # randomize
     imgperm_rand = msr.randomize(imgperm)
     metricnull = np.empty((nperm))
     for d in range(nperm):
-        metricnull[d] = spearmanr(imgfix, imgperm_rand[d,:])[0]
+        metricnull[d] = eval(metric)(imgfix, imgperm_rand[d,:])[0]
 
     # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
     pval = np.mean(np.abs(metricnull) >= np.abs(r_obs))  
