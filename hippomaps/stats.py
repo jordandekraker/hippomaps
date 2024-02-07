@@ -216,6 +216,6 @@ def contextualize2D(taskMaps, n_topComparison=3, permTest=True, nperm=1000, plot
             ax.annotate(str(int(contextHM['feature_n'][f])), (contextHM['axiscorrAPPD'][0,f]-.008, contextHM['subfieldsmaxcorr'][f]-.007))
         ax.scatter(APcorr,Subfscorr,color='k',s=200);
         for t in range(nT):
-            ax.annotate(str(t), (APcorr[t]-.008, Subfscorr[t]-.007),color='w')
+            ax.annotate(str(t), (APcorr[0,t]-.008, Subfscorr[t]-.007),color='w')
             
     return topFeatures, topR, topP, APcorr, Subfscorr, ax
