@@ -1,9 +1,10 @@
 import numpy as np
 import nibabel as nib
-import scipy.io as spio
+import pandas as pd
 from scipy.ndimage import rotate
 from scipy.ndimage import shift
 from scipy.stats import spearmanr, pearsonr
+from joblib import Parallel, delayed
 from sklearn.metrics import adjusted_mutual_info_score, adjusted_rand_score
 import warnings
 import hippomaps.utils
@@ -176,10 +177,11 @@ def contextualize2D(taskMaps, n_topComparison=3, permTest=True, nperm=1000, plot
        Subfscorr : Max correlation with subfields (Spearmann)
        ax : axis handle
        """
+    if taskMaps.ndim==1: taskMaps = taskMaps.reshape([-1,1])
     nT = taskMaps.shape[1]
 
     # load required data
-    contextHM = np.load('../resources/2Dcontextualize/initialHippoMaps.npz')
+    contextHM = np.load(f'{resourcesdir}/2Dcontextualize/initialHippoMaps.npz')
     # resample input data if needed
     nVref,iVref = hippomaps.config.get_nVertices(['hipp'],'0p5mm')
     if taskMaps.shape[0] != nVref:
@@ -194,9 +196,9 @@ def contextualize2D(taskMaps, n_topComparison=3, permTest=True, nperm=1000, plot
     topR = np.ones((nT,n_topComparison))*np.nan
     topP = np.ones((nT,n_topComparison))*np.nan
     if n_topComparison >0:
-        p = np.ones((taskMaps.shape[1],len(contextHM['features'])))
-        R = np.ones((taskMaps.shape[1],len(contextHM['features'])))
-        for i in range(taskMaps.shape[1]):
+        p = np.ones((nT,len(contextHM['features'])))
+        R = np.ones((nT,len(contextHM['features'])))
+        for i in range(nT):
             for j in range(len(contextHM['features'])):
                 if permTest:
                     _,_,p[i,j],R[i,j] = hippomaps.stats.spin_test(taskMapsresamp[:,i],contextHM['featureData'][:,j], nperm)
@@ -211,10 +213,12 @@ def contextualize2D(taskMaps, n_topComparison=3, permTest=True, nperm=1000, plot
                 topP[t,c] = p[t,order[c]]
             
     # get position of new features on 2D space axes
-    APcorr = spearmanr(np.concatenate((taskMapsresamp,contextHM['AP'].reshape([-1,1])),axis=1))[0][nT:,:nT]
-    APcorr = np.abs(APcorr)
-    Subfscorr = spearmanr(np.concatenate((taskMapsresamp,contextHM['subfields_permuted']),axis=1))[0][nT:,:nT]
-    Subfscorr = np.nanmax(np.abs(Subfscorr),axis=0)
+    # due to trouble with NaN and zero covariance, we use pandas for correlations here.
+    # see https://stackoverflow.com/questions/51386399/python-scipy-spearman-correlation-for-matrix-does-not-match-two-array-correlatio
+    APcorr = pd.DataFrame(np.concatenate((taskMapsresamp,contextHM['AP'].reshape([-1,1])),axis=1))
+    APcorr = np.abs(APcorr.corr('pearson').to_numpy())[nT:,:nT]
+    Subfscorr = pd.DataFrame(np.concatenate((taskMapsresamp,contextHM['subfields_permuted']),axis=1))
+    Subfscorr = np.nanmax(np.abs(Subfscorr.corr('spearman').to_numpy())[nT:,:nT],axis=0)
 
     # plot in space
     fig, ax = plt.subplots(figsize=(8,8))
@@ -227,6 +231,6 @@ def contextualize2D(taskMaps, n_topComparison=3, permTest=True, nperm=1000, plot
             ax.annotate(str(int(contextHM['feature_n'][f])), (contextHM['axiscorrAPPD'][0,f]-.008, contextHM['subfieldsmaxcorr'][f]-.007))
         ax.scatter(APcorr,Subfscorr,color='k',s=200);
         for t in range(nT):
-            ax.annotate(str(t), (APcorr[0,t]-.008, Subfscorr[t]-.007),color='w')
+            ax.annotate(str(t), (APcorr[t]-.008, Subfscorr[t]-.007),color='w')
             
     return topFeatures, topR, topP, APcorr, Subfscorr, ax
