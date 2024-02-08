@@ -45,4 +45,8 @@ These tutorials reproduce the figures found in HippoMaps (DeKraker et al). They 
 
    tutorials/MRI-3T-taskfMRI.ipynb
 
+.. toctree::
+   :maxdepth: 2
+   :caption: TLE-HC:
 
+   tutorials/TLE-HC.ipynb
