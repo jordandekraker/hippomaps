@@ -4,7 +4,7 @@
 
 Hippomaps🍤
 =====================================
-This is a toolbox and repository for open source mapping and contextualization of hippocampal data, paralleling surface-based mapping of the neocortex. This is partnered with a repository of mapped data at [OSF](https://osf.io/92p34/).
+This is a toolbox and repository for open source mapping and contextualization of hippocampal data, paralleling surface-based mapping of the neocortex. This is partnered with a repository of mapped data at [OSF](https://osf.io/92p34/). 
 
 
 Documentation📝
@@ -43,6 +43,12 @@ Other relevant repositories🗂️
 
 [micapipe](https://github.com/MICA-MNI/micapipe/)
 
+Citing HippoMaps📝
+-------------------------------------
+
+DeKraker, J., Cabalo, D. G., Royer, J., Khan, A. R., Karat, B., Benkarim, O., ... & Bernhardt, B. C. (2024). HippoMaps: Multiscale cartography of the human hippocampal formation. bioRxiv, 2024-02. [link](https://www.biorxiv.org/content/10.1101/2024.02.23.581734v1)
+
+For use of additional data in the [OSF repo](https://osf.io/92p34/), please cite the original authors of each map.
 
 Join the Open Source Adventure!🚀
 -------------------------------------
