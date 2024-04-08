@@ -117,7 +117,7 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L', 'R'], labels=['hipp', 'dent
 
 def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L', 'R'], labels=['hipp', 'dentate'],
                             flipRcurv=True, unfoldAPrescale=False, den='0p5mm', modality='T1w', tighten_cwindow=True,
-                            rotate=True, resourcesdir=resourcesdir, size=[350, 230], cmap='viridis', **qwargs):
+                            rotate=20, resourcesdir=resourcesdir, size=[350, 230], cmap='viridis', **qwargs):
     """
         Plots subject-specific folded and unfolded surfaces (hipp/dentate; folded/unfolded).
 
@@ -179,7 +179,7 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L', 'R']
                 if glob.glob(fn1):
                     s = read_surface(fn1)
                 else:
-                    print(fn1 + ' not sound, using generic')
+                    print(fn1 + ' not found, using generic')
                     s = read_surface(
                         f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-{label}_midthickness.surf.gii')
                     if space != 'unfold': s.Points = np.ones(s.Points.shape) * np.nan
@@ -203,7 +203,12 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L', 'R']
 
     # rotate surfaces to approx coronal-oblique
     if rotate:
-        aff = np.loadtxt(f'{resourcesdir}/xfms/corobl-20deg_xfm.txt')
+        #aff = np.loadtxt(f'{resourcesdir}/xfms/corobl-20deg_xfm.txt')
+        aff = np.eye(4)
+        aff[1,1] = np.cos(np.deg2rad(rotate))
+        aff[2,2] = np.cos(np.deg2rad(rotate))
+        aff[1,2] = np.sin(np.deg2rad(rotate))
+        aff[2,1] = -np.sin(np.deg2rad(rotate))
         for i, h in enumerate(hemis):
             p = np.hstack((surf[i * 2].Points, np.ones((npts, 1))))
             p = p @ aff
