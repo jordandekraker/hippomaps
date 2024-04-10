@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 from brainspace.mesh.mesh_io import read_surface
 from hippomaps.moran import MoranRandomization
 from brainspace.mesh import mesh_elements as me
+from eigenstrapping import SurfaceEigenstrapping
 from pathlib import Path
 resourcesdir=str(Path(__file__).parents[1]) + '/resources'
 
@@ -57,8 +58,12 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den=
     if den != 'unfoldiso':
         imgperm = hippomaps.utils.density_interp(den, 'unfoldiso', imgperm, label=label, method='nearest')[0]
         imgfix = hippomaps.utils.density_interp(den, 'unfoldiso', imgfix, label=label, method='nearest')[0]  
-    imgperm = np.reshape(imgperm, (126, 254))  # get maps to 126x254
-    imgfix = np.reshape(imgfix, (126, 254))  # get maps to 126x254
+    if label == 'hipp':
+        imgperm = np.reshape(imgperm, (126, 254))  # get maps to 126x254
+        imgfix = np.reshape(imgfix, (126, 254))  # get maps to 126x254
+    elif label == 'dentate':
+        imgperm = np.reshape(imgperm, (32, 254)) # get maps to 32x254
+        imgfix = np.reshape(imgfix, (32, 254))
 
     rotation = np.random.randint(1, 360, nperm)  # generate random rotations
     translate1 = np.random.randint(-63, 64, nperm)  # generate random translations
@@ -101,7 +106,7 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den
            Number of permutations to perform.
        metric : str, optional
            Metric for comparing maps (one of pearsonr, spearmanr).
-           Default is 'pearson'.
+           Default is 'pearsonr'.
        label : str, optional
            Label for the hippocampus ('hipp' or 'dentate'). Default is 'hipp'.
        den : str, optional
@@ -115,23 +120,75 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den
        pval : p-value based on metricnull r_obs.
        """
     if type(imgfix) == str:
-        imgfix = nib.load(imgfix).agg_data()
+        imgfix = nib.load(imgfix).agg_data().flatten()
     if type(imgperm) == str:
-        imgperm = nib.load(imgperm).agg_data()
+        imgperm = nib.load(imgperm).agg_data().flatten()
     
     # load reference surface to get geodesic distance
-    surf = read_surface(f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-hipp_midthickness.surf.gii")
-    # wrap concenient brainspace function for weights (geodesic distance) and MRS
+    surf = read_surface(f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-{label}_midthickness.surf.gii")
+    # wrap convenient brainspace function for weights (geodesic distance) and MRS
     weights = me.get_ring_distance(surf, n_ring=1)
     weights.data **= -1
     msr = MoranRandomization(n_rep=nperm, spectrum='all')
     msr.fit(weights)
 
     # get observed correlation
-    r_obs = eval(f"{metric}r")(imgfix, imgperm, nan_policy='omit')[0]
+    r_obs = eval(metric)(imgfix, imgperm)[0]
 
     # randomize
     imgperm_rand = msr.randomize(imgperm)
+    metricnull = np.empty((nperm))
+    for d in range(nperm):
+        metricnull[d] = eval(metric)(imgfix, imgperm_rand[d,:])[0]
+
+    # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
+    pval = np.mean(np.abs(metricnull) >= np.abs(r_obs))  
+
+    return metricnull, imgperm_rand, pval, r_obs
+
+def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm', num_modes=200):
+    """
+        Awesome new tool at https://www.biorxiv.org/content/10.1101/2024.02.07.579070v1.abstract
+        Generates null models of spatial maps by rotating geometric eigenmodes.
+        Koussis, N. C., Pang, J. C., Jeganathan, J., Paton, B., Fornito, A., Robinson, P. A., ... & Breakspear, M. (2024). Generation of surrogate brain maps preserving spatial autocorrelation through random rotation of geometric eigenmodes. bioRxiv, 2024-02.
+       
+        Parameters
+        ----------
+        imgfix : str or array
+           Path to the fixed map, or fixed array map.
+        imgperm : str or array
+           Path to the fixed map to be permuted, or array map to be permuted.
+        nperm : int
+            Number of permutations to perform.
+        metric : str, optional
+            Metric for comparing maps (one of pearsonr, spearmanr).
+            Default is 'pearsonr'.
+        label : str, optional
+            Label for the hippocampus ('hipp' or 'dentate'). Default is 'hipp'.
+        den : str, optional
+            Density of the surface data. Default '0p5mm'.
+
+        Returns
+        -------
+        metricnull : Null distribution of the specified metric
+        permutedimg : All permuted spatial maps at 'unfoldiso' density.
+        r_obs :  The observed association between the two aligned maps.
+        pval : p-value based on metricnull r_obs.
+        """
+    if type(imgfix) == str:
+        imgfix = nib.load(imgfix).agg_data().flatten()
+    if type(imgperm) == str:
+        imgperm = nib.load(imgperm).agg_data().flatten()
+    
+    # load reference surface and put in Eigenstrapping class
+    eigen = SurfaceEigenstrapping(surface=f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-{label}_midthickness.surf.gii", 
+        data=imgperm, num_modes=num_modes)
+
+    # get observed correlation
+    r_obs = eval(metric)(imgfix, imgperm)[0]
+
+    # randomize
+    imgperm_rand = eigen(n=nperm)
     metricnull = np.empty((nperm))
     for d in range(nperm):
         metricnull[d] = eval(metric)(imgfix, imgperm_rand[d,:])[0]
