@@ -24,6 +24,7 @@ Stats
 
     spin_test
     moran_test
+    eigenstrapping
     contextualize2D
 
 

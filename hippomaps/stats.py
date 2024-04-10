@@ -167,6 +167,8 @@ def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp',
             Label for the hippocampus ('hipp' or 'dentate'). Default is 'hipp'.
         den : str, optional
             Density of the surface data. Default '0p5mm'.
+        num_modes : int, optional
+            Number of eigenmodes to use. Default is 200.
 
         Returns
         -------
