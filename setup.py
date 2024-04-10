@@ -47,6 +47,7 @@ setuptools.setup(
         "matplotlib>=2.0.0",
         "pygeodesic>=0.1.8",
         "wget>=3.2",
+        "eigenstrapping @ git+https://github.com/SNG-Newy/eigenstrapping.git",
     ],
     extras_require={"dev": ["gitpython", "hcp-utils", "mypy", "plotly", "pytest"]},
     include_package_data=True,
