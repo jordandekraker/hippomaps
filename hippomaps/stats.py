@@ -176,7 +176,7 @@ def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp',
         **qwargs : dict, optional
             Additional keyword arguments for customization.
             See https://eigenstrapping.readthedocs.io/en/latest/generated/eigenstrapping.SurfaceEigenstrapping.html#eigenstrapping.SurfaceEigenstrapping
-           
+
         Returns
         -------
         metricnull : Null distribution of the specified metric
