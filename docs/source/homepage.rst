@@ -47,6 +47,8 @@ Other relevant repositories🗂️
 
 `micapipe <https://github.com/MICA-MNI/micapipe/>`_
 
+`eigenstrapping <https://github.com/SNG-Newy/eigenstrapping/>`_
+
 
 Join the Open Source Adventure!🚀
 -------------------------------------

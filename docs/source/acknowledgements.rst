@@ -18,6 +18,9 @@ DeKraker, J., Lau, J. C., Ferko, K. M., Khan, A. R., & Köhler, S. (2020). Hippo
 
 Paquola, C., Benkarim, O., DeKraker, J., Lariviere, S., Frässle, S., Royer, J., ... & Bernhardt, B. C. (2020). Convergence of cortical types and functional motifs in the human mesiotemporal lobe. elife, 9, e60673.
 
+Koussis, N. C., Pang, J. C., Jeganathan, J., Paton, B., Fornito, A., Robinson, P. A., ... & Breakspear, M. (2024). Generation of surrogate brain maps preserving spatial autocorrelation through random rotation of geometric eigenmodes. bioRxiv, 2024-02.
+
+Vos de Wael R, Benkarim O, Paquola C, Lariviere S, Royer J, Tavakol S, Xu T, Hong S, Langs G, Valk S, Misic B, Milham M, Margulies D, Smallwood J, Bernhardt B (2020). BrainSpace: a toolbox for the analysis of macroscale gradients in neuroimaging and connectomics datasets. Commun Biol 3, 103.
 
 Funding💰
 -------------------------------------
