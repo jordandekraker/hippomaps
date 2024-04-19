@@ -146,7 +146,7 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den
 
     return metricnull, imgperm_rand, pval, r_obs
 
-def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm', num_modes=200):
+def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm', num_modes=200, permute=False, resample=False, **qwargs):
     """
         Awesome new tool at https://www.biorxiv.org/content/10.1101/2024.02.07.579070v1.abstract
         Generates null models of spatial maps by rotating geometric eigenmodes.
@@ -169,6 +169,13 @@ def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp',
             Density of the surface data. Default '0p5mm'.
         num_modes : int, optional
             Number of eigenmodes to use. Default is 200.
+        permute : bool, optional
+            Set whether to permute surrogate map from original map to preserve values. Default is False.
+        resample : bool, optional
+            Set whether to resample surrogate map from original map to preserve values. Default is False.
+        **qwargs : dict, optional
+            Additional keyword arguments for customization.
+            See https://eigenstrapping.readthedocs.io/en/latest/generated/eigenstrapping.SurfaceEigenstrapping.html#eigenstrapping.SurfaceEigenstrapping
 
         Returns
         -------
@@ -184,7 +191,7 @@ def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp',
     
     # load reference surface and put in Eigenstrapping class
     eigen = SurfaceEigenstrapping(surface=f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-{label}_midthickness.surf.gii", 
-        data=imgperm, num_modes=num_modes)
+        data=imgperm, num_modes=num_modes, permute=False, resample=False, **qwargs)
 
     # get observed correlation
     r_obs = eval(metric)(imgfix, imgperm)[0]
