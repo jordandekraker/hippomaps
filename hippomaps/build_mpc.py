@@ -98,7 +98,7 @@ def build_mpc(data, parc=None, idxExclude=None):
     else:
         I = data
         szI = data.shape
-        szZ = np.empty((data.shape[1], data.shape[1]))
+        szZ = (data.shape[1], data.shape[1])
 
 
     # Build MPC

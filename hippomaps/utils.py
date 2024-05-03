@@ -15,7 +15,7 @@ from pathlib import Path
 resourcesdir = str(Path(__file__).parents[1]) + '/resources'
 
 
-def avg_neighbours(invar):
+def avg_neighbours(F, cdat, n):
     """
     Averages vertex-wise data at vertex n with its neighboring vertices.
 
@@ -32,7 +32,6 @@ def avg_neighbours(invar):
     float
         The average value of the vertex-wise data at vertex n and its neighboring vertices.
     """
-    F, cdat, n = invar
     frows = np.where(F == n)[0]
     v = np.unique(F[frows, :])
     with warnings.catch_warnings():
@@ -58,11 +57,15 @@ def surfdat_smooth(F, cdata, iters=1, cores=8):
        numpy.ndarray
            Smoothed surface data across neighboring vertices.
        """
-    cdat = copy.deepcopy(cdata)
+    cdata_smooth = copy.deepcopy(cdata)
     for i in range(iters):
-        cdat = Parallel(n_jobs=cores)(delayed(avg_neighbours)((F, cdat, n)) for n in range(len(cdat)))
-        cdata_smooth = np.array(cdat)
-        cdat = copy.deepcopy(cdata_smooth)
+        if cores>1:
+            cdata = Parallel(n_jobs=cores)(delayed(avg_neighbours)(F, cdata, n) for n in range(len(cdata)))
+            cdata_smooth = np.array(cdata)
+        else:
+            for n in range(len(cdata)):
+                cdata_smooth[n] = avg_neighbours(F, cdata, n)
+        cdata = copy.deepcopy(cdata_smooth)
     return cdata_smooth
 
 
@@ -307,7 +310,7 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
         elif method == "linear":
             meth = "Linear"
         t = os.system(f"antsApplyTransforms -i tmp.nii.gz -r tmp.nii.gz -o tmpWarped.nii.gz -t {warp[0]} -n {meth}")
-        if t != 0: raise Error("ANTs not found")
+        if t != 0: raise Exception("ANTs not found or returning error")
         surf_data_unfoldiso = nib.load("tmpWarped.nii.gz").get_fdata()[:, :, 0]
         os.system("rm tmp.nii.gz tmpWarped.nii.gz")
     except:
