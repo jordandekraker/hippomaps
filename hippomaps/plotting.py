@@ -80,7 +80,7 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L', 'R'], labels=['hipp', 'dent
 
     # do some cdata formatting
     cdata = np.reshape(cdata, [cdata.shape[0], len(hemis), -1])
-    if len(cdata.shape) == 2: cdata = np.expand_dims(t, axis=2)
+    if len(cdata.shape) == 2: cdata = np.expand_dims(cdata, axis=2)
     if tighten_cwindow > 0:
         for i in range(0, cdata.shape[2]):
             cdata[:, :, i] = bound_cdata(cdata[:, :, i])
@@ -104,7 +104,11 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L', 'R'], labels=['hipp', 'dent
             arrName[f, :] = f'feature{f}'
 
     # extra parameters
-    new_qwargs = dict(zoom=1.7, nan_color=(0, 0, 0, 0))
+    new_qwargs = dict()
+    if not 'zoom' in qwargs:
+        new_qwargs['zoom'] = 1.7
+    if not 'nan_color' in qwargs:
+        new_qwargs['nan_color'] = (0, 0, 0, 0)
     new_qwargs.update(qwargs)
     new_size = copy.deepcopy(size)
     new_size[0] = new_size[0] * len(hemis)
@@ -261,7 +265,11 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L', 'R']
             arrName[f, :] = feature
 
     # extra parameters
-    new_qwargs = dict(zoom=1.5, nan_color=(0, 0, 0, 0))
+    new_qwargs = dict()
+    if not 'zoom' in qwargs:
+        new_qwargs['zoom'] = 1.5
+    if not 'nan_color' in qwargs:
+        new_qwargs['nan_color'] = (0, 0, 0, 0)
     new_qwargs.update(qwargs)
     new_size = copy.deepcopy(size)
     new_size[0] = new_size[0] * len(hemis)
