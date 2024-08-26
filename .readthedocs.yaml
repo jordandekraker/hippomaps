@@ -12,5 +12,4 @@ sphinx:
 python:
   install:
     - requirements: docs/requirements.txt
-  commands:
-    - pip install -e .
+
