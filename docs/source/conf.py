@@ -5,12 +5,6 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../hippomaps'))
 
-try:
-    import hippomaps.fetcher
-    print("hippomaps.fetcher imported successfully")
-except ImportError as e:
-    print(f"Error importing hippomaps.fetcher: {e}")
-
 # -- Project information
 
 project = 'Hippomaps'
