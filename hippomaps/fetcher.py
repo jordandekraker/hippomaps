@@ -2,7 +2,6 @@ import nibabel as nib
 import urllib.request, json 
 import wget
 from fnmatch import fnmatch
-from pprint import pprint
 from pathlib import Path
 import os
 resourcesdir = str(Path(__file__).parents[1]) + '/resources'
