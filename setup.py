@@ -49,6 +49,7 @@ setuptools.setup(
         "wget>=3.2",
         "eigenstrapping @ git+https://github.com/SNG-Newy/eigenstrapping.git",
 	"pathlib",
+	"parspin",
     ],
     extras_require={"dev": ["gitpython", "hcp-utils", "mypy", "plotly", "pytest"]},
     include_package_data=True,
