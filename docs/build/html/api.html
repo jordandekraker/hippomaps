@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tools Index &mdash; Hippomaps 0.1 documentation</title>
@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="hippomaps.plotting.surfplot_canonical_foldunfold" href="generated/hippomaps.plotting.surfplot_canonical_foldunfold.html" />
-    <link rel="prev" title="MRI-3T-taskfMRI" href="tutorials/MRI-3T-taskfMRI.html" /> 
+    <link rel="prev" title="Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)" href="tutorials/TLE-HC.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -63,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#stats">Stats</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/hippomaps.stats.spin_test.html">hippomaps.stats.spin_test</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/hippomaps.stats.moran_test.html">hippomaps.stats.moran_test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/hippomaps.stats.eigenstrapping.html">hippomaps.stats.eigenstrapping</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/hippomaps.stats.contextualize2D.html">hippomaps.stats.contextualize2D</a></li>
 </ul>
 </li>
@@ -132,7 +133,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="hippomaps.stats.moran_test.html#hippomaps.stats.moran_test" title="hippomaps.stats.moran_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">moran_test</span></code></a>(imgfix, imgperm[, nperm, metric, ...])</p></td>
 <td><p>Moran Spectral Randomization Moran Spectral Randomization (MSR) computes Moran’s I, a metric for spatial auto-correlation and generates normally distributed data with similar auto-correlation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="hippomaps.stats.contextualize2D.html#hippomaps.stats.contextualize2D" title="hippomaps.stats.contextualize2D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextualize2D</span></code></a>(taskMaps[, n_topComparison, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="hippomaps.stats.eigenstrapping.html#hippomaps.stats.eigenstrapping" title="hippomaps.stats.eigenstrapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eigenstrapping</span></code></a>(imgfix, imgperm[, nperm, ...])</p></td>
+<td><p>Awesome new tool at <a class="reference external" href="https://www.biorxiv.org/content/10.1101/2024.02.07.579070v1.abstract">https://www.biorxiv.org/content/10.1101/2024.02.07.579070v1.abstract</a> Generates null models of spatial maps by rotating geometric eigenmodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="hippomaps.stats.contextualize2D.html#hippomaps.stats.contextualize2D" title="hippomaps.stats.contextualize2D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextualize2D</span></code></a>(taskMaps[, n_topComparison, ...])</p></td>
 <td><p>Compares the present maps to thoes in the inital HippoMaps release</p></td>
 </tr>
 </tbody>
@@ -179,7 +183,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="tutorials/MRI-3T-taskfMRI.html" class="btn btn-neutral float-left" title="MRI-3T-taskfMRI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorials/TLE-HC.html" class="btn btn-neutral float-left" title="Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="generated/hippomaps.plotting.surfplot_canonical_foldunfold.html" class="btn btn-neutral float-right" title="hippomaps.plotting.surfplot_canonical_foldunfold" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
