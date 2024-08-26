@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Localization &mdash; Hippomaps 0.1 documentation</title>
@@ -84,8 +84,8 @@
              
   <p>This notebook maps electrode channels (the midpoint between two contacts) to hippocmapal surfaces. HippUnfold is run in space-nativepro, which is then registered to space-implant. Distances are calculated between chennel centroids and hippocampal surfaces, and all vertices within 5mm are given that channel bandpower values.</p>
 <p>For a more detailed explanation of code, see <code class="docutils literal notranslate"><span class="pre">notebooks/iEEG.ipynb</span></code></p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -94,23 +94,31 @@
 <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;/export03/data/opt/hippunfold_toolbox/hippunfold_toolbox&#39;</span><span class="p">)</span>
-<span class="kn">import</span> <span class="nn">plotting</span>
-<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">hippomaps</span> <span class="k">as</span> <span class="nn">hm</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">scipy.io</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">periodogram</span>
 <span class="kn">import</span> <span class="nn">pygeodesic.geodesic</span> <span class="k">as</span> <span class="nn">geodesic</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">gaussian_filter1d</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/export03/data/opt/venv/lib/python3.8/site-packages/nilearn/datasets/__init__.py:93: FutureWarning: Fetchers from the nilearn.datasets module will be updated in version 0.9 to return python strings instead of bytes and Pandas dataframes instead of Numpy arrays.
+  warn(&#34;Fetchers from the nilearn.datasets module will be &#34;
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">micapipe_dir</span> <span class="o">=</span> <span class="s1">&#39;../sourcedata/Micapipe_MICs&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">micapipe_dir</span> <span class="o">=</span> <span class="s1">&#39;/export03/data/publication-hippomaps/sourcedata/Micapipe_MICs&#39;</span>
 <span class="n">ieeg_dir</span> <span class="o">=</span> <span class="s1">&#39;/host/oncilla/local_raid/iEEG-BIDS&#39;</span> <span class="c1">#(no ses)</span>
-<span class="n">ieeg_local</span> <span class="o">=</span> <span class="s1">&#39;../sourcedata/iEEG-local/&#39;</span>
+<span class="n">ieeg_local</span> <span class="o">=</span> <span class="s1">&#39;/export03/data/publication-hippomaps/sourcedata/iEEG-local/&#39;</span>
 <span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mica3/BIDS_MICs/derivatives/hippunfold_v1.3.0/hippunfold/&#39;</span>
 <span class="n">subs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PX001&#39;</span><span class="p">,</span> <span class="s1">&#39;PX005&#39;</span><span class="p">,</span> <span class="s1">&#39;PX007&#39;</span><span class="p">,</span> <span class="s1">&#39;PX009&#39;</span><span class="p">,</span>
     <span class="s1">&#39;PX010&#39;</span><span class="p">,</span> <span class="s1">&#39;PX012&#39;</span><span class="p">,</span> <span class="s1">&#39;PX015&#39;</span><span class="p">,</span> <span class="s1">&#39;PX019&#39;</span><span class="p">,</span> <span class="s1">&#39;PX023&#39;</span><span class="p">,</span>
@@ -121,18 +129,21 @@
 <span class="n">hemis</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;R&#39;</span><span class="p">]</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;hipp&#39;</span><span class="p">]</span><span class="c1">#,&#39;dentate&#39;]</span>
 <span class="n">den</span><span class="o">=</span><span class="s1">&#39;2mm&#39;</span>
-<span class="n">ind</span> <span class="o">=</span> <span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">419</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">419</span><span class="p">,</span><span class="mi">483</span><span class="p">)]</span> <span class="c1"># index of how many dentate and hipp vertices are</span>
-<span class="n">shp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">419</span><span class="p">]</span><span class="c1">#,64]</span>
+
+<span class="c1"># get expected number of vertices and their indices</span>
+<span class="n">nV</span><span class="p">,</span><span class="n">iV</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_nVertices</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">den</span><span class="p">)</span>
+
 <span class="n">freq</span> <span class="o">=</span> <span class="mi">200</span> <span class="c1">#Hz</span>
 <span class="n">bands</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;delta&#39;</span><span class="p">,</span> <span class="s1">&#39;theta&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="s1">&#39;gamma&#39;</span><span class="p">]</span>
 <span class="n">band_lims</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">13</span><span class="p">],</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span><span class="mi">30</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span><span class="mi">80</span><span class="p">]])</span>
 <span class="n">sampspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">80</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">dist_threshold</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1">#mm</span>
+<span class="n">colormap</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Set1</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">sampspace</span><span class="p">),</span><span class="mi">0</span><span class="p">))</span>
@@ -146,11 +157,11 @@
         <span class="n">cnames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">cnames</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">sub</span><span class="p">,</span><span class="n">n1</span><span class="p">,</span><span class="n">n2</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">interpolator</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">f</span><span class="o">*</span><span class="n">freq</span><span class="p">,</span><span class="n">p</span><span class="p">[</span><span class="n">c</span><span class="p">,:]</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">c</span><span class="p">,:]))</span>
         <span class="n">pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pxx</span><span class="p">,</span><span class="n">interpolator</span><span class="p">(</span><span class="n">sampspace</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span>
@@ -158,7 +169,7 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -167,7 +178,7 @@
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -181,7 +192,7 @@
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -197,7 +208,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)))</span>
@@ -209,7 +220,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">color_discrete</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Set1</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
@@ -219,12 +230,15 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="p">[</span><span class="n">ax</span><span class="p">]</span>
 <span class="n">n</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">cbins</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="o">+</span> <span class="p">[</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">()]</span>
     <span class="n">dat</span> <span class="o">=</span> <span class="n">bp</span><span class="p">[:,</span><span class="n">b</span><span class="p">]</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dat</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">color_discrete</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">50</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                <span class="n">color</span><span class="o">=</span><span class="n">color_discrete</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="n">b</span><span class="p">]);</span>
+    <span class="n">cbins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">50</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+               <span class="n">color</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="n">b</span><span class="p">]))</span>
     <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
@@ -236,19 +250,19 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/data/mica1/01_programs/tmp/ipykernel_43097/3041265054.py:16: UserWarning: Legend does not support &lt;AxesSubplot:&gt; instances.
+/data/mica1/01_programs/tmp/ipykernel_30819/1080293335.py:19: UserWarning: Legend does not support handles for Axes instances.
 A proxy artist may be used instead.
-See: https://matplotlib.org/users/legend_guide.html#creating-artists-specifically-for-adding-to-the-legend-aka-proxy-artists
+See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#controlling-the-legend-entries
   plt.legend(handles=ax[1:])
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7f98044c4850&gt;
+&lt;matplotlib.legend.Legend at 0x7f03759dfaf0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -262,7 +276,7 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 <h1>Localization<a class="headerlink" href="#Localization" title="Permalink to this heading"></a></h1>
 <p>Here, we have the vertices associated with each channel that falls within 5mm of the hippocampus.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Register hippunfold surfaces to implant space</span>
@@ -291,7 +305,7 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">insensitive_glob</span><span class="p">(</span><span class="n">pattern</span><span class="p">):</span>
@@ -302,7 +316,7 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">change_table</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;filenames&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sub-PX015/anat/electrode_LOTj.csv&#39;</span><span class="p">,</span>
@@ -323,12 +337,13 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="nb">sum</span><span class="p">(</span><span class="n">shp</span><span class="p">),</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="n">hipp_pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="nb">sum</span><span class="p">(</span><span class="n">shp</span><span class="p">),</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">sampspace</span><span class="p">),</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">hipp_pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">sampspace</span><span class="p">),</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 <span class="n">missing_electrodes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">label</span><span class="o">=</span><span class="s1">&#39;hipp&#39;</span>
 <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
         <span class="n">sub</span> <span class="o">=</span> <span class="n">cnames</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">c</span><span class="p">]</span>
@@ -370,7 +385,7 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -379,7 +394,7 @@ set()
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_pxx</span><span class="o">.</span><span class="n">shape</span>
@@ -387,7 +402,7 @@ set()
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -396,7 +411,7 @@ set()
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_bp</span><span class="o">.</span><span class="n">shape</span>
@@ -404,7 +419,7 @@ set()
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -412,8 +427,8 @@ set()
 (419, 2, 5, 2507)
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;number of L hemis: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">])))</span>
@@ -421,21 +436,12 @@ set()
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-number of L hemis: 7
-number of R hemis: 37
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_bp_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))[:,</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">hipp_bp_count</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="s1">&#39;2mm&#39;</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">hipp_bp_count</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="s1">&#39;2mm&#39;</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -449,7 +455,7 @@ number of R hemis: 37
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -457,7 +463,7 @@ number of R hemis: 37
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">hipp_pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
@@ -471,7 +477,7 @@ number of R hemis: 37
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -487,7 +493,47 @@ number of R hemis: 37
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">pxx</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sampspace</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">.19</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">sampspace</span><span class="p">,</span> <span class="n">y</span><span class="o">-</span><span class="n">err</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="n">err</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">band_lims</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span><span class="n">colors</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">hipp_pxx</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">hipp_pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sampspace</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">.19</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">sampspace</span><span class="p">,</span> <span class="n">y</span><span class="o">-</span><span class="n">err</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="n">err</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">band_lims</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span><span class="n">colors</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.4, 100)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_18_1.png" src="../../_images/tutorials_extras_iEEG_MICs_18_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">color_discrete</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Set1</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
@@ -497,12 +543,15 @@ number of R hemis: 37
 <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="p">[</span><span class="n">ax</span><span class="p">]</span>
 <span class="n">n</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">hippcbins</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># number of channels in each bin</span>
 <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="o">+</span> <span class="p">[</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">()]</span>
     <span class="n">dat</span> <span class="o">=</span> <span class="n">hipp_bp</span><span class="p">[:,:,</span><span class="n">b</span><span class="p">,:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dat</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">color_discrete</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">50</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                <span class="n">color</span><span class="o">=</span><span class="n">color_discrete</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="n">b</span><span class="p">]);</span>
+    <span class="n">hippcbins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">50</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+               <span class="n">color</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="n">b</span><span class="p">]))</span>
     <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
@@ -514,26 +563,63 @@ number of R hemis: 37
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/data/mica1/01_programs/tmp/ipykernel_37650/818807886.py:16: UserWarning: Legend does not support &lt;AxesSubplot:&gt; instances.
+/data/mica1/01_programs/tmp/ipykernel_30819/773083350.py:19: UserWarning: Legend does not support handles for Axes instances.
 A proxy artist may be used instead.
-See: https://matplotlib.org/users/legend_guide.html#creating-artists-specifically-for-adding-to-the-legend-aka-proxy-artists
+See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#controlling-the-legend-entries
   plt.legend(handles=ax[1:])
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7fb36c608790&gt;
+&lt;matplotlib.legend.Legend at 0x7f02c6bcb0a0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_extras_iEEG_MICs_18_2.png" src="../../_images/tutorials_extras_iEEG_MICs_18_2.png" />
+<img alt="../../_images/tutorials_extras_iEEG_MICs_19_2.png" src="../../_images/tutorials_extras_iEEG_MICs_19_2.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="p">[</span><span class="n">ax</span><span class="p">]</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">n</span><span class="o">=</span><span class="mi">0</span>
+<span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="o">+</span> <span class="p">[</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">()]</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">bp</span><span class="p">[:,</span><span class="n">b</span><span class="p">]</span>
+    <span class="c1">#ax[n+1].vlines(np.nanmedian(dat),0,1, color=&#39;gray&#39;, linestyle=&#39;dashed&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">cbins</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:],</span><span class="n">gaussian_filter1d</span><span class="p">(</span><span class="n">cbins</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">sigma</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span>
+<span class="n">n</span><span class="o">=</span><span class="mi">0</span>
+<span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="o">+</span> <span class="p">[</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">()]</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">hipp_bp</span><span class="p">[:,:,</span><span class="n">b</span><span class="p">,:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dat</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">hippcbins</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:],</span><span class="n">gaussian_filter1d</span><span class="p">(</span><span class="n">hippcbins</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">sigma</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="c1">#ax[n+1].hist(dat,bins=np.logspace(np.log10(1e-4),np.log10(1), 50), linestyle=None, alpha=0.5,</span>
+    <span class="c1">#           color=colormap[b], label=l[b]);</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_20_0.png" src="../../_images/tutorials_extras_iEEG_MICs_20_0.png" />
 </div>
 </div>
 </section>
@@ -541,12 +627,10 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 <h1>Extrapolation<a class="headerlink" href="#Extrapolation" title="Permalink to this heading"></a></h1>
 <p>We can see that simply averaging over all channels doesn’t give a good idea of the spatial distribution of band power, since so much data is missing. Thus, we will extrapolate each channel over the whole hippocampus and then use the distance from the channel as a weighting when performing weighted averaging across channels. See <code class="docutils literal notranslate"><span class="pre">../extras</span></code> for an example visualization.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">importlib</span>
-<span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">utils</span><span class="p">)</span>
-<span class="n">resorcesdir</span> <span class="o">=</span> <span class="s1">&#39;/export03/data/opt/hippunfold_toolbox/resources&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resorcesdir</span> <span class="o">=</span> <span class="s1">&#39;/export03/data/opt/hippunfold_toolbox/resources&#39;</span>
 <span class="n">gii</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">resorcesdir</span><span class="si">}</span><span class="s1">/canonical_surfs/tpl-avg_space-canonical_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
 <span class="n">v</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_TRIANGLE&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
@@ -559,7 +643,7 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># cominbing BP across channels and vertices for visualization</span>
@@ -572,11 +656,12 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hipp_bp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
         <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">c</span><span class="p">])</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">c</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
                 <span class="n">geoalg</span> <span class="o">=</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">PyGeodesicAlgorithmExact</span><span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">l</span><span class="p">])</span>
                 <span class="n">sd</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">geoalg</span><span class="o">.</span><span class="n">geodesicDistances</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
-                <span class="n">weights_hipp_bp</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">sd</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sd</span><span class="p">))</span>
+                <span class="n">sd</span> <span class="o">=</span> <span class="n">sd</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">weights_hipp_bp</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">sd</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sd</span><span class="p">))</span>
 <span class="n">totweights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">weights_hipp_bp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">weights_hipp_bp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
     <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
@@ -589,35 +674,26 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">interp_hipp_bp</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">interp_hipp_bp</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/export03/data/opt/venv/lib/python3.8/site-packages/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
-  warnings.warn(&#34;Interactive mode requires &#39;panel&#39;. &#34;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_extras_iEEG_MICs_22_1.png" src="../../_images/tutorials_extras_iEEG_MICs_22_1.png" />
+<img alt="../../_images/tutorials_extras_iEEG_MICs_24_0.png" src="../../_images/tutorials_extras_iEEG_MICs_24_0.png" />
 </div>
 </div>
 </section>
 <section id="example-of-how-data-gets-extrapolated-along-a-geodesic-distance">
 <h1>example of how data gets extrapolated along a geodesic distance<a class="headerlink" href="#example-of-how-data-gets-extrapolated-along-a-geodesic-distance" title="Permalink to this heading"></a></h1>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">copy</span>
@@ -628,7 +704,23 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 
 <span class="n">h</span><span class="o">=</span><span class="mi">1</span>
 <span class="n">c</span><span class="o">=</span><span class="p">[</span><span class="mi">1201</span><span class="p">,</span><span class="mi">1635</span><span class="p">]</span>
-<span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">hd</span><span class="p">[:,</span><span class="n">h</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">],</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">hd</span><span class="p">[:,</span><span class="n">h</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">],</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_extras_iEEG_MICs_26_0.png" src="../../_images/tutorials_extras_iEEG_MICs_26_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">wd</span><span class="p">[:,</span><span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">],</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -637,30 +729,14 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_extras_iEEG_MICs_24_0.png" src="../../_images/tutorials_extras_iEEG_MICs_24_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">wd</span><span class="p">[:,</span><span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">],</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/tutorials_extras_iEEG_MICs_25_0.png" src="../../_images/tutorials_extras_iEEG_MICs_25_0.png" />
+<img alt="../../_images/tutorials_extras_iEEG_MICs_27_0.png" src="../../_images/tutorials_extras_iEEG_MICs_27_0.png" />
 </div>
 </div>
 </section>
 <section id="Brainspace-gradients">
 <h1>Brainspace gradients<a class="headerlink" href="#Brainspace-gradients" title="Permalink to this heading"></a></h1>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">brainspace.gradient</span> <span class="kn">import</span> <span class="n">GradientMaps</span>
@@ -671,7 +747,7 @@ See: https://matplotlib.org/users/legend_guide.html#creating-artists-specificall
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -680,23 +756,23 @@ GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">bpgm</span><span class="o">.</span><span class="n">gradients_</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">bpgm</span><span class="o">.</span><span class="n">gradients_</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_extras_iEEG_MICs_28_0.png" src="../../_images/tutorials_extras_iEEG_MICs_28_0.png" />
+<img alt="../../_images/tutorials_extras_iEEG_MICs_30_0.png" src="../../_images/tutorials_extras_iEEG_MICs_30_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bpgm</span><span class="o">.</span><span class="n">lambdas_</span><span class="p">)</span>
@@ -704,26 +780,27 @@ GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&lt;matplotlib.lines.Line2D at 0x7fb36c0c6d30&gt;]
+[&lt;matplotlib.lines.Line2D at 0x7f02c5470a00&gt;]
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_extras_iEEG_MICs_29_1.png" src="../../_images/tutorials_extras_iEEG_MICs_29_1.png" />
+<img alt="../../_images/tutorials_extras_iEEG_MICs_31_1.png" src="../../_images/tutorials_extras_iEEG_MICs_31_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vars_to_load</span> <span class="o">=</span> <span class="p">[</span><span class="n">pxx</span><span class="p">,</span> <span class="n">bp</span><span class="p">,</span> <span class="n">hipp_bp</span><span class="p">,</span> <span class="n">hipp_pxx</span><span class="p">]</span>
+<span class="o">!</span>mkdir<span class="w"> </span>-p<span class="w"> </span>../checkpoints
 <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;../checkpoints/iEEG_MICs_dat&#39;</span><span class="p">,</span> <span class="n">vars_to_load</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
 </pre></div>
 </div>
