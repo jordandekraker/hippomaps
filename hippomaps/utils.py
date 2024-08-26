@@ -21,12 +21,9 @@ def avg_neighbours(F, cdat, n):
 
     Parameters
     ----------
-    invar : tuple
-        A tuple containing the following elements:
-        - F: tuple
-        - cdat: tuple
-        - n: int
-            Vertex index for which the data will be averaged with its neighboring vertices.
+    F: Faces, numpy.ndarray
+    cdat: vertex data, numpy.ndarray
+    n: Vertex index for which the data will be averaged with its neighboring vertices, int
     Returns
     -------
     float
@@ -34,13 +31,14 @@ def avg_neighbours(F, cdat, n):
     """
     frows = np.where(F == n)[0]
     v = np.unique(F[frows, :])
+    cdat = np.reshape(cdat, (len(cdat), -1))
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        out = np.nanmean(cdat[v])
+        out = np.nanmean(cdat[v,:], 0)
     return out
 
 
-def surfdat_smooth(F, cdata, iters=1, cores=8):
+def surfdat_smooth(F, cdata, iters=1, cores=1):
     """
        Smooths surface data across neighboring vertices.
        TODO: convert to mm vis calibration curves in https://github.com/MELDProject/meld_classifier/blob/9d3d364de86dc207d3a1e5ec11dcab3ef012ebcb/meld_classifier/mesh_tools.py#L17'''
@@ -57,16 +55,18 @@ def surfdat_smooth(F, cdata, iters=1, cores=8):
        numpy.ndarray
            Smoothed surface data across neighboring vertices.
        """
+    sz = cdata.shape
+    cdata = cdata.reshape(cdata.shape[0], -1)
     cdata_smooth = copy.deepcopy(cdata)
     for i in range(iters):
         if cores>1:
-            cdata = Parallel(n_jobs=cores)(delayed(avg_neighbours)(F, cdata, n) for n in range(len(cdata)))
-            cdata_smooth = np.array(cdata)
+            c = Parallel(n_jobs=cores, backend='multiprocessing')(delayed(avg_neighbours)(F, cdata, n) for n in range(len(cdata)))
+            cdata_smooth = np.array(c)
         else:
             for n in range(len(cdata)):
-                cdata_smooth[n] = avg_neighbours(F, cdata, n)
+                cdata_smooth[n,:] = avg_neighbours(F, cdata, n)
         cdata = copy.deepcopy(cdata_smooth)
-    return cdata_smooth
+    return cdata_smooth.reshape(sz)
 
 
 def profile_align(P, patchdist=None, V=[],F=[], maxroll=5):
