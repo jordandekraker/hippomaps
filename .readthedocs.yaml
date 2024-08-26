@@ -10,7 +10,7 @@ sphinx:
   configuration: docs/source/conf.py
 
 python:
-   install:
-     - requirements: docs/requirements.txt
-   commands:
-     - pip install -e .
+  install:
+    - requirements: docs/requirements.txt
+  commands:
+    - pip install -e .
