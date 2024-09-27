@@ -1,7 +1,7 @@
 Tutorials
 ==================
 
-These tutorials reproduce the figures found in the HippoMaps paper (DeKraker et al. 2024 ). They also serve as examples for common analyses, and to showcase ways of using HippoMaps tools.
+.. include:: tutorials/README.txt
 
 .. toctree::
    :maxdepth: 2
