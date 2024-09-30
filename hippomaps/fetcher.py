@@ -4,8 +4,9 @@ import wget
 from fnmatch import fnmatch
 from pathlib import Path
 import os
-resourcesdir = str(Path(__file__).parents[1]) + '/resources'
-downloads = resourcesdir + '/downloads'
+resourcesdir = str(Path(__file__).parents[1]) + '/resources/'
+downloads = resourcesdir + '/downloads/'
+checkpointsdir = str(Path(__file__).parents[1]) + '/tutorials/checkpoints/'
 
 repoID = '92p34'
 
@@ -107,7 +108,15 @@ def get_map(repo='HippoMaps-initializationMaps',Dataset='*',Method='*',Modality=
     return data, names
 
 
-
-
-
-
+def get_tutorialCheckpoints(filenames):
+    """
+    Downloads checkpoint data needed for running hippomaps tutorials. 
+    filenames : list of strings
+        Filenames to be downloaded
+    """
+    if not os.path.isdir(checkpointsdir):
+        os.mkdir(checkpointsdir)
+    for fn in filenames:
+        if not os.path.isfile(checkpointsdir + fn):
+            h = name_hashes['/tutorialCheckpoints/' + fn]
+            wget.download(f"https://files.ca-1.osf.io/v1/resources/{repoID}/providers/osfstorage{h}",out=checkpointsdir + fn)
