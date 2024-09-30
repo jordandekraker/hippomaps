@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC) &mdash; Hippomaps 0.1 documentation</title>
+  <title>TLE-HC &mdash; Hippomaps 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
@@ -64,7 +64,8 @@
 <li class="toctree-l2"><a class="reference internal" href="iEEG.html">iEEG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DimReduct.html">Dimensionality-Reduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html">MRI-3T-taskfMRI</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">TLE-HC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#0)-Map-and-load-volumetric-data-to-surfaces">0) Map and load volumetric data to surfaces</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#1)-plot-group-averages">1) plot group-averages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#2)-Examine-inter-patient-(ipsilateral)-consistency">2) Examine inter-patient (ipsilateral) consistency</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#3)-Contextualize-with-other-maps">3) Contextualize with other maps</a></li>
@@ -91,7 +92,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../tutorials.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)</li>
+      <li class="breadcrumb-item active">TLE-HC</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -100,11 +101,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Case-control-atrophy-mapping-in-temporal-lobe-epilepsy-vs-healthy-controls-(TLE-HC)">
-<h1>Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)<a class="headerlink" href="#Case-control-atrophy-mapping-in-temporal-lobe-epilepsy-vs-healthy-controls-(TLE-HC)" title="Permalink to this heading"></a></h1>
+  <section id="TLE-HC">
+<h1>TLE-HC<a class="headerlink" href="#TLE-HC" title="Permalink to this heading"></a></h1>
 <p><strong>Overview</strong></p>
-<p>This notebook will examine morphological features of the hippocampus in TLE patients. We compare the ipsilateral foci hippocampi to contralateral, and to age-matched controls.</p>
-<div class="nbinput nblast docutils container">
+<p>Case-control difference mapping in temporal lobe epilepsy. This notebook will examine morphological features of the hippocampus in TLE patients. We compare the ipsilateral foci hippocampi to contralateral (asymmetry analysis), and to age-matched controls (case-control analysis).</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -116,12 +117,29 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/export03/data/opt/venv/lib/python3.8/site-packages/nilearn/datasets/__init__.py:93: FutureWarning: Fetchers from the nilearn.datasets module will be updated in version 0.9 to return python strings instead of bytes and Pandas dataframes instead of Numpy arrays.
+  warn(&#34;Fetchers from the nilearn.datasets module will be &#34;
+</pre></div></div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;../../publication-hippomaps/hippunfold/MICs_v1.3.0/hippunfold&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># config</span>
 
+<span class="n">useCheckpoints</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">if</span> <span class="n">useCheckpoints</span><span class="p">:</span>
+    <span class="n">hm</span><span class="o">.</span><span class="n">fetcher</span><span class="o">.</span><span class="n">get_tutorialCheckpoints</span><span class="p">([</span><span class="s1">&#39;TLE-HC.npz&#39;</span><span class="p">,</span> <span class="s1">&#39;participants_MICs_PX.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;participants_MICs_HC.csv&#39;</span><span class="p">])</span>
+
+<span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mica3/BIDS_MICs/derivatives/hippunfold_v1.3.0/hippunfold&#39;</span>
+
+<span class="n">subs_PX</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;checkpoints/participants_MICs_PX.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+<span class="n">subs_HC</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;checkpoints/participants_MICs_HC.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
 <span class="n">hemis</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;R&#39;</span><span class="p">]</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;hipp&#39;</span><span class="p">]</span><span class="c1">#,&#39;dentate&#39;]</span>
 <span class="n">den</span> <span class="o">=</span> <span class="s1">&#39;0p5mm&#39;</span>
@@ -134,553 +152,60 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
+<section id="0)-Map-and-load-volumetric-data-to-surfaces">
+<h2>0) Map and load volumetric data to surfaces<a class="headerlink" href="#0)-Map-and-load-volumetric-data-to-surfaces" title="Permalink to this heading"></a></h2>
+<p>As in all tutorials here, this step is OPTIONAL, and will be skipped by default. It provides an example of how data can be mapped to hippocampal surfaces outside of python (using <code class="docutils literal notranslate"><span class="pre">wb_command</span></code>). This relies on having the data stored locally, and should be considered example code. This code may differ depending on where/how your data is stored and formatted, and so may require some customization for new projects. For the purposes of this tutorial, we provide a matrix of loaded data at the end,
+so skip to the next step.</p>
+<p>In this example, we loop through samples (that is, subjects and hemipsheres) pulling hippunfold output features (that is, features intrinsic to the surfaces themselves, such as thickness).</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PX</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;../../publication-hippomaps/hippunfold/participants_MICs_PX.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-<span class="n">PX</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">useCheckpoints</span><span class="p">:</span>
+
+    <span class="c1"># Load PX data</span>
+    <span class="n">hipp_dat_PX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+                    <span class="n">ses</span> <span class="o">=</span> <span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;SES&#39;</span><span class="p">][</span><span class="n">s</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;pathology&#39;</span><span class="p">][</span><span class="n">s</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">hemi</span><span class="p">:</span>
+                        <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># always put ipsi first</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">ic</span><span class="o">=</span><span class="mi">1</span> <span class="c1"># contra second</span>
+                    <span class="n">fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span>
+                    <span class="k">if</span> <span class="n">feature</span><span class="o">==</span><span class="s1">&#39;curvature&#39;</span> <span class="ow">and</span> <span class="n">hemi</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
+                        <span class="n">hipp_dat_PX</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">ic</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">hipp_dat_PX</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">ic</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="c1"># Load HC data</span>
+    <span class="n">hipp_dat_HC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">subs_HC</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs_HC</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+                    <span class="n">ses</span> <span class="o">=</span> <span class="n">subs_HC</span><span class="p">[</span><span class="s1">&#39;SES&#39;</span><span class="p">][</span><span class="n">s</span><span class="p">]</span>
+                    <span class="n">fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span>
+                    <span class="k">if</span> <span class="n">feature</span><span class="o">==</span><span class="s1">&#39;curvature&#39;</span> <span class="ow">and</span> <span class="n">hemi</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
+                        <span class="n">hipp_dat_HC</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">hipp_dat_HC</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="s2">&quot;checkpoints/TLE-HC&quot;</span><span class="p">,</span><span class="n">hipp_dat_PX</span><span class="p">,</span> <span class="n">hipp_dat_HC</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>ID</th>
-      <th>SES</th>
-      <th>AGE</th>
-      <th>SEX</th>
-      <th>SITE</th>
-      <th>group</th>
-      <th>pathology</th>
-      <th>T1W</th>
-      <th>QT1</th>
-      <th>FLAIR</th>
-      <th>DWI</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>sub-PX003</td>
-      <td>ses-01</td>
-      <td>54</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>sub-PX005</td>
-      <td>ses-01</td>
-      <td>26</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>sub-PX012</td>
-      <td>ses-03</td>
-      <td>36</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>sub-PX013</td>
-      <td>ses-01</td>
-      <td>57</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>sub-PX016</td>
-      <td>ses-01</td>
-      <td>41</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>sub-PX019</td>
-      <td>ses-01</td>
-      <td>31</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>sub-PX020</td>
-      <td>ses-02</td>
-      <td>54</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>sub-PX021</td>
-      <td>ses-01</td>
-      <td>55</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>sub-PX024</td>
-      <td>ses-01</td>
-      <td>26</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>sub-PX025</td>
-      <td>ses-02</td>
-      <td>27</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>sub-PX026</td>
-      <td>ses-01</td>
-      <td>52</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>sub-PX028</td>
-      <td>ses-01</td>
-      <td>22</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>sub-PX032</td>
-      <td>ses-01</td>
-      <td>53</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>sub-PX036</td>
-      <td>ses-02</td>
-      <td>26</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>sub-PX042</td>
-      <td>ses-01</td>
-      <td>38</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>sub-PX043</td>
-      <td>ses-02</td>
-      <td>40</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>sub-PX044</td>
-      <td>ses-01</td>
-      <td>43</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>sub-PX047</td>
-      <td>ses-01</td>
-      <td>35</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>sub-PX053</td>
-      <td>ses-01</td>
-      <td>41</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>sub-PX055</td>
-      <td>ses-01</td>
-      <td>27</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>sub-PX060</td>
-      <td>ses-01</td>
-      <td>25</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>sub-PX061</td>
-      <td>ses-01</td>
-      <td>39</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>sub-PX062</td>
-      <td>ses-01</td>
-      <td>44</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>sub-PX063</td>
-      <td>ses-01</td>
-      <td>28</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>sub-PX065</td>
-      <td>ses-01</td>
-      <td>29</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>sub-PX067</td>
-      <td>ses-01</td>
-      <td>39</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>sub-PX068</td>
-      <td>ses-01</td>
-      <td>54</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>sub-PX069</td>
-      <td>ses-01</td>
-      <td>39</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>sub-PX070</td>
-      <td>ses-01</td>
-      <td>36</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>sub-PX072</td>
-      <td>ses-01</td>
-      <td>43</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>30</th>
-      <td>sub-PX075</td>
-      <td>ses-01</td>
-      <td>18</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Left TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>31</th>
-      <td>sub-PX079</td>
-      <td>ses-01</td>
-      <td>32</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>32</th>
-      <td>sub-PX087</td>
-      <td>ses-01</td>
-      <td>29</td>
-      <td>F</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>33</th>
-      <td>sub-PX088</td>
-      <td>ses-01</td>
-      <td>56</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>34</th>
-      <td>sub-PX094</td>
-      <td>ses-01</td>
-      <td>63</td>
-      <td>M</td>
-      <td>1</td>
-      <td>Patient</td>
-      <td>Right TLE</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mean age: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;M/F: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;SEX&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;SEX&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;F&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;L/R: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;pathology&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Right TLE&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;pathology&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Left TLE&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># overview demographics of patients</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mean age: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;M/F: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;SEX&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;SEX&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;F&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;L/R: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;pathology&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Right TLE&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;pathology&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Left TLE&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -695,259 +220,13 @@ L/R: 15/20
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;pathology&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&#39;Left TLE&#39;
-</pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
-<span class="n">hipp_dat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># overview demographics of controls</span>
 
-<span class="c1"># Preprocess</span>
-<span class="c1"># Profile align the depths of each column (as in https://github.com/jordandekraker/hippomaps/blob/master/tutorials/Histology-MRI-9p4T.ipynb)</span>
-<span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]):</span>
-        <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-                <span class="n">ses</span> <span class="o">=</span> <span class="n">PX</span><span class="p">[</span><span class="s1">&#39;SES&#39;</span><span class="p">][</span><span class="n">s</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">PX</span><span class="p">[</span><span class="s1">&#39;pathology&#39;</span><span class="p">][</span><span class="n">s</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">hemi</span><span class="p">:</span>
-                    <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># always put ipsi first</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">ic</span><span class="o">=</span><span class="mi">1</span> <span class="c1"># contra second</span>
-                <span class="n">fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span>
-                <span class="k">if</span> <span class="n">feature</span><span class="o">==</span><span class="s1">&#39;curvature&#39;</span> <span class="ow">and</span> <span class="n">hemi</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
-                    <span class="n">hipp_dat</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">ic</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hipp_dat</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">ic</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HC</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;../../publication-hippomaps/hippunfold/participants_MICs_HC.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-<span class="n">HC</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>ID</th>
-      <th>SES</th>
-      <th>AGE</th>
-      <th>SEX</th>
-      <th>SITE</th>
-      <th>group</th>
-      <th>pathology</th>
-      <th>T1W</th>
-      <th>QT1</th>
-      <th>FLAIR</th>
-      <th>DWI</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>sub-HC005</td>
-      <td>ses-02</td>
-      <td>27.0</td>
-      <td>M</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>sub-HC009</td>
-      <td>ses-02</td>
-      <td>34.0</td>
-      <td>F</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>sub-HC010</td>
-      <td>ses-03</td>
-      <td>40.0</td>
-      <td>M</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>sub-HC012</td>
-      <td>ses-03</td>
-      <td>30.0</td>
-      <td>F</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>sub-HC016</td>
-      <td>ses-02</td>
-      <td>33.0</td>
-      <td>M</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>76</th>
-      <td>sub-HC039</td>
-      <td>ses-01</td>
-      <td>40.0</td>
-      <td>F</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>77</th>
-      <td>sub-HC049</td>
-      <td>ses-01</td>
-      <td>41.0</td>
-      <td>M</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>78</th>
-      <td>sub-HC053</td>
-      <td>ses-01</td>
-      <td>58.0</td>
-      <td>M</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>79</th>
-      <td>sub-HC057</td>
-      <td>ses-01</td>
-      <td>37.0</td>
-      <td>M</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>80</th>
-      <td>sub-HC070</td>
-      <td>ses-01</td>
-      <td>60.0</td>
-      <td>F</td>
-      <td>MICs</td>
-      <td>Control</td>
-      <td>NaN</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-  </tbody>
-</table>
-<p>81 rows × 11 columns</p>
-</div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mean age: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">HC</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">HC</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;M/F: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">HC</span><span class="p">[</span><span class="s1">&#39;SEX&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">HC</span><span class="p">[</span><span class="s1">&#39;SEX&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;F&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mean age: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">subs_HC</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">subs_HC</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;M/F: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">subs_HC</span><span class="p">[</span><span class="s1">&#39;SEX&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">subs_HC</span><span class="p">[</span><span class="s1">&#39;SEX&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;F&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -961,52 +240,35 @@ M/F: 42/39
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
-<span class="n">hipp_dat_HC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">HC</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="c1"># Preprocess</span>
-<span class="c1"># Profile align the depths of each column (as in https://github.com/jordandekraker/hippomaps/blob/master/tutorials/Histology-MRI-9p4T.ipynb)</span>
-<span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">HC</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]):</span>
-        <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-                <span class="n">ses</span> <span class="o">=</span> <span class="n">HC</span><span class="p">[</span><span class="s1">&#39;SES&#39;</span><span class="p">][</span><span class="n">s</span><span class="p">]</span>
-                <span class="n">fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span>
-                <span class="k">if</span> <span class="n">feature</span><span class="o">==</span><span class="s1">&#39;curvature&#39;</span> <span class="ow">and</span> <span class="n">hemi</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
-                    <span class="n">hipp_dat_HC</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hipp_dat_HC</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-</pre></div>
-</div>
-</div>
-<section id="1)-plot-group-averages">
-<h2>1) plot group-averages<a class="headerlink" href="#1)-plot-group-averages" title="Permalink to this heading"></a></h2>
-<p>Here we plot averages of the ipsilateral seizure focus, contralalteral, and healthy controls. We then compare ipsilateral to contralalteral (an asymmetry analysis) and ipsilateral to controls (case-control differences). Asymmetry is nice since it includes perfect matching on things like demographics, etc., but in cases with severe epilepsy there can also be abnormalities or secondary epileptogenic zones in the contralateral hemisphere as well. Case-control differences are less closely matched,
-but we can be confident that the HC data is normative.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Here we calculate and add a new feature: columnar volume. This is simply thicknes (mm) * surface area (mm2) giving a units in mm3.</span>
 
-<span class="n">coolumnar_volume</span> <span class="o">=</span> <span class="n">hipp_dat</span><span class="p">[:,:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">hipp_dat</span><span class="p">[:,:,:,</span><span class="mi">3</span><span class="p">]</span>
-<span class="n">hipp_dat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">hipp_dat</span><span class="p">,</span><span class="n">coolumnar_volume</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">PX</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]),</span><span class="mi">1</span><span class="p">])),</span><span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">hipp_dat_PX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;checkpoints/TLE-HC.npz&quot;</span><span class="p">)[</span><span class="s1">&#39;arr_0&#39;</span><span class="p">]</span>
+<span class="n">hipp_dat_HC</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;checkpoints/TLE-HC.npz&quot;</span><span class="p">)[</span><span class="s1">&#39;arr_1&#39;</span><span class="p">]</span>
+
+<span class="n">coolumnar_volume</span> <span class="o">=</span> <span class="n">hipp_dat_PX</span><span class="p">[:,:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">hipp_dat_PX</span><span class="p">[:,:,:,</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">hipp_dat_PX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">hipp_dat_PX</span><span class="p">,</span><span class="n">coolumnar_volume</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]),</span><span class="mi">1</span><span class="p">])),</span><span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="n">coolumnar_volume</span> <span class="o">=</span> <span class="n">hipp_dat_HC</span><span class="p">[:,:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">hipp_dat_HC</span><span class="p">[:,:,:,</span><span class="mi">3</span><span class="p">]</span>
-<span class="n">hipp_dat_HC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">hipp_dat_HC</span><span class="p">,</span><span class="n">coolumnar_volume</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">HC</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]),</span><span class="mi">1</span><span class="p">])),</span><span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">hipp_dat_HC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">hipp_dat_HC</span><span class="p">,</span><span class="n">coolumnar_volume</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">subs_HC</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]),</span><span class="mi">1</span><span class="p">])),</span><span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;columnarVol&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+</section>
+<section id="1)-plot-group-averages">
+<h2>1) plot group-averages<a class="headerlink" href="#1)-plot-group-averages" title="Permalink to this heading"></a></h2>
+<p>Here we plot averages of the ipsilateral seizure focus, contralalteral, and healthy controls. We then compare ipsilateral to contralalteral (an asymmetry analysis) and ipsilateral to controls (case-control differences). Asymmetry is nice since it includes perfect matching on things like demographics, etc., but in cases with severe epilepsy there can also be abnormalities or secondary epileptogenic zones in the contralateral hemisphere as well. Case-control differences are less closely matched,
+but we can be confident that the HC data is normative.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ipsilateral</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">hipp_dat</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">contralateral</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">hipp_dat</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,:,:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ipsilateral</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">hipp_dat_PX</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">contralateral</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">hipp_dat_PX</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,:,:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">hipp_dat_HC</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
 <span class="n">asymmetry</span> <span class="o">=</span> <span class="n">contralateral</span><span class="o">-</span><span class="n">ipsilateral</span>
 <span class="n">caseCtrl</span> <span class="o">=</span> <span class="n">ctrl</span><span class="o">-</span><span class="n">ipsilateral</span>
@@ -1037,15 +299,7 @@ but we can be confident that the HC data is normative.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_TLE-HC_12_0.png" src="../_images/tutorials_TLE-HC_12_0.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">cdata1</span><span class="p">[:,</span><span class="n">f</span><span class="p">,:],</span> <span class="n">color_bar</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;hipp&#39;</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">,</span> <span class="n">color_range</span><span class="o">=</span><span class="s1">&#39;sym&#39;</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">screenshot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;tmp.png&#39;</span><span class="p">)</span>
-<br/></pre></div>
+<img alt="../_images/tutorials_TLE-HC_9_0.png" src="../_images/tutorials_TLE-HC_9_0.png" />
 </div>
 </div>
 </section>
@@ -1053,17 +307,17 @@ but we can be confident that the HC data is normative.</p>
 <h2>2) Examine inter-patient (ipsilateral) consistency<a class="headerlink" href="#2)-Examine-inter-patient-(ipsilateral)-consistency" title="Permalink to this heading"></a></h2>
 <p>Here, we focus only on case-control differences for each ipsilateral hippocampus to the control average.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ttest_1samp</span>
 
-<span class="c1"># make a histogram of the off-diagonal cross-patient correlations</span>
+<span class="c1"># make a histogram of the off-diagonal cross-patient correlations (minus controls average)</span>
 <span class="n">mfcorr</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">sdfcorr</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
-    <span class="n">cdat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctrl</span><span class="p">[:,</span><span class="n">f</span><span class="p">]</span><span class="o">-</span><span class="n">hipp_dat</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">cdat</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctrl</span><span class="p">[:,</span><span class="n">f</span><span class="p">]</span><span class="o">-</span><span class="n">hipp_dat_PX</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">corr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">cdat</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="c1"># as above 2</span>
     <span class="n">fcorr</span> <span class="o">=</span> <span class="n">corr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span> <span class="c1"># this return only the off-diagonal (lower left triangle)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">ttest_1samp</span><span class="p">(</span><span class="n">fcorr</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">nan_policy</span><span class="o">=</span><span class="s1">&#39;omit&#39;</span><span class="p">))</span>
@@ -1078,22 +332,22 @@ but we can be confident that the HC data is normative.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Ttest_1sampResult(statistic=4.876997145961731, pvalue=2.278470962511645e-06)
-Ttest_1sampResult(statistic=6.4575080753712335, pvalue=8.76151025412419e-10)
-Ttest_1sampResult(statistic=15.186544536003135, pvalue=1.431884784956529e-34)
-Ttest_1sampResult(statistic=6.88452310563634, pvalue=8.317160023756746e-11)
-Ttest_1sampResult(statistic=6.688206318715512, pvalue=2.4820341157259765e-10)
+TtestResult(statistic=4.876997145961731, pvalue=2.278470962511645e-06, df=189)
+TtestResult(statistic=6.4575080753712335, pvalue=8.76151025412419e-10, df=189)
+TtestResult(statistic=15.186544536003135, pvalue=1.431884784956529e-34, df=189)
+TtestResult(statistic=6.88452310563634, pvalue=8.317160023756746e-11, df=189)
+TtestResult(statistic=6.688206318715512, pvalue=2.4820341157259765e-10, df=189)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_TLE-HC_15_1.png" src="../_images/tutorials_TLE-HC_15_1.png" />
+<img alt="../_images/tutorials_TLE-HC_11_1.png" src="../_images/tutorials_TLE-HC_11_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># instead of histograms, we will show a bar plot of the average and standard deviation</span>
@@ -1101,109 +355,61 @@ Ttest_1sampResult(statistic=6.688206318715512, pvalue=2.4820341157259765e-10)
 <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)),</span><span class="n">mfcorr</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)),</span><span class="n">mfcorr</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">sdfcorr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">ticks</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)),</span><span class="n">labels</span><span class="o">=</span><span class="n">features</span><span class="p">,</span><span class="n">rotation</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mf">.4</span><span class="p">]);</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+([&lt;matplotlib.axis.XTick at 0x7f226151fd30&gt;,
+  &lt;matplotlib.axis.XTick at 0x7f2260afd3d0&gt;,
+  &lt;matplotlib.axis.XTick at 0x7f2260af6700&gt;,
+  &lt;matplotlib.axis.XTick at 0x7f2260ab8a90&gt;,
+  &lt;matplotlib.axis.XTick at 0x7f2260a47220&gt;],
+ [Text(0, 0, &#39;thickness&#39;),
+  Text(1, 0, &#39;gyrification&#39;),
+  Text(2, 0, &#39;curvature&#39;),
+  Text(3, 0, &#39;surfarea&#39;),
+  Text(4, 0, &#39;columnarVol&#39;)])
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_TLE-HC_16_0.png" src="../_images/tutorials_TLE-HC_16_0.png" />
+<img alt="../_images/tutorials_TLE-HC_12_1.png" src="../_images/tutorials_TLE-HC_12_1.png" />
 </div>
 </div>
 </section>
 <section id="3)-Contextualize-with-other-maps">
 <h2>3) Contextualize with other maps<a class="headerlink" href="#3)-Contextualize-with-other-maps" title="Permalink to this heading"></a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[91]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">topFeatures</span><span class="p">,</span> <span class="n">topR</span><span class="p">,</span> <span class="n">topP</span><span class="p">,</span> <span class="n">APcorr</span><span class="p">,</span> <span class="n">Subfscorr</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">contextualize2D</span><span class="p">(</span><span class="n">asymmetry</span><span class="p">,</span> <span class="n">nperm</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="c1"># ideally nperm should be 10000</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">topFeatures</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">topR</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">topP</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#t, ax = hm.stats.contextualize2D(asymmetry, nperm=1000) # ideally nperm should be 10000</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[&#39;MRI-3T-rsfMRI-IntTS&#39; &#39;MRI-7T-ADC&#39; &#39;MRI-3T-rsfMRI-avgFCneocort&#39;]
- [&#39;MRI-7T-gyrification&#39; &#39;histology-gyrification&#39; &#39;iEEG-BandPower-delta&#39;]
- [&#39;MRI-7T-ADC&#39; &#39;MRI-7T-FA&#39; &#39;MRI-7T-qT1&#39;]
- [&#39;histology-Parvalbumin&#39; &#39;MRI-7T-ADC&#39; &#39;MRI-3T-rsfMRI-IntTS&#39;]
- [&#39;histology-Parvalbumin&#39; &#39;MRI-7T-ADC&#39; &#39;MRI-3T-rsfMRI-IntTS&#39;]]
-[[ 0.29042015  0.28139226  0.24666882]
- [ 0.42963204  0.40083605  0.31847284]
- [ 0.03895964 -0.03567171  0.03168604]
- [ 0.30704696  0.27560222  0.24758442]
- [ 0.26536365  0.24291992  0.24154682]]
-[[0.001 0.008 0.01 ]
- [0.    0.    0.02 ]
- [0.008 0.014 0.009]
- [0.001 0.01  0.031]
- [0.01  0.012 0.023]]
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorials_TLE-HC_18_1.png" src="../_images/tutorials_TLE-HC_18_1.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[92]:
+<p>APcorr</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">topFeatures</span><span class="p">,</span> <span class="n">topR</span><span class="p">,</span> <span class="n">topP</span><span class="p">,</span> <span class="n">APcorr</span><span class="p">,</span> <span class="n">Subfscorr</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">contextualize2D</span><span class="p">(</span><span class="n">caseCtrl</span><span class="p">,</span> <span class="n">nperm</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="c1"># ideally nperm should be 10000</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">topFeatures</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">topR</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">topP</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#t, ax = hm.stats.contextualize2D(caseCtrl, nperm=1000) # ideally nperm should be 10000</span>
 </pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[&#39;MRI-3T-rsfMRI-IntTS&#39; &#39;MRI-3T-rsfMRI-avgFCneocort&#39;
-  &#39;histology-Bieloschowsky&#39;]
- [&#39;MRI-7T-gyrification&#39; &#39;iEEG-BandPower-delta&#39; &#39;histology-gyrification&#39;]
- [&#39;MRI-3T-rsfMRI-IntTS&#39; &#39;MRI-7T-ADC&#39; &#39;iEEG-BandPower-gamma&#39;]
- [&#39;MRI-7T-ADC&#39; &#39;MRI-7T-MTR&#39; &#39;histology-Parvalbumin&#39;]
- [&#39;MRI-7T-ADC&#39; &#39;histology-Parvalbumin&#39; &#39;MRI-7T-MTR&#39;]]
-[[0.29209891 0.29180742 0.27980856]
- [0.50941525 0.44602646 0.43197429]
- [0.06510822 0.05809238 0.05719323]
- [0.39753283 0.36754286 0.33102012]
- [0.32614747 0.30467817 0.30162154]]
-[[0.005 0.012 0.024]
- [0.    0.003 0.   ]
- [0.035 0.042 0.096]
- [0.    0.004 0.009]
- [0.003 0.009 0.008]]
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorials_TLE-HC_19_1.png" src="../_images/tutorials_TLE-HC_19_1.png" />
 </div>
 </div>
 <p><strong>save</strong></p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save a copy of the 2D map</span>
+<span class="o">!</span>mkdir<span class="w"> </span>-p<span class="w"> </span>../maps/HippoMaps-initializationMaps/Dataset-MICs
 <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
@@ -1211,7 +417,7 @@ Ttest_1sampResult(statistic=6.688206318715512, pvalue=2.4820341157259765e-10)
             <span class="n">data_array</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiDataArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">cdat</span><span class="p">)</span>
             <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiImage</span><span class="p">()</span>
             <span class="n">image</span><span class="o">.</span><span class="n">add_gifti_data_array</span><span class="p">(</span><span class="n">data_array</span><span class="p">)</span>
-            <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-MICs/MRI-3T-MRI-TLE-case-control-</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">_average-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">PX</span><span class="p">)</span><span class="si">}</span><span class="s1">_hemi-mix_den-2mm_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span><span class="p">)</span>
+            <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-MICs/MRI-3T-MRI-TLE-case-control-</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">_average-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">subs_PX</span><span class="p">)</span><span class="si">}</span><span class="s1">_hemi-mix_den-2mm_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

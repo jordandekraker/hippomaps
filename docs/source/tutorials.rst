@@ -1,7 +1,7 @@
 Tutorials
 ==================
 
-.. include:: tutorials/README.txt
+.. include:: tutorials/README.md
 
 .. toctree::
    :maxdepth: 2

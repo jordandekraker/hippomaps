@@ -61,7 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/iEEG.html">iEEG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/DimReduct.html">Dimensionality-Reduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/MRI-3T-taskfMRI.html">MRI-3T-taskfMRI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/TLE-HC.html">Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/TLE-HC.html">TLE-HC</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Tools Index</a></li>
@@ -94,13 +94,19 @@
   <section id="tutorials">
 <h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this heading"></a></h1>
 <p>These tutorials reproduce the figures found in the HippoMaps paper (DeKraker et al. 2024 ). They also serve as examples for common analyses, and to showcase ways of using HippoMaps tools.</p>
+<p>Each tutorial is organized into the following sections:</p>
+<ul class="simple">
+<li><p><cite>config</cite> includes things like input data directory, list of subjects, surface vertex density, etc. This is primarily what a user will edit when running this code on their own data.</p></li>
+<li><p><cite>0)</cite> Mapping of data into surfaces. If <cite>useCheckpoints</cite> is true, this will be skipped and pre-generated numpy arrays will be loaded instead.</p></li>
+<li><p><cite>1)</cite> First step of actual data analysis</p></li>
+<li><p><cite>2)+</cite> Additional steps to break down and explain the analyses being done. These are specific to each tutorial, and include things like postprocessing, plotting, stats, etc.</p></li>
+</ul>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Morphology:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/Morphology.html">Morphology</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/Morphology.html#Histology-data">Histology data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/Morphology.html#Ultra-high-field-MRI-data-at-7T">Ultra-high field MRI data at 7T</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/Morphology.html#High-field-MRI-data-at-3T">High-field MRI data at 3T</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Morphology.html#0)-Map-and-load-volumetric-data-to-surfaces">0) Map and load volumetric data to surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/Morphology.html#1)-Average-across-subjects-and-plot">1) Average across subjects and plot</a></li>
 </ul>
 </li>
 </ul>
@@ -191,7 +197,8 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">TLE-HC:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/TLE-HC.html">Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/TLE-HC.html">TLE-HC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/TLE-HC.html#0)-Map-and-load-volumetric-data-to-surfaces">0) Map and load volumetric data to surfaces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/TLE-HC.html#1)-plot-group-averages">1) plot group-averages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/TLE-HC.html#2)-Examine-inter-patient-(ipsilateral)-consistency">2) Examine inter-patient (ipsilateral) consistency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/TLE-HC.html#3)-Contextualize-with-other-maps">3) Contextualize with other maps</a></li>

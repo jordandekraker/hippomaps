@@ -58,9 +58,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Morphology</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Histology-data">Histology data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Ultra-high-field-MRI-data-at-7T">Ultra-high field MRI data at 7T</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#High-field-MRI-data-at-3T">High-field MRI data at 3T</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#0)-Map-and-load-volumetric-data-to-surfaces">0) Map and load volumetric data to surfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1)-Average-across-subjects-and-plot">1) Average across subjects and plot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#histology">histology</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Ultra-high-field-MRI-data-at-7T">Ultra-high field MRI data at 7T</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#High-field-MRI-data-at-3T">High-field MRI data at 3T</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Histology-MRI-9p4T.html">Histology-MRI-9p4T</a></li>
@@ -69,7 +73,7 @@
 <li class="toctree-l2"><a class="reference internal" href="iEEG.html">iEEG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DimReduct.html">Dimensionality-Reduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html">MRI-3T-taskfMRI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TLE-HC.html">Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TLE-HC.html">TLE-HC</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">Tools Index</a></li>
@@ -105,7 +109,7 @@
 <p><strong>Overview</strong></p>
 <p>Morphological measures of thickness, gyrification, and curvature are calculated within HippUnfold. Here we examine these to ensure they are consistent with previous work, and that they don’t differ drastically between datasets.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -115,14 +119,17 @@
 </pre></div>
 </div>
 </div>
-<section id="Histology-data">
-<h2>Histology data<a class="headerlink" href="#Histology-data" title="Permalink to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">source_dir</span> <span class="o">=</span> <span class="s1">&#39;../../publication-hippomaps/sourcedata/BIDS_HISTO/&#39;</span>
-<span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;../../publication-hippomaps/hippunfold/HISTO_v1.3.0_100um/hippunfold/&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># config</span>
+
+<span class="n">useCheckpoints</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">if</span> <span class="n">useCheckpoints</span><span class="p">:</span>
+    <span class="n">hm</span><span class="o">.</span><span class="n">fetcher</span><span class="o">.</span><span class="n">get_tutorialCheckpoints</span><span class="p">([</span><span class="s1">&#39;Morph-Histology.npy&#39;</span><span class="p">])</span>
+
+<span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;/host/cassio/export03/data/unfolded_registration/hippunfold_v1.3.0_100um/hippunfold&#39;</span>
 
 <span class="n">subs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;bbhist&#39;</span><span class="p">,</span> <span class="s1">&#39;bbhist&#39;</span><span class="p">,</span> <span class="s1">&#39;pli3d&#39;</span><span class="p">,</span> <span class="s1">&#39;122017&#39;</span><span class="p">,</span> <span class="s1">&#39;122017&#39;</span><span class="p">,</span> <span class="s1">&#39;152017&#39;</span><span class="p">,</span> <span class="s1">&#39;152017&#39;</span><span class="p">]</span>
 <span class="n">ses</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -134,25 +141,45 @@
 <span class="n">nV</span><span class="p">,</span><span class="n">iV</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_nVertices</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">den</span><span class="p">)</span>
 
 <span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">,</span> <span class="s1">&#39;gyrification&#39;</span><span class="p">,</span> <span class="s1">&#39;curvature&#39;</span><span class="p">]</span>
-<span class="n">morph_dat_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="n">d</span><span class="o">=</span><span class="p">[]</span>
-<span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemis</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="si">}</span><span class="s1">_space-corobl&#39;</span>\
-                     <span class="sa">f</span><span class="s1">&#39;_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">labels</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span><span class="p">)</span>
-        <span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-        <span class="k">if</span> <span class="n">feature</span><span class="o">==</span><span class="s1">&#39;curvature&#39;</span><span class="p">:</span>
-            <span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">hemis</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;R&quot;</span><span class="p">:</span>
-                <span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
+<section id="0)-Map-and-load-volumetric-data-to-surfaces">
+<h2>0) Map and load volumetric data to surfaces<a class="headerlink" href="#0)-Map-and-load-volumetric-data-to-surfaces" title="Permalink to this heading"></a></h2>
+<p>As in all tutorials here, this step is OPTIONAL, and will be skipped by default. It provides an example of how data can be mapped to hippocampal surfaces outside of python (using <code class="docutils literal notranslate"><span class="pre">wb_command</span></code>). This relies on having the data stored locally, and should be considered example code. This code may differ depending on where/how your data is stored and formatted, and so may require some customization for new projects. For the purposes of this tutorial, we provide a matrix of loaded data at the end,
+so skip to the next step.</p>
+<p>In this example, we loop through samples (that is, subjects and hemipsheres) pulling hippunfold output features (that is, features intrinsic to the surfaces themselves, such as thickness).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">useCheckpoints</span><span class="p">:</span>
+    <span class="n">morph_dat_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">d</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemis</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="si">}</span><span class="s1">_space-corobl&#39;</span>\
+                        <span class="sa">f</span><span class="s1">&#39;_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">labels</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span><span class="p">)</span>
+            <span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span> <span class="n">feature</span><span class="o">==</span><span class="s1">&#39;curvature&#39;</span><span class="p">:</span>
+                <span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">hemis</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;R&quot;</span><span class="p">:</span>
+                    <span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">morph_dat_hist</span><span class="p">[:,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;checkpoints/Morph-Histology&quot;</span><span class="p">,</span><span class="n">morph_dat_hist</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1)-Average-across-subjects-and-plot">
+<h2>1) Average across subjects and plot<a class="headerlink" href="#1)-Average-across-subjects-and-plot" title="Permalink to this heading"></a></h2>
+<section id="histology">
+<h3>histology<a class="headerlink" href="#histology" title="Permalink to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">morph_dat_hist</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">morph_dat_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;checkpoints/Morph-Histology.npy&quot;</span><span class="p">)</span>
+<span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">morph_dat_hist</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -161,26 +188,26 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/export03/data/opt/venv/lib/python3.8/site-packages/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
+/export03/data/opt/BrainSpace/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
   warnings.warn(&#34;Interactive mode requires &#39;panel&#39;. &#34;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_Morphology_4_1.png" src="../_images/tutorials_Morphology_4_1.png" />
+<img alt="../_images/tutorials_Morphology_7_1.png" src="../_images/tutorials_Morphology_7_1.png" />
 </div>
 </div>
 </section>
 <section id="Ultra-high-field-MRI-data-at-7T">
-<h2>Ultra-high field MRI data at 7T<a class="headerlink" href="#Ultra-high-field-MRI-data-at-7T" title="Permalink to this heading"></a></h2>
+<h3>Ultra-high field MRI data at 7T<a class="headerlink" href="#Ultra-high-field-MRI-data-at-7T" title="Permalink to this heading"></a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;../../publication-hippomaps/hippunfold/PNI_v1.3.0_super/hippunfold&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mica3/BIDS_PNI/derivatives/hippunfold_v1.3.0_supersession/hippunfold&#39;</span>
 
 <span class="n">subs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PNC002&#39;</span><span class="p">,</span> <span class="s1">&#39;PNC003&#39;</span><span class="p">,</span> <span class="s1">&#39;PNC006&#39;</span><span class="p">,</span> <span class="s1">&#39;PNC007&#39;</span><span class="p">,</span> <span class="s1">&#39;PNC009&#39;</span><span class="p">,</span> <span class="s1">&#39;PNC010&#39;</span><span class="p">,</span> <span class="s1">&#39;PNC015&#39;</span><span class="p">,</span> <span class="s1">&#39;PNC016&#39;</span><span class="p">,</span> <span class="s1">&#39;PNC018&#39;</span><span class="p">,</span> <span class="s1">&#39;PNC019&#39;</span><span class="p">]</span>
 <span class="n">ses</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -190,47 +217,56 @@
 
 <span class="c1"># get expected number of vertices and their indices</span>
 <span class="n">nV</span><span class="p">,</span><span class="n">iV</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_nVertices</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">den</span><span class="p">)</span>
-
-<span class="n">morph_dat_MRI7T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="n">d</span><span class="o">=</span><span class="p">[]</span>
-<span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">d</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w&#39;</span>\
-                                 <span class="sa">f</span><span class="s1">&#39;_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span><span class="p">)</span>
-                    <span class="n">morph_dat_MRI7T</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-                <span class="k">except</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1"> not found&#39;</span><span class="p">)</span>
-<span class="n">morph_dat_MRI7T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">morph_dat_MRI7T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">useCheckpoints</span><span class="p">:</span>
+    <span class="n">morph_dat_MRI7T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">d</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">d</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w&#39;</span>\
+                                    <span class="sa">f</span><span class="s1">&#39;_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span><span class="p">)</span>
+                        <span class="n">morph_dat_MRI7T</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1"> not found&#39;</span><span class="p">)</span>
+    <span class="n">morph_dat_MRI7T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">morph_dat_MRI7T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;checkpoints/Morph-MRI7T&quot;</span><span class="p">,</span><span class="n">morph_dat_MRI7T</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">morph_dat_MRI7T</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)),</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">morph_dat_MRI7T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;checkpoints/Morph-MRI7T.npy&quot;</span><span class="p">)</span>
+<span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">morph_dat_MRI7T</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)),</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_Morphology_7_0.png" src="../_images/tutorials_Morphology_7_0.png" />
+<img alt="../_images/tutorials_Morphology_11_0.png" src="../_images/tutorials_Morphology_11_0.png" />
 </div>
 </div>
 </section>
 <section id="High-field-MRI-data-at-3T">
-<h2>High-field MRI data at 3T<a class="headerlink" href="#High-field-MRI-data-at-3T" title="Permalink to this heading"></a></h2>
+<h3>High-field MRI data at 3T<a class="headerlink" href="#High-field-MRI-data-at-3T" title="Permalink to this heading"></a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;../../publication-hippomaps/hippunfold/MICs_v1.3.0/hippunfold&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mica3/BIDS_MICs/derivatives/hippunfold_v1.3.0/hippunfold&#39;</span>
 
 <span class="n">subs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HC048&#39;</span><span class="p">,</span> <span class="s1">&#39;HC043&#39;</span><span class="p">,</span> <span class="s1">&#39;HC087&#39;</span><span class="p">,</span> <span class="s1">&#39;HC037&#39;</span><span class="p">,</span> <span class="s1">&#39;HC055&#39;</span><span class="p">,</span> <span class="s1">&#39;HC100&#39;</span><span class="p">,</span> <span class="s1">&#39;HC036&#39;</span><span class="p">,</span> <span class="s1">&#39;HC017&#39;</span><span class="p">,</span> <span class="s1">&#39;HC088&#39;</span><span class="p">,</span> <span class="s1">&#39;HC040&#39;</span><span class="p">,</span> <span class="s1">&#39;HC058&#39;</span><span class="p">,</span> <span class="s1">&#39;HC076&#39;</span><span class="p">,</span> <span class="s1">&#39;HC090&#39;</span><span class="p">,</span> <span class="s1">&#39;HC059&#39;</span><span class="p">,</span> <span class="s1">&#39;HC101&#39;</span><span class="p">,</span> <span class="s1">&#39;HC063&#39;</span><span class="p">,</span> <span class="s1">&#39;HC094&#39;</span><span class="p">,</span> <span class="s1">&#39;HC024&#39;</span><span class="p">,</span> <span class="s1">&#39;HC050&#39;</span><span class="p">,</span>
  <span class="s1">&#39;HC080&#39;</span><span class="p">,</span> <span class="s1">&#39;HC013&#39;</span><span class="p">,</span> <span class="s1">&#39;HC026&#39;</span><span class="p">,</span> <span class="s1">&#39;HC001&#39;</span><span class="p">,</span> <span class="s1">&#39;HC084&#39;</span><span class="p">,</span> <span class="s1">&#39;HC105&#39;</span><span class="p">,</span> <span class="s1">&#39;HC083&#39;</span><span class="p">,</span> <span class="s1">&#39;HC042&#39;</span><span class="p">,</span> <span class="s1">&#39;HC014&#39;</span><span class="p">,</span> <span class="s1">&#39;HC033&#39;</span><span class="p">,</span> <span class="s1">&#39;HC081&#39;</span><span class="p">,</span> <span class="s1">&#39;HC106&#39;</span><span class="p">,</span> <span class="s1">&#39;HC108&#39;</span><span class="p">,</span> <span class="s1">&#39;HC095&#39;</span><span class="p">,</span> <span class="s1">&#39;HC002&#39;</span><span class="p">,</span> <span class="s1">&#39;HC102&#39;</span><span class="p">,</span> <span class="s1">&#39;HC028&#39;</span><span class="p">,</span> <span class="s1">&#39;HC020&#39;</span><span class="p">,</span> <span class="s1">&#39;HC049&#39;</span><span class="p">,</span>
@@ -245,45 +281,55 @@
 
 <span class="c1"># get expected number of vertices and their indices</span>
 <span class="n">nV</span><span class="p">,</span><span class="n">iV</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_nVertices</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">den</span><span class="p">)</span>
-
-<span class="n">morph_dat_MRI3T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="n">d</span><span class="o">=</span><span class="p">[]</span>
-<span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">d</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w&#39;</span>\
-                                 <span class="sa">f</span><span class="s1">&#39;_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span><span class="p">)</span>
-                    <span class="n">morph_dat_MRI3T</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-                <span class="k">except</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1"> not found&#39;</span><span class="p">)</span>
-<span class="n">morph_dat_MRI3T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">morph_dat_MRI3T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">useCheckpoints</span><span class="p">:</span>
+    <span class="n">morph_dat_MRI3T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nV</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">d</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">d</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w&#39;</span>\
+                                    <span class="sa">f</span><span class="s1">&#39;_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">.shape.gii&#39;</span><span class="p">)</span>
+                        <span class="n">morph_dat_MRI3T</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1"> not found&#39;</span><span class="p">)</span>
+    <span class="n">morph_dat_MRI3T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">morph_dat_MRI3T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;checkpoints/Morph-MRI3T&quot;</span><span class="p">,</span><span class="n">morph_dat_MRI3T</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">morph_dat_MRI3T</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)),</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">morph_dat_MRI3T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;checkpoints/Morph-MRI3T.npy&quot;</span><span class="p">)</span>
+<span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">morph_dat_MRI3T</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)),</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_Morphology_10_0.png" src="../_images/tutorials_Morphology_10_0.png" />
+<img alt="../_images/tutorials_Morphology_15_0.png" src="../_images/tutorials_Morphology_15_0.png" />
 </div>
 </div>
 <p><strong>save</strong></p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save 2D map</span>
+<span class="o">!</span>mkdir<span class="w"> </span>-p<span class="w"> </span>../maps/HippoMaps-initializationMaps/Dataset-MICs
 <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
         <span class="n">cdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">morph_dat_MRI3T</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">h</span><span class="p">,:,</span><span class="n">f</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
@@ -295,10 +341,11 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save 2D map</span>
+<span class="o">!</span>mkdir<span class="w"> </span>-p<span class="w"> </span>../maps/HippoMaps-initializationMaps/Dataset-PNI
 <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
     <span class="n">cdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">morph_dat_MRI7T</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="mi">0</span><span class="p">],:,:,</span><span class="n">f</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
     <span class="n">data_array</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiDataArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">cdat</span><span class="p">)</span>
@@ -309,10 +356,12 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save 2D map</span>
+<span class="o">!</span>mkdir<span class="w"> </span>-p<span class="w"> </span>../maps/HippoMaps-initializationMaps/Dataset-Mixed
+<span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
     <span class="n">cdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">morph_dat_hist</span><span class="p">[:,:,</span><span class="n">f</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
     <span class="n">data_array</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiDataArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">cdat</span><span class="p">)</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiImage</span><span class="p">()</span>
@@ -324,6 +373,7 @@
 <script type="application/vnd.jupyter.widget-state+json">
 {"state": {}, "version_major": 2, "version_minor": 0}
 </script></section>
+</section>
 </section>
 
 

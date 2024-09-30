@@ -69,7 +69,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html">MRI-3T-taskfMRI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TLE-HC.html">Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TLE-HC.html">TLE-HC</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">Tools Index</a></li>
@@ -104,7 +104,7 @@
 <h1>Dimensionality-Reduction<a class="headerlink" href="#Dimensionality-Reduction" title="Permalink to this heading"></a></h1>
 <p><strong>Overview</strong></p>
 <p>In this notebook, we will load all maps from the other tutorials (except task-fMRI) and consider the relationships between them. For this, we will apply spatial correlation with the anterior-posterior and proximal-distal axes of the hippocampus, as well as all permutations of rank-ordered subfield labels. Finally, we apply data-driven dimensionality reduction using Gradient decomposition</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -122,52 +122,61 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/export03/data/opt/venv/lib/python3.8/site-packages/nilearn/datasets/__init__.py:93: FutureWarning: Fetchers from the nilearn.datasets module will be updated in version 0.9 to return python strings instead of bytes and Pandas dataframes instead of Numpy arrays.
+  warn(&#34;Fetchers from the nilearn.datasets module will be &#34;
+</pre></div></div>
+</div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># A list of all the data to be examined, grouped roughly into methodologies</span>
 <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-BigBrain/histology-Merker_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AxerPLI/histology-PLI-transmittance_average-1_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Bieloschowsky_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Blockface_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Parvalbumin_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Thionin_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Calbindin_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Calretinin_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-BigBrain/histology-Merker_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AxerPLI/histology-PLI-transmittance_average-1_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Bieloschowsky_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Blockface_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Parvalbumin_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Thionin_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Calbindin_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AHEAD/histology-Calretinin_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
 
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AHEAD/MRI-9p4T-qR1_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AHEAD/MRI-9p4T-qR2star_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-AHEAD/MRI-9p4T-ProtonDensity_average-4_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-qT1_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-FA_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-ADC_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-T2star_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-MTR_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AHEAD/MRI-9p4T-R1_average-4_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AHEAD/MRI-9p4T-R2star_average-4_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-AHEAD/MRI-9p4T-PD_average-4_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-qT1_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-FA_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-ADC_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-T2star_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-MTR_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
 
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-MICs/MRI-3T-rsfMRI-IntTS_average-99_hemi-L_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-MICs/MRI-3T-rsfMRI-ReHo_average-99_hemi-L_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-MICs/MRI-3T-rsfMRI-avgFCneocort_average-80_hemi-L_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-MICs/MRI-3T-rsfMRI-IntTS_average-99_hemi-L_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-MICs/MRI-3T-rsfMRI-ReHo_average-99_hemi-L_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-MICs/MRI-3T-rsfMRI-avgFCneocort_average-99_hemi-L_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
 
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-delta_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-theta_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-alpha_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-beta_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-gamma_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-delta_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-theta_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-alpha_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-beta_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-MICs+Frauscher/iEEG-BandPower-gamma_average-81_hemi-mix_den-2mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
 
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-Mixed/histology-curvature_average-7_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-curvature_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-Mixed/histology-gyrification_average-7_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-gyrification_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-Mixed/histology-thickness_average-7_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
- <span class="s1">&#39;../../publication-hippomaps/maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-thickness_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-Mixed/histology-curvature_average-7_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-curvature_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-Mixed/histology-gyrification_average-7_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-gyrification_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-Mixed/histology-thickness_average-7_hemi-mix_den-unfoldiso_label-hipp.shape.gii&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;../maps/HippoMaps-initializationMaps/Dataset-PNI/MRI-7T-thickness_average-20_hemi-mix_den-0p5mm_label-hipp.shape.gii&#39;</span><span class="p">,</span>
  <span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># organize into sensible blocks of the same modality</span>
@@ -186,7 +195,7 @@
 <h2>1) Load all maps and resample<a class="headerlink" href="#1)-Load-all-maps-and-resample" title="Permalink to this heading"></a></h2>
 <p>Because these maps have varying resolutions, or surface densities, we will resample them all to 0.5mm vertex spacing</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load all data and resample to a common surface density</span>
@@ -200,7 +209,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cmaps</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span><span class="s1">&#39;Purples&#39;</span><span class="p">]</span>
@@ -208,7 +217,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot all feature maps in the same plot</span>
@@ -238,7 +247,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># check for significant correlation (spin test) (slow!)</span>
@@ -251,7 +260,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[59]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot correlation between features</span>
@@ -300,7 +309,7 @@
 <section id="2)-Check-for-correlations-with-AP,-PD,-or-subfield-organizations">
 <h2>2) Check for correlations with AP, PD, or subfield organizations<a class="headerlink" href="#2)-Check-for-correlations-with-AP,-PD,-or-subfield-organizations" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># here we can generate the PD axis. We generate a gradient in a flat &#39;unfoldiso&#39; density, and then resample it to the present 0p3m surface density</span>
@@ -319,15 +328,14 @@
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/tutorials_DimReduct_11_1.png" src="../_images/tutorials_DimReduct_11_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># same as above, for the AP axis</span>
@@ -337,33 +345,31 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/tutorials_DimReduct_12_0.png" src="../_images/tutorials_DimReduct_12_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load subfields from resources</span>
-<span class="n">subfields</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hm</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">/../resources/parc-multihist7/sub-0_hemi-0_space-0_den-0p5mm_label-hipp_atlas-multihist7_subfields.label.gii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">subfields</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;../resources/parc-multihist7/sub-0_hemi-0_space-0_den-0p5mm_label-hipp_atlas-multihist7_subfields.label.gii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 <span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">subfields</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;hipp&#39;</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/tutorials_DimReduct_13_0.png" src="../_images/tutorials_DimReduct_13_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># generate permutations of subfields labels, since intensities may not change step-wise as they do in our labelling scheme</span>
@@ -380,7 +386,7 @@
 </div>
 <p>Now we can determine whether features are most correlated with the AP axis, PD axis, or permuted subfields</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">axiscorrAPPD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">cdata</span><span class="p">,</span><span class="n">AP</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">7262</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">PD</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">7262</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:,:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
@@ -404,7 +410,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subfieldscorr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">spearmanr</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">cdata</span><span class="p">,</span><span class="n">subfields_permuted</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">):,:</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)])</span>
@@ -440,7 +446,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
@@ -462,7 +468,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save these for adding and comparing with new features using the new function hm.stats.contextualize2D</span>
@@ -476,7 +482,7 @@
 <h2>3) Gradient decomposition<a class="headerlink" href="#3)-Gradient-decomposition" title="Permalink to this heading"></a></h2>
 <p>Just as in the other tutorials, we will combine features to generate primary gradients. Here, we use all maps, with Pearson’s R for for affinity matrix kernel. Since each map is also an average of many subjects, we reduce sparsity from its default 0.9 to 0.1 in order to better leaverage even low values (since we still have high confidence in them)</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># gradient decomposition</span>
@@ -487,8 +493,7 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -496,7 +501,7 @@ GradientMaps(kernel=&#39;pearson&#39;, n_components=5, random_state=0)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">mmgm</span><span class="o">.</span><span class="n">gradients_</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;hipp&#39;</span><span class="p">],</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -504,15 +509,14 @@ GradientMaps(kernel=&#39;pearson&#39;, n_components=5, random_state=0)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/tutorials_DimReduct_22_0.png" src="../_images/tutorials_DimReduct_22_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># instead of plotting gradients onto space, we can also plot space into gradients! In this case, space will be the subfield identities, AP coordinates, or PD coordinates</span>
@@ -535,7 +539,7 @@ GradientMaps(kernel=&#39;pearson&#39;, n_components=5, random_state=0)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[123]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we can also see the lambda value (or eigenvalue) for each gradient</span>
@@ -544,8 +548,7 @@ GradientMaps(kernel=&#39;pearson&#39;, n_components=5, random_state=0)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[123]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -560,7 +563,7 @@ GradientMaps(kernel=&#39;pearson&#39;, n_components=5, random_state=0)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[80]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># convert into a percentage of explained variance</span>
@@ -569,8 +572,7 @@ GradientMaps(kernel=&#39;pearson&#39;, n_components=5, random_state=0)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[80]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
