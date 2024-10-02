@@ -84,8 +84,8 @@
              
   <p>This notebook maps electrode channels (the midpoint between two contacts) to hippocmapal surfaces. Channel data are all in space-MNI152 from the Frauscher et al. atlas. Thus, to compute a hippocmapal surface in this space, we register all MICs subjects to space-MNI152 and then average hippocmapal surfaces in that space. We then map bandpower in the same was as iEEG_MICs.ipynb.</p>
 <p>For a more detailed explanation of code, see <code class="docutils literal notranslate"><span class="pre">notebooks/iEEG.ipynb</span></code></p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -103,8 +103,17 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/export03/data/opt/venv/lib/python3.8/site-packages/nilearn/datasets/__init__.py:93: FutureWarning: Fetchers from the nilearn.datasets module will be updated in version 0.9 to return python strings instead of bytes and Pandas dataframes instead of Numpy arrays.
+  warn(&#34;Fetchers from the nilearn.datasets module will be &#34;
+</pre></div></div>
+</div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">micapipe_dir</span> <span class="o">=</span> <span class="s1">&#39;/export03/data/publication-hippomap/sourcedata/Micapipe_MICs&#39;</span>
@@ -131,7 +140,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">atlasdat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ieeg_local</span><span class="si">}</span><span class="s1">/Frauscher-wakefullnes.mat&#39;</span><span class="p">)</span>
@@ -139,7 +148,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">atlasdat</span><span class="p">[</span><span class="s1">&#39;ChannelName&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
@@ -147,7 +156,7 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -155,8 +164,8 @@
 (1772, 1)
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ensure same space</span>
@@ -169,8 +178,17 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[16.         28.5        30.80357143]
+[162.         191.33333333 157.53846154]
+</pre></div></div>
+</div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">sampspace</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">atlasdat</span><span class="p">[</span><span class="s1">&#39;ChannelPosition&#39;</span><span class="p">])))</span>
@@ -182,7 +200,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span>
@@ -190,7 +208,7 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -199,7 +217,7 @@
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -213,7 +231,7 @@
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -229,7 +247,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">pxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)))</span>
@@ -241,7 +259,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">color_discrete</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Set1</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
@@ -271,19 +289,19 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/data/mica1/01_programs/tmp/ipykernel_46051/892831248.py:19: UserWarning: Legend does not support handles for Axes instances.
+/data/mica1/01_programs/tmp/ipykernel_18212/892831248.py:19: UserWarning: Legend does not support &lt;AxesSubplot:&gt; instances.
 A proxy artist may be used instead.
-See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#controlling-the-legend-entries
+See: https://matplotlib.org/users/legend_guide.html#creating-artists-specifically-for-adding-to-the-legend-aka-proxy-artists
   plt.legend(handles=ax[1:])
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7fbf0ce7fb50&gt;
+&lt;matplotlib.legend.Legend at 0x7fd81a7b8fd0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -297,10 +315,12 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 <h1>Localization<a class="headerlink" href="#Localization" title="Permalink to this heading"></a></h1>
 <p>Here, we have the vertices associated with each channel that falls within 5mm of the hippocampus.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">surfL</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/export03/data/opt/hippunfold-templateflow/tpl-MNI152NLin2009cSym/tpl-MNI152NLin2009cSym_hemi-L_space-T1w_den-2mm_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># since all Frauscher atlas channels are in space-MNI152, we will use the same surfaces for mapping all channels (please acquire from https://github.com/khanlab/hippunfold-templateflow)</span>
+
+<span class="n">surfL</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/export03/data/opt/hippunfold-templateflow/tpl-MNI152NLin2009cSym/tpl-MNI152NLin2009cSym_hemi-L_space-T1w_den-2mm_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
 <span class="n">surfR</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/export03/data/opt/hippunfold-templateflow/tpl-MNI152NLin2009cSym/tpl-MNI152NLin2009cSym_hemi-R_space-T1w_den-2mm_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
 <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">surfL</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">surfR</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">faces</span> <span class="o">=</span> <span class="n">surfL</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_TRIANGLE&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
@@ -308,7 +328,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist_threshold</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1">#mm</span>
@@ -326,8 +346,8 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;number of L hemis: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">])))</span>
@@ -335,8 +355,17 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+number of L hemis: 19
+number of R hemis: 18
+</pre></div></div>
+</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hipp_bp_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hipp_bp</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))[:,</span><span class="mi">0</span><span class="p">]</span>
@@ -349,12 +378,12 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/export03/data/opt/venv/lib/python3.8/site-packages/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
+/export03/data/opt/BrainSpace/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
   warnings.warn(&#34;Interactive mode requires &#39;panel&#39;. &#34;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -362,7 +391,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">hipp_pxx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
@@ -376,7 +405,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -392,7 +421,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">pxx</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
@@ -416,7 +445,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -432,7 +461,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">color_discrete</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Set1</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
@@ -462,19 +491,19 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/data/mica1/01_programs/tmp/ipykernel_46051/2180602821.py:19: UserWarning: Legend does not support handles for Axes instances.
+/data/mica1/01_programs/tmp/ipykernel_18212/2180602821.py:19: UserWarning: Legend does not support &lt;AxesSubplot:&gt; instances.
 A proxy artist may be used instead.
-See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#controlling-the-legend-entries
+See: https://matplotlib.org/users/legend_guide.html#creating-artists-specifically-for-adding-to-the-legend-aka-proxy-artists
   plt.legend(handles=ax[1:])
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7fbe8e3c3160&gt;
+&lt;matplotlib.legend.Legend at 0x7fd79c1752e0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -485,7 +514,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
@@ -525,25 +554,23 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 <section id="Extrapolation">
 <h1>Extrapolation<a class="headerlink" href="#Extrapolation" title="Permalink to this heading"></a></h1>
 <p>We can see that simply averaging over all channels doesn’t give a good idea of the spatial distribution of band power, since so much data is missing. Thus, we will extrapolate each channel over the whole hippocampus and then use the distance from the channel as a weighting when performing weighted averaging across channels. See <code class="docutils literal notranslate"><span class="pre">../extras</span></code> for an example visualization.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gii</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;../../resources/canonical_surfs/tpl-avg_space-canonical_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_TRIANGLE&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">gii</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;../../resources/canonical_surfs/tpl-avg_space-canonical_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-dentate_midthickness.surf.gii&#39;</span><span class="p">)</span>
+<span class="n">vdg</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">fdg</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_TRIANGLE&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">F</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">,</span> <span class="n">fdg</span><span class="p">]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">vdg</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(419,)
-</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># cominbing BP across channels and vertices for visualization</span>
@@ -559,7 +586,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
             <span class="n">dat</span> <span class="o">=</span> <span class="n">hipp_bp</span><span class="p">[:,</span><span class="n">h</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">c</span><span class="p">]</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">]])</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
-                <span class="n">geoalg</span> <span class="o">=</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">PyGeodesicAlgorithmExact</span><span class="p">(</span><span class="n">vertices</span><span class="p">[:,:,</span><span class="n">h</span><span class="p">],</span> <span class="n">faces</span><span class="p">)</span>
+                <span class="n">geoalg</span> <span class="o">=</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">PyGeodesicAlgorithmExact</span><span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">l</span><span class="p">])</span>
                 <span class="n">sd</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">geoalg</span><span class="o">.</span><span class="n">geodesicDistances</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="n">sd</span> <span class="o">=</span> <span class="n">sd</span><span class="o">**</span><span class="mi">2</span>
                 <span class="n">weights_hipp_bp</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">sd</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sd</span><span class="p">))</span>
@@ -575,7 +602,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">interp_hipp_bp</span><span class="p">,</span> <span class="n">den</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -587,12 +614,12 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/export03/data/opt/venv/lib/python3.8/site-packages/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
+/export03/data/opt/BrainSpace/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
   warnings.warn(&#34;Interactive mode requires &#39;panel&#39;. &#34;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -602,7 +629,7 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 <section id="Band-power-gradients">
 <h2>Band power gradients<a class="headerlink" href="#Band-power-gradients" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">brainspace.gradient</span> <span class="kn">import</span> <span class="n">GradientMaps</span>
@@ -612,12 +639,47 @@ See: https://matplotlib.org/stable/tutorials/intermediate/legend_guide.html#cont
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/export03/data/opt/BrainSpace/brainspace/gradient/kernels.py:29: RuntimeWarning: invalid value encountered in arccos
+  x = 1 - np.arccos(x, x)/np.pi
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [22]</span>, in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(95,135,135)"># gradient decomposition</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> bpgm <span style="color: rgb(98,98,98)">=</span> GradientMaps(n_components<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">5</span>, kernel<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">normalized_angle</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-fg">----&gt; 4</span> <span class="ansi-yellow-bg">bpgm</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">fit</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">interp_hipp_perio_dat</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/export03/data/opt/BrainSpace/brainspace/gradient/gradient.py:162</span>, in <span class="ansi-cyan-fg">GradientMaps.fit</span><span class="ansi-blue-fg">(self, x, gamma, sparsity, n_iter, reference, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    158</span>     align_single <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-intense-fg ansi-bold">    160</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">isinstance</span>(x, np<span style="color: rgb(98,98,98)">.</span>ndarray):  <span style="color: rgb(95,135,135)"># or sp.issparse(x):</span>
+<span class="ansi-green-intense-fg ansi-bold">    161</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>lambdas_, <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>gradients_ <span style="color: rgb(98,98,98)">=</span> \
+<span class="ansi-green-fg">--&gt; 162</span>         <span class="ansi-yellow-bg">_fit_one</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">x</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">approach</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">kernel</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">n_components</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    163</span> <span class="ansi-yellow-bg">                 </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">random_state</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">gamma</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">gamma</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">sparsity</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">sparsity</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    164</span> <span class="ansi-yellow-bg">                 </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    165</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>aligned_ <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
+<span class="ansi-green-intense-fg ansi-bold">    167</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span>
+
+File <span class="ansi-green-fg">/export03/data/opt/BrainSpace/brainspace/gradient/gradient.py:48</span>, in <span class="ansi-cyan-fg">_fit_one</span><span class="ansi-blue-fg">(x, app, kernel, n_components, random_state, gamma, sparsity, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">     45</span> a <span style="color: rgb(98,98,98)">=</span> compute_affinity(x, kernel<span style="color: rgb(98,98,98)">=</span>kernel, sparsity<span style="color: rgb(98,98,98)">=</span>sparsity, gamma<span style="color: rgb(98,98,98)">=</span>gamma)
+<span class="ansi-green-intense-fg ansi-bold">     47</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> np<span style="color: rgb(98,98,98)">.</span>isnan(a)<span style="color: rgb(98,98,98)">.</span>any() <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> np<span style="color: rgb(98,98,98)">.</span>isinf(a)<span style="color: rgb(98,98,98)">.</span>any():
+<span class="ansi-green-fg">---&gt; 48</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Affinity matrix contains NaN or Inf values. Common </span><span style="color: rgb(175,0,0)">&#39;</span>
+<span class="ansi-green-intense-fg ansi-bold">     49</span>                      <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">causes of this include NaNs/Infs or rows of zeros </span><span style="color: rgb(175,0,0)">&#39;</span>
+<span class="ansi-green-intense-fg ansi-bold">     50</span>                      <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">in the input matrix.</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">     52</span> kwds_emb <span style="color: rgb(98,98,98)">=</span> {<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">n_components</span><span style="color: rgb(175,0,0)">&#39;</span>: n_components, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">random_state</span><span style="color: rgb(175,0,0)">&#39;</span>: random_state}
+<span class="ansi-green-intense-fg ansi-bold">     53</span> kwds_emb<span style="color: rgb(98,98,98)">.</span>update(kwargs)
+
+<span class="ansi-red-fg">ValueError</span>: Affinity matrix contains NaN or Inf values. Common causes of this include NaNs/Infs or rows of zeros in the input matrix.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -659,11 +721,10 @@ GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vars_to_load</span> <span class="o">=</span> <span class="p">[</span><span class="n">pxx</span><span class="p">,</span> <span class="n">bp</span><span class="p">,</span> <span class="n">hipp_bp</span><span class="p">,</span> <span class="n">hipp_pxx</span><span class="p">]</span>
-<span class="o">!</span>mkdir<span class="w"> </span>-p<span class="w"> </span>../checkpoints
 <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;../checkpoints/iEEG_Frauscher_dat&#39;</span><span class="p">,</span> <span class="n">vars_to_load</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
 </pre></div>
 </div>

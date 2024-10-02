@@ -72,7 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="iEEG.html">iEEG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DimReduct.html">Dimensionality-Reduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MRI-3T-taskfMRI.html">MRI-3T-taskfMRI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TLE-HC.html">Case control atrophy mapping in temporal lobe epilepsy vs healthy controls (TLE-HC)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TLE-HC.html">TLE-HC</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">Tools Index</a></li>
@@ -108,7 +108,7 @@
 <p><strong>Overview</strong></p>
 <p>This notebook will examine 3T MRI rsfMRI measures projected onto hippocampal surfaces and averaged across 99 subjects. We will then take a closer look at functional connectivity (FC) of the hippocampus, and break it down into primary Gradients.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -123,11 +123,16 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># locate input data</span>
-<span class="n">ses</span> <span class="o">=</span> <span class="s1">&#39;01&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># config</span>
+
+<span class="n">useCheckpoints</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># this will download and use checkpoint numpy array data instead of mapping local data to hippocampal surfaces</span>
+<span class="k">if</span> <span class="n">useCheckpoints</span><span class="p">:</span>
+    <span class="n">hm</span><span class="o">.</span><span class="n">fetcher</span><span class="o">.</span><span class="n">get_tutorialCheckpoints</span><span class="p">([</span><span class="s1">&#39;MRI-3T-rsfMRI.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;MRI-3T-rsfMRI-FC.npy&#39;</span><span class="p">])</span>
+
+<span class="c1"># locate input data (if not using checkpoints)</span>
 <span class="n">micapipe_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mica3/BIDS_MICs/derivatives/micapipe_v0.2.0&#39;</span>
 <span class="n">hippunfold_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mica3/BIDS_MICs/derivatives/hippunfold_v1.3.0/hippunfold&#39;</span>
 <span class="n">tmp_dir</span> <span class="o">=</span> <span class="s1">&#39;tmp_MICs-FC&#39;</span>
@@ -144,6 +149,7 @@
  <span class="s1">&#39;HC057&#39;</span><span class="p">,</span> <span class="s1">&#39;HC018&#39;</span><span class="p">,</span> <span class="s1">&#39;HC074&#39;</span><span class="p">,</span> <span class="s1">&#39;HC064&#39;</span><span class="p">,</span> <span class="s1">&#39;HC096&#39;</span><span class="p">,</span> <span class="s1">&#39;HC010&#39;</span><span class="p">,</span> <span class="s1">&#39;HC038&#39;</span><span class="p">,</span> <span class="s1">&#39;HC093&#39;</span><span class="p">,</span> <span class="s1">&#39;HC082&#39;</span><span class="p">,</span> <span class="s1">&#39;HC092&#39;</span><span class="p">,</span>
  <span class="s1">&#39;HC027&#39;</span><span class="p">,</span> <span class="s1">&#39;HC019&#39;</span><span class="p">,</span> <span class="s1">&#39;HC005&#39;</span><span class="p">,</span> <span class="s1">&#39;HC008&#39;</span><span class="p">,</span> <span class="s1">&#39;HC011&#39;</span><span class="p">,</span> <span class="s1">&#39;HC044&#39;</span><span class="p">,</span> <span class="s1">&#39;HC030&#39;</span><span class="p">,</span> <span class="s1">&#39;HC035&#39;</span><span class="p">,</span> <span class="s1">&#39;HC085&#39;</span><span class="p">,</span> <span class="s1">&#39;HC069&#39;</span><span class="p">,</span>
  <span class="s1">&#39;HC041&#39;</span><span class="p">,</span> <span class="s1">&#39;HC012&#39;</span><span class="p">,</span> <span class="s1">&#39;HC054&#39;</span><span class="p">,</span> <span class="s1">&#39;HC022&#39;</span><span class="p">,</span> <span class="s1">&#39;HC016&#39;</span><span class="p">,</span> <span class="s1">&#39;HC099&#39;</span><span class="p">,</span> <span class="s1">&#39;HC073&#39;</span><span class="p">,</span> <span class="s1">&#39;HC052&#39;</span><span class="p">,</span> <span class="s1">&#39;HC045&#39;</span><span class="p">]</span>
+<span class="n">ses</span> <span class="o">=</span> <span class="s1">&#39;01&#39;</span>
 <span class="n">hemis</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;R&#39;</span><span class="p">]</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;hipp&#39;</span><span class="p">]</span><span class="c1"># ,&#39;dentate&#39;]</span>
 <span class="n">den</span><span class="o">=</span><span class="s1">&#39;2mm&#39;</span>
@@ -154,14 +160,12 @@
 <span class="c1"># get expected number of vertices and their indices</span>
 <span class="n">nV</span><span class="p">,</span><span class="n">iV</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_nVertices</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">den</span><span class="p">)</span>
 
-<span class="c1"># Load neocortical surfaces for visualzation (assets from micapipe)</span>
-<span class="n">parcL</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/data/mica1/01_programs/micapipe-v0.2.0/parcellations/schaefer-400_conte69_lh.label.gii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-<span class="n">parcR</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/data/mica1/01_programs/micapipe-v0.2.0/parcellations/schaefer-400_conte69_rh.label.gii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="c1"># Load neocortical surfaces for visualzation</span>
+<span class="c1"># 3. Load neocortical surfaces for visualzation</span>
+<span class="n">parcL</span><span class="p">,</span> <span class="n">parcR</span> <span class="o">=</span> <span class="n">load_parcellation</span><span class="p">(</span><span class="s1">&#39;schaefer&#39;</span><span class="p">)</span>
+<span class="n">c69_inf_lh</span><span class="p">,</span> <span class="n">c69_inf_rh</span> <span class="o">=</span> <span class="n">load_conte69</span><span class="p">()</span>
 <span class="n">nP</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">parcL</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span> <span class="c1"># number of neocortical parcels (one hemisphere)</span>
 <span class="n">parc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">parcL</span><span class="p">,</span><span class="n">parcR</span><span class="p">))</span>
-<span class="n">c69_inf_lh</span><span class="o">=</span> <span class="n">read_surface</span><span class="p">(</span><span class="s1">&#39;/data/mica1/01_programs/micapipe-v0.2.0/surfaces/fsLR-32k.L.inflated.surf.gii&#39;</span><span class="p">,</span> <span class="n">itype</span><span class="o">=</span><span class="s1">&#39;gii&#39;</span><span class="p">)</span>
-<span class="n">c69_inf_rh</span> <span class="o">=</span> <span class="n">read_surface</span><span class="p">(</span><span class="s1">&#39;/data/mica1/01_programs/micapipe-v0.2.0/surfaces/fsLR-32k.R.inflated.surf.gii&#39;</span><span class="p">,</span> <span class="n">itype</span><span class="o">=</span><span class="s1">&#39;gii&#39;</span><span class="p">)</span>
-<span class="n">labels_c69</span> <span class="o">=</span> <span class="n">load_parcellation</span><span class="p">(</span><span class="s1">&#39;schaefer&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -169,74 +173,74 @@
 <h2>0) Map rsfMRI data to hippocampal surfaces<a class="headerlink" href="#0)-Map-rsfMRI-data-to-hippocampal-surfaces" title="Permalink to this heading"></a></h2>
 <p>As in all tutorials here, this step is OPTIONAL, and provides an example of how data can be mapped to hippocampal surfaces outside of python (using ANTs and/or wb_command). This relies on having the data stored locally, and should be considered example code. This code may differ depending on where/how your data is stored and formatted, and so may require some customization for new projects. For the purposes of this tutorial, we provide a matrix of loaded data at the end, so skip to the next
 step).</p>
-<p>In this example, we loop through subjects and hemipsheres, and sample volumetric timeseries data onto hippocampal surfaces. We then apply smoothing. Finally, we load the data from all surfaces into a single matrix.</p>
+<p>In this example, we loop through subjects and hemipsheres, and transform hippocampal surfaces to space-func, sample volumetric timeseries data onto hippocampal surfaces, then apply smoothing. Finally, we load the data from all surfaces into a single matrix.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Note that all data is not yet aligned in space-T1w AKA space-nativepro, we we need to apply transforms to make it so. In micapipe, this involves two affines and a warp transform.</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">useCheckpoints</span><span class="p">:</span>
 
-<span class="c1"># intialize the matrix for loading data into</span>
-<span class="n">cdata_hipp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="n">timepoints</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">)))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="o">!</span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="o">{</span>tmp_dir<span class="o">}</span>
+    <span class="c1"># Note that all data is not yet aligned in space-T1w AKA space-nativepro, we we need to apply transforms to make it so. In micapipe, this involves two affines and a warp transform.</span>
 
-<span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">subs</span><span class="p">:</span>
-    <span class="c1"># convert affines</span>
-    <span class="n">cmd1a</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;c3d_affine_tool &#39;</span>\
-        <span class="sa">f</span><span class="s1">&#39;-itk </span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/xfm/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_from-se_task-rest_acq-AP_bold_to-nativepro_mode-image_desc-affine_0GenericAffine.mat &#39;</span>\
-        <span class="sa">f</span><span class="s1">&#39;-o </span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_tmp0GenericAffine0.txt&#39;</span>
-    <span class="o">!{</span>cmd1a<span class="o">}</span>
-    <span class="n">cmd1b</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;c3d_affine_tool &#39;</span>\
-        <span class="sa">f</span><span class="s1">&#39;-itk </span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/xfm/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_from-nativepro_func_to-se_task-rest_acq-AP_bold_mode-image_desc-SyN_0GenericAffine.mat &#39;</span>\
-        <span class="sa">f</span><span class="s1">&#39;-inv &#39;</span>\
-        <span class="sa">f</span><span class="s1">&#39;-o </span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_tmp0GenericAffine1.txt&#39;</span>
-    <span class="o">!{</span>cmd1b<span class="o">}</span>
+    <span class="c1"># intialize the matrix for loading data into</span>
+    <span class="n">cdata_hipp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="n">timepoints</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">)))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="o">!</span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="o">{</span>tmp_dir<span class="o">}</span>
 
-    <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-            <span class="c1">#apply affines</span>
-            <span class="n">cmd2a</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -surface-apply-affine &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w_den-0p5mm_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_midthickness.surf.gii &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_tmp0GenericAffine0.txt &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_aff0.surf.gii&#39;</span>
-            <span class="o">!{</span>cmd2a<span class="o">}</span>
-            <span class="n">cmd2b</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -surface-apply-affine &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_aff0.surf.gii &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_tmp0GenericAffine1.txt &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_aff1.surf.gii&#39;</span>
-            <span class="o">!{</span>cmd2b<span class="o">}</span>
-            <span class="c1"># apply warp (Note this is actually the INVERSE warp)</span>
-            <span class="n">cmd3</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -surface-apply-warpfield &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_aff1.surf.gii &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/xfm/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_from-nativepro_func_to-se_task-rest_acq-AP_bold_mode-image_desc-SyN_1Warp.nii.gz &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_deform.surf.gii&#39;</span>
-            <span class="o">!{</span>cmd3<span class="o">}</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
+        <span class="c1"># convert affines</span>
+        <span class="n">cmd1a</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/data_/mica1/01_programs/c3d-1.0.0-Linux-x86_64/bin/c3d_affine_tool &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;-itk </span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/xfm/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_from-se_task-rest_acq-AP_bold_to-nativepro_mode-image_desc-affine_0GenericAffine.mat &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;-o </span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_tmp0GenericAffine0.txt&#39;</span>
+        <span class="o">!{</span>cmd1a<span class="o">}</span>
+        <span class="n">cmd1b</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/data_/mica1/01_programs/c3d-1.0.0-Linux-x86_64/bin/c3d_affine_tool &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;-itk </span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/xfm/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_from-nativepro_func_to-se_task-rest_acq-AP_bold_mode-image_desc-SyN_0GenericAffine.mat &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;-inv &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;-o </span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_tmp0GenericAffine1.txt&#39;</span>
+        <span class="o">!{</span>cmd1b<span class="o">}</span>
 
-            <span class="c1"># sample</span>
-            <span class="n">cmd4</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -volume-to-surface-mapping &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/func/desc-se_task-rest_acq-AP_bold/volumetric/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_space-func_desc-se_preproc.nii.gz &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_deform.surf.gii &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_rsfMRI.func.gii &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;-enclosing&#39;</span>
-            <span class="o">!{</span>cmd4<span class="o">}</span>
+        <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+                <span class="c1">#apply affines</span>
+                <span class="n">cmd2a</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -surface-apply-affine &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_midthickness.surf.gii &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_tmp0GenericAffine0.txt &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_aff0.surf.gii&#39;</span>
+                <span class="o">!{</span>cmd2a<span class="o">}</span>
+                <span class="n">cmd2b</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -surface-apply-affine &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_aff0.surf.gii &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_tmp0GenericAffine1.txt &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_aff1.surf.gii&#39;</span>
+                <span class="o">!{</span>cmd2b<span class="o">}</span>
+                <span class="c1"># apply warp (Note this is actually the INVERSE warp)</span>
+                <span class="n">cmd3</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -surface-apply-warpfield &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_aff1.surf.gii &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/xfm/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_from-nativepro_func_to-se_task-rest_acq-AP_bold_mode-image_desc-SyN_1Warp.nii.gz &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_deform.surf.gii&#39;</span>
+                <span class="o">!{</span>cmd3<span class="o">}</span>
 
-            <span class="c1"># smooth</span>
-            <span class="n">cmd5</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -metric-smoothing &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w_den-0p5mm_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_midthickness.surf.gii &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_rsfMRI.func.gii &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sigma</span><span class="si">}</span><span class="s1"> &#39;</span>\
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_rsfMRI_smooth.func.gii &#39;</span>
-            <span class="o">!{</span>cmd5<span class="o">}</span>
+                <span class="c1"># sample</span>
+                <span class="n">cmd4</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -volume-to-surface-mapping &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/func/desc-se_task-rest_acq-AP_bold/volumetric/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_space-func_desc-se_preproc.nii.gz &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_deform.surf.gii &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_rsfMRI.func.gii &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;-enclosing&#39;</span>
+                <span class="o">!{</span>cmd4<span class="o">}</span>
 
-            <span class="c1"># downsample</span>
-            <span class="n">func</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_rsfMRI_smooth.func.gii&#39;</span><span class="p">)</span>
-            <span class="n">out_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">darrays</span><span class="p">),</span><span class="n">shp</span><span class="p">[</span><span class="n">l</span><span class="p">]))</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">darrays</span><span class="p">)):</span>
-                <span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">density_interp</span><span class="p">(</span><span class="s1">&#39;0p5mm&#39;</span><span class="p">,</span> <span class="s1">&#39;2mm&#39;</span><span class="p">,</span><span class="n">func</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
-                <span class="n">cdata_hipp</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,:,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+                <span class="c1"># smooth</span>
+                <span class="n">cmd5</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;wb_command -metric-smoothing &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hippunfold_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_hemi-</span><span class="si">{</span><span class="n">hemi</span><span class="si">}</span><span class="s1">_space-T1w_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_midthickness.surf.gii &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_rsfMRI.func.gii &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sigma</span><span class="si">}</span><span class="s1"> &#39;</span>\
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_rsfMRI_smooth.func.gii &#39;</span>
+                <span class="o">!{</span>cmd5<span class="o">}</span>
 
-<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;../checkpoints/MRI-3T-rsfMRI&quot;</span><span class="p">,</span><span class="n">cdata_hipp</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="o">!</span>rm<span class="w"> </span>-r<span class="w"> </span><span class="o">{</span>tmp_dir<span class="o">}</span>
+                <span class="c1"># now load the data!</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">_rsfMRI_smooth.func.gii&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timepoints</span><span class="p">):</span>
+                    <span class="n">cdata_hipp</span><span class="p">[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;checkpoints/MRI-3T-rsfMRI&quot;</span><span class="p">,</span><span class="n">cdata_hipp</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="o">!</span>rm<span class="w"> </span>-r<span class="w"> </span><span class="o">{</span>tmp_dir<span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -246,15 +250,15 @@ step).</p>
 <p>Our data is now organized into a single matrix of (number of vertices nV) x (number of hemsipheres 2) x (timepoints) x (number of subjects)</p>
 <p>Intrinsic timescale is a measure of how long it takes for the temporal autocorrelation of rsfMRI data to decay beyond a treshold. In this case, until an autocorrelation of 0 is reached.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cdata_hipp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;../checkpoints/MRI-3T-rsfMRI.npy&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cdata_hipp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;checkpoints/MRI-3T-rsfMRI.npy&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># sample a random vertex to view its autocorrelation function (acf)</span>
@@ -270,12 +274,12 @@ step).</p>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.lines.Line2D at 0x7f24064e1a60&gt;
+&lt;matplotlib.lines.Line2D at 0x7f77641eeac0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -286,7 +290,7 @@ step).</p>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">IntrinsicTimescale</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">TR</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -314,8 +318,8 @@ step).</p>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IntTS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nV</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">)))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -324,17 +328,8 @@ step).</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/data/mica1/01_programs/tmp/ipykernel_9740/2710468927.py:15: RuntimeWarning: invalid value encountered in true_divide
-  acf = acf / var / len(ndat)
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">IntTS</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)),</span> <span class="n">den</span><span class="o">=</span><span class="s1">&#39;2mm&#39;</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -346,12 +341,12 @@ step).</p>
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/export03/data/opt/venv/lib/python3.8/site-packages/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
+/export03/data/opt/BrainSpace/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
   warnings.warn(&#34;Interactive mode requires &#39;panel&#39;. &#34;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -359,7 +354,7 @@ step).</p>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">IntTS</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">);</span>
@@ -368,7 +363,7 @@ step).</p>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -389,15 +384,14 @@ step).</p>
 <h2>2) Calculate Regional Homogeneity<a class="headerlink" href="#2)-Calculate-Regional-Homogeneity" title="Permalink to this heading"></a></h2>
 <p>Regional homogeneity is a measure of local functional connectivity, or how similar each vertex is to all nieghbours across time. Here we will start with an illustrative example</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Here, we take a conconical midthickness surface and highlight one vertex compared with its neighbours</span>
 <span class="c1"># This is mostly just to illustrate the logic of the method.</span>
 
 <span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">art3d</span>
-<span class="n">resourcesdir</span> <span class="o">=</span> <span class="s1">&#39;/export03/data/opt/hippunfold_toolbox/resources&#39;</span>
-<span class="n">gii</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">resourcesdir</span><span class="si">}</span><span class="s1">/canonical_surfs/tpl-avg_space-canonical_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
+<span class="n">gii</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;../resources/canonical_surfs/tpl-avg_space-canonical_den-</span><span class="si">{</span><span class="n">den</span><span class="si">}</span><span class="s1">_label-hipp_midthickness.surf.gii&#39;</span><span class="p">)</span>
 <span class="n">v</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_POINTSET&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">gii</span><span class="o">.</span><span class="n">get_arrays_from_intent</span><span class="p">(</span><span class="s1">&#39;NIFTI_INTENT_TRIANGLE&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 
@@ -449,17 +443,17 @@ step).</p>
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/data/mica1/01_programs/tmp/ipykernel_9740/1934700871.py:7: MatplotlibDeprecationWarning: Case-insensitive properties were deprecated in 3.3 and support will be removed two minor releases later
+/data/mica1/01_programs/tmp/ipykernel_48011/54527331.py:10: MatplotlibDeprecationWarning: Case-insensitive properties were deprecated in 3.3 and support will be removed two minor releases later
   pc = art3d.Poly3DCollection(v[f], faceColor=[0, 0, 0, 0], edgeColor=[0,0,0,1])
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x7f23fc398d30&gt;
+&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x7f7764043a00&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -470,7 +464,7 @@ step).</p>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Here we define ReHo as the vertex-wise Kendall&#39;s W across connected vertices</span>
@@ -501,7 +495,7 @@ step).</p>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[97]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># now we can loop through all data and apply</span>
@@ -515,7 +509,7 @@ step).</p>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[98]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hm</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">surfplot_canonical_foldunfold</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">reho</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)),</span> <span class="n">den</span><span class="o">=</span><span class="s1">&#39;2mm&#39;</span><span class="p">,</span> <span class="n">hemis</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">unfoldAPrescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tighten_cwindow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;cividis&#39;</span><span class="p">,</span> <span class="n">share</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">color_bar</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">embed_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -523,7 +517,7 @@ step).</p>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[98]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -533,7 +527,7 @@ step).</p>
 <p><strong>Calculate tSNR</strong></p>
 <p>fMRI signal is generally lower for more medial and inferior structures, and those near tissue interfaces like the sinuses and eardrums. Here, we map that onto the hippocampus. (TODO: get volumetric version generated from micapipe)</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tSNR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">cdata_hipp</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">cdata_hipp</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -541,77 +535,54 @@ step).</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/data/mica1/01_programs/tmp/ipykernel_9740/1555471391.py:1: RuntimeWarning: invalid value encountered in true_divide
-  tSNR = np.mean(cdata_hipp,axis=2) / np.std(cdata_hipp,axis=2)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_19_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_19_1.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_19_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_19_0.png" />
 </div>
 </div>
 </section>
 <section id="3)-Functional-connectivity-of-the-hippocampus-to-neocortex">
 <h2>3) Functional connectivity of the hippocampus to neocortex<a class="headerlink" href="#3)-Functional-connectivity-of-the-hippocampus-to-neocortex" title="Permalink to this heading"></a></h2>
 <p>Here we look at FC of each hippocampal vertex to ipsilateral neocortical vertices.</p>
+<p>Note that the neocortical timeseries data is in in a micapipe processed directory and so by default this will be skipped when running this tutorial.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[61]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">FC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nV</span><span class="p">,</span><span class="n">nP</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">)))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
-    <span class="n">neo_ts</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/func/desc-se_task-rest_acq-AP_bold/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_surf-fsLR-32k_desc-timeseries_clean.shape.gii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-    <span class="n">neo_ts_parc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">neo_ts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">nP</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nP</span><span class="o">*</span><span class="mi">2</span><span class="p">):</span>
-         <span class="n">neo_ts_parc</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">neo_ts</span><span class="p">[:,</span><span class="n">parc</span><span class="o">==</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">neo_tsL</span> <span class="o">=</span> <span class="n">neo_ts_parc</span><span class="p">[:,:</span><span class="n">nP</span><span class="p">]</span>
-    <span class="n">neo_tsR</span> <span class="o">=</span> <span class="n">neo_ts_parc</span><span class="p">[:,</span><span class="n">nP</span><span class="p">:]</span>
-    <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">hemi</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span>
-            <span class="n">FC</span><span class="p">[:,:,</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">cdata_hipp</span><span class="p">[:,</span><span class="n">h</span><span class="p">,:,</span><span class="n">s</span><span class="p">],</span><span class="n">neo_tsL</span><span class="p">[:</span><span class="n">timepoints</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">)[:</span><span class="n">nV</span><span class="p">,</span><span class="n">nV</span><span class="p">:]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">FC</span><span class="p">[:,:,</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">cdata_hipp</span><span class="p">[:,</span><span class="n">h</span><span class="p">,:,</span><span class="n">s</span><span class="p">],</span><span class="n">neo_tsR</span><span class="p">[:</span><span class="n">timepoints</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">)[:</span><span class="n">nV</span><span class="p">,</span><span class="n">nV</span><span class="p">:]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">useCheckpoints</span><span class="p">:</span>
 
-<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;../checkpoints/MRI-3T-rsfMRI-FC&quot;</span><span class="p">,</span><span class="n">FC</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">FC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nV</span><span class="p">,</span><span class="n">nP</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hemis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">)))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subs</span><span class="p">):</span>
+        <span class="n">neo_ts</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">micapipe_dir</span><span class="si">}</span><span class="s1">/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">/ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">/func/desc-se_task-rest_acq-AP_bold/surf/sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">_ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">_surf-fsLR-32k_desc-timeseries_clean.shape.gii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">darrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">neo_ts_parc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">neo_ts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">nP</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nP</span><span class="o">*</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">neo_ts_parc</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">neo_ts</span><span class="p">[:,</span><span class="n">parc</span><span class="o">==</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">neo_tsL</span> <span class="o">=</span> <span class="n">neo_ts_parc</span><span class="p">[:,:</span><span class="n">nP</span><span class="p">]</span>
+        <span class="n">neo_tsR</span> <span class="o">=</span> <span class="n">neo_ts_parc</span><span class="p">[:,</span><span class="n">nP</span><span class="p">:]</span>
+        <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">hemi</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span>
+                <span class="n">FC</span><span class="p">[:,:,</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">cdata_hipp</span><span class="p">[:,</span><span class="n">h</span><span class="p">,:,</span><span class="n">s</span><span class="p">],</span><span class="n">neo_tsL</span><span class="p">[:</span><span class="n">timepoints</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">)[:</span><span class="n">nV</span><span class="p">,</span><span class="n">nV</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">FC</span><span class="p">[:,:,</span><span class="n">h</span><span class="p">,</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">cdata_hipp</span><span class="p">[:,</span><span class="n">h</span><span class="p">,:,</span><span class="n">s</span><span class="p">],</span><span class="n">neo_tsR</span><span class="p">[:</span><span class="n">timepoints</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">)[:</span><span class="n">nV</span><span class="p">,</span><span class="n">nV</span><span class="p">:]</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;checkpoints/MRI-3T-rsfMRI-FC&quot;</span><span class="p">,</span><span class="n">FC</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">FC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;../checkpoints/MRI-3T-rsfMRI-FC.npy&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">FC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;checkpoints/MRI-3T-rsfMRI-FC.npy&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">FC</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(419, 200, 2, 99)
-</pre></div></div>
 </div>
 <p>FC should skew positive, since negative FC values are generally not interpretable</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">FC</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">);</span>
@@ -622,11 +593,11 @@ step).</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_25_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_25_0.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_24_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_24_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># view left and right FC (nV x nP) after averaging over subjects</span>
@@ -638,24 +609,24 @@ step).</p>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f23f1728d60&gt;
+&lt;matplotlib.image.AxesImage at 0x7f775ffb20a0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_26_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_26_1.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_25_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_25_1.png" />
 </div>
 </div>
 <p>Here we see that FC is generally positive, both across all FC calculations and after averaging over subjects. This is a good sanity check.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[66]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot averaging over hemispheres, subjects, and necortical parcels</span>
@@ -664,15 +635,15 @@ step).</p>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[66]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_28_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_28_0.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_27_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_27_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[49]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot the neocortical counterparts by averaging over subjects and hippocampal vertices</span>
@@ -685,25 +656,16 @@ step).</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/export03/data/opt/venv/lib/python3.8/site-packages/brainspace/plotting/base.py:287: UserWarning: Interactive mode requires &#39;panel&#39;. Setting &#39;interactive=False&#39;
-  warnings.warn(&#34;Interactive mode requires &#39;panel&#39;. &#34;
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[49]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_29_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_29_1.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_28_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_28_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[50]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot the neocortical counterparts by averaging over subjects, hemispheres, and hippocampal vertices</span>
@@ -720,16 +682,16 @@ step).</p>
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/export03/data/opt/venv/lib/python3.8/site-packages/brainspace/plotting/utils.py:303: RuntimeWarning: All-NaN axis encountered
+/export03/data/opt/BrainSpace/brainspace/plotting/utils.py:303: RuntimeWarning: All-NaN axis encountered
   a, b = np.nanmin(x), np.nanmax(x)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[50]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_30_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_30_1.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_29_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_29_1.png" />
 </div>
 </div>
 </section>
@@ -737,7 +699,7 @@ step).</p>
 <h2>4) Check consistency for all measures<a class="headerlink" href="#4)-Check-consistency-for-all-measures" title="Permalink to this heading"></a></h2>
 <p>To make sure our measures are consistent, we will check whether they are correlated across samples (that is, across subjects and hemispheres)</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[84]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[51]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ttest_1samp</span>
@@ -745,7 +707,7 @@ step).</p>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[92]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[52]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">feats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;IntTS&quot;</span><span class="p">,</span> <span class="s2">&quot;ReHo&quot;</span><span class="p">,</span> <span class="s2">&quot;FC&quot;</span><span class="p">]</span>
@@ -777,13 +739,13 @@ step).</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Ttest_1sampResult(statistic=79.39621481646617, pvalue=0.0)
-Ttest_1sampResult(statistic=354.88439139080623, pvalue=0.0)
-Ttest_1sampResult(statistic=13993.126375721766, pvalue=0.0)
+TtestResult(statistic=76.54907624821988, pvalue=0.0, df=19502)
+TtestResult(statistic=346.10564604288714, pvalue=0.0, df=19502)
+TtestResult(statistic=13321.008616626994, pvalue=0.0, df=784060199)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[93]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[53]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
@@ -798,7 +760,7 @@ Ttest_1sampResult(statistic=13993.126375721766, pvalue=0.0)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_34_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_34_0.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_33_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_33_0.png" />
 </div>
 </div>
 <p>Though the inter-subject correlation is somewhat low in IntTS and FC, it is reliably above 0</p>
@@ -807,7 +769,7 @@ Ttest_1sampResult(statistic=13993.126375721766, pvalue=0.0)
 <h2>5) Gradients of differential hippocampal FC<a class="headerlink" href="#5)-Gradients-of-differential-hippocampal-FC" title="Permalink to this heading"></a></h2>
 <p>Dimensionality reduction allows us to summarize many maps as primary components, or Gradients. Here we will use BrainSpace to compute nonlinear Gradients using diffusion map embedding. Briefly, this typically consists of computing an affinity matrix (e.g. a correlation between all maps) and then grouping them into a few consistent patterns (Gradients). In this case, the affinity matrix is between hippocampal vertices, based on how similar is their neocortical FC.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[102]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[54]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># multimodal gradient map (mGM) decomposition using default parameters</span>
@@ -816,17 +778,51 @@ Ttest_1sampResult(statistic=13993.126375721766, pvalue=0.0)
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/export03/data/opt/BrainSpace/brainspace/gradient/kernels.py:29: RuntimeWarning: invalid value encountered in arccos
+  x = 1 - np.arccos(x, x)/np.pi
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[102]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [54]</span>, in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># multimodal gradient map (mGM) decomposition using default parameters </span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> FCGM <span style="color: rgb(98,98,98)">=</span> GradientMaps(n_components<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">5</span>, kernel<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">normalized_angle</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-fg">----&gt; 3</span> <span class="ansi-yellow-bg">FCGM</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">fit</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">np</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">nanmean</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">FC</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg">axis</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">2</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">3</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/export03/data/opt/BrainSpace/brainspace/gradient/gradient.py:162</span>, in <span class="ansi-cyan-fg">GradientMaps.fit</span><span class="ansi-blue-fg">(self, x, gamma, sparsity, n_iter, reference, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    158</span>     align_single <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-intense-fg ansi-bold">    160</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">isinstance</span>(x, np<span style="color: rgb(98,98,98)">.</span>ndarray):  <span style="color: rgb(95,135,135)"># or sp.issparse(x):</span>
+<span class="ansi-green-intense-fg ansi-bold">    161</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>lambdas_, <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>gradients_ <span style="color: rgb(98,98,98)">=</span> \
+<span class="ansi-green-fg">--&gt; 162</span>         <span class="ansi-yellow-bg">_fit_one</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">x</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">approach</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">kernel</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">n_components</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    163</span> <span class="ansi-yellow-bg">                 </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">random_state</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">gamma</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">gamma</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">sparsity</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">sparsity</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    164</span> <span class="ansi-yellow-bg">                 </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    165</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>aligned_ <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
+<span class="ansi-green-intense-fg ansi-bold">    167</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span>
+
+File <span class="ansi-green-fg">/export03/data/opt/BrainSpace/brainspace/gradient/gradient.py:48</span>, in <span class="ansi-cyan-fg">_fit_one</span><span class="ansi-blue-fg">(x, app, kernel, n_components, random_state, gamma, sparsity, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">     45</span> a <span style="color: rgb(98,98,98)">=</span> compute_affinity(x, kernel<span style="color: rgb(98,98,98)">=</span>kernel, sparsity<span style="color: rgb(98,98,98)">=</span>sparsity, gamma<span style="color: rgb(98,98,98)">=</span>gamma)
+<span class="ansi-green-intense-fg ansi-bold">     47</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> np<span style="color: rgb(98,98,98)">.</span>isnan(a)<span style="color: rgb(98,98,98)">.</span>any() <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> np<span style="color: rgb(98,98,98)">.</span>isinf(a)<span style="color: rgb(98,98,98)">.</span>any():
+<span class="ansi-green-fg">---&gt; 48</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Affinity matrix contains NaN or Inf values. Common </span><span style="color: rgb(175,0,0)">&#39;</span>
+<span class="ansi-green-intense-fg ansi-bold">     49</span>                      <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">causes of this include NaNs/Infs or rows of zeros </span><span style="color: rgb(175,0,0)">&#39;</span>
+<span class="ansi-green-intense-fg ansi-bold">     50</span>                      <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">in the input matrix.</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">     52</span> kwds_emb <span style="color: rgb(98,98,98)">=</span> {<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">n_components</span><span style="color: rgb(175,0,0)">&#39;</span>: n_components, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">random_state</span><span style="color: rgb(175,0,0)">&#39;</span>: random_state}
+<span class="ansi-green-intense-fg ansi-bold">     53</span> kwds_emb<span style="color: rgb(98,98,98)">.</span>update(kwargs)
+
+<span class="ansi-red-fg">ValueError</span>: Affinity matrix contains NaN or Inf values. Common causes of this include NaNs/Infs or rows of zeros in the input matrix.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[103]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># As above, we can make a nice plot for each of the resulting gradients</span>
@@ -835,15 +831,14 @@ GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[103]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_38_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_38_0.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_37_0.png" src="../_images/tutorials_MRI-3T-rsfMRI_37_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[104]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we can also see the lambda value (or eigenvalue) for each gradient</span>
@@ -852,8 +847,7 @@ GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[104]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -864,11 +858,11 @@ GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_39_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_39_1.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_38_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_38_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[105]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># convert into a percentage of explained variance</span>
@@ -877,8 +871,7 @@ GradientMaps(kernel=&#39;normalized_angle&#39;, n_components=5)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[105]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -887,7 +880,7 @@ array([0.38785603, 0.2904295 , 0.13625114, 0.09743545, 0.08802788])
 </div>
 <p>To help contextualize how these gradients relate to FC, we can plot the FCs from only to top and the bottom 25% vertices for each gradient.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[106]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># look only at FC to the rest of the neocortex for the top-bottom 10% of each gradient</span>
@@ -921,22 +914,22 @@ array([0.38785603, 0.2904295 , 0.13625114, 0.09743545, 0.08802788])
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[106]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_MRI-3T-rsfMRI_42_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_42_1.png" />
+<img alt="../_images/tutorials_MRI-3T-rsfMRI_41_1.png" src="../_images/tutorials_MRI-3T-rsfMRI_41_1.png" />
 </div>
 </div>
 <p><strong>save</strong></p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[58]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save a copy of the 2D map</span>
+<span class="o">!</span>mkdir<span class="w"> </span>-p<span class="w"> </span>./maps/HippoMaps-initializationMaps/Dataset-MICs
 <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-        <span class="n">cdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">IntTS</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="n">ind</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">]</span>
+        <span class="n">cdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">IntTS</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">]</span>
         <span class="n">data_array</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiDataArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">cdat</span><span class="p">)</span>
         <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiImage</span><span class="p">()</span>
         <span class="n">image</span><span class="o">.</span><span class="n">add_gifti_data_array</span><span class="p">(</span><span class="n">data_array</span><span class="p">)</span>
@@ -945,13 +938,13 @@ array([0.38785603, 0.2904295 , 0.13625114, 0.09743545, 0.08802788])
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[59]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save a copy of the 2D map</span>
 <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-        <span class="n">cdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">reho</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="n">ind</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">]</span>
+        <span class="n">cdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">reho</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">]</span>
         <span class="n">data_array</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiDataArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">cdat</span><span class="p">)</span>
         <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiImage</span><span class="p">()</span>
         <span class="n">image</span><span class="o">.</span><span class="n">add_gifti_data_array</span><span class="p">(</span><span class="n">data_array</span><span class="p">)</span>
@@ -960,13 +953,13 @@ array([0.38785603, 0.2904295 , 0.13625114, 0.09743545, 0.08802788])
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[60]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save a copy of the 2D map</span>
 <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">hemi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hemis</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-        <span class="n">cdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">FC</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))[</span><span class="n">ind</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">]</span>
+        <span class="n">cdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">FC</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))[</span><span class="n">iV</span><span class="p">[</span><span class="n">l</span><span class="p">],</span><span class="n">h</span><span class="p">]</span>
         <span class="n">data_array</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiDataArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">cdat</span><span class="p">)</span>
         <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">gifti</span><span class="o">.</span><span class="n">GiftiImage</span><span class="p">()</span>
         <span class="n">image</span><span class="o">.</span><span class="n">add_gifti_data_array</span><span class="p">(</span><span class="n">data_array</span><span class="p">)</span>

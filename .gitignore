@@ -1,8 +1,8 @@
 .ipynb_checkpoints
 sourcedata/
 checkpoints/
-notebooks/img_*
-notebooks/tmp_*
+tutorials/img*
+tutorials/tmp*
 maps/
 HippoMaps.egg-info/
 hippomaps/__pycache__

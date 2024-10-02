@@ -1,6 +1,7 @@
 import numpy as np
 import glob
 import os
+import sys
 import copy
 from joblib import Parallel, delayed
 import warnings
@@ -14,6 +15,11 @@ import pygeodesic.geodesic as geodesic
 from pathlib import Path
 resourcesdir = str(Path(__file__).parents[1]) + '/resources'
 
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+def enablePrint():
+    sys.stdout = sys.__stdout__
 
 def avg_neighbours(F, cdat, n):
     """
