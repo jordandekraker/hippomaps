@@ -2,7 +2,7 @@
 <img align="right" width="200" src="https://github.com/MICA-MNI/hippomaps/blob/master/docs/source/HMlogo1.png">
 
 
-Hippomaps🍤
+HippoMaps🍤
 =====================================
 This is a toolbox and repository for open source mapping and contextualization of hippocampal data, paralleling surface-based mapping of the neocortex. This is partnered with a repository of mapped data at [OSF](https://osf.io/92p34/). 
 
