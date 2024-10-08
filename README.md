@@ -43,6 +43,8 @@ Other relevant repositories🗂️
 
 [micapipe](https://github.com/MICA-MNI/micapipe/)
 
+[Eigenstrapping](https://github.com/SNG-Newy/eigenstrapping)
+
 Citing HippoMaps📝
 -------------------------------------
 
