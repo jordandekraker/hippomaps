@@ -68,7 +68,7 @@ def tree_osf_hashes(repoID, name_hashes, maxdepth, current_hash):
         except Exception as e:
             print(f"Failed to fetch or parse data for URL {next_url}: {str(e)}")
             continue  # Continue with the next item in the queue if an error occurs
-  
+
 tree_osf_hashes(repoID,name_hashes,maxdepth,current_hash)
 
 # utility for making dict searchable
