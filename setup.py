@@ -41,7 +41,7 @@ setuptools.setup(
         "brainspace>=0.1.2",
         "nibabel>=3.2.2",
         "nilearn>=0.7.0",
-        "numpy>=1.16.5",
+        "numpy>=1.16.5,<2.0.0",
         "pandas>=0.23",
         "scipy>=1.3.3",
         "matplotlib>=2.0.0",
