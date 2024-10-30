@@ -1,4 +1,5 @@
 [![Documentation Status](https://readthedocs.org/projects/hippomaps/badge/?version=latest)](https://hippomaps.readthedocs.io/en/latest/?badge=latest)
+![Version](https://img.shields.io/github/v/tag/jordandekraker/hippomaps?label=version)
 <img align="right" width="200" src="https://github.com/MICA-MNI/hippomaps/blob/master/docs/source/HMlogo1.png">
 
 
