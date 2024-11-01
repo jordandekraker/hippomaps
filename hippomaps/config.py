@@ -21,3 +21,12 @@ def get_nVertices(labels,den):
     if len(iLabels)>1:
        iV.append(range(nVertices[iLabels[0],idens[0]], nV))
     return nV,iV
+
+def get_label_from_nV(nV):
+    lookupDen = dict()
+    lookupLabel = dict()
+    for l,label in enumerate(labelNames):
+        for d,den in enumerate(densityNames):
+            lookupDen[str(nVertices[l,d])] = densityNames[d]
+            lookupLabel[str(nVertices[l,d])] = labelNames[l]
+    return lookupLabel[str(nV)], lookupDen[str(nV)]

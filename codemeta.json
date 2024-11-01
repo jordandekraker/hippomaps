@@ -1,0 +1,23 @@
+{
+    "@context": "https://w3id.org/codemeta/3.0",
+    "type": "SoftwareSourceCode",
+    "applicationCategory": "Module, Notebook",
+    "codeRepository": "git+https://github.com/jordandekraker/hippomaps.git",
+    "dateCreated": "2024-05-11",
+    "dateModified": "2024-09-30",
+    "datePublished": "2024-09-30",
+    "description": "This is a toolbox and repository for open source mapping and contextualization of hippocampal data, paralleling surface-based mapping of the neocortex. This is partnered with a repository of mapped data at OSF.",
+    "keywords": [
+        "Neuroscience",
+        "Hippocampus"
+    ],
+    "license": "https://spdx.org/licenses/GPL-3.0",
+    "name": "HippoMaps",
+    "programmingLanguage": "Python 3",
+    "relatedLink": "https://osf.io/92p34/",
+    "releaseNotes": "Initial release",
+    "softwareRequirements": "https://github.com/jordandekraker/hippomaps/blob/master/setup.py",
+    "version": "0.1.0",
+    "issueTracker": "https://github.com/jordandekraker/hippomaps/issues",
+    "referencePublication": "https://www.biorxiv.org/content/10.1101/2024.02.23.581734v2"
+}
