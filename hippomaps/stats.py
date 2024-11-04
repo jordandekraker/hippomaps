@@ -248,7 +248,7 @@ def contextualize2D(taskMaps, n_topComparison=3, nperm=1000, plotTable=True, plo
     if taskMaps.shape[0] != nV:
         taskMapsresamp = np.ones((nV,nT))*np.nan
         for t in range(nT):
-            taskMapsresamp[:,t],_,_ = hippomaps.utils.density_interp(hm.config.get_label_from_nV(taskMaps.shape[0]),'0p5mm',taskMaps[:,t], label='hipp')
+            taskMapsresamp[:,t],_,_ = hippomaps.utils.density_interp(hippomaps.config.get_label_from_nV(taskMaps.shape[0]),'0p5mm',taskMaps[:,t], label='hipp')
     else:
         taskMapsresamp = taskMaps
 
