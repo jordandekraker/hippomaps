@@ -8,4 +8,4 @@ map2 = nib.load("/Users/enningyang/Downloads/histology-Bieloschowsky_average-4_h
 
 map_set = np.stack((map1.reshape(-1,1),map2.reshape(-1,1)), axis=1)
 print(map_set.shape)
-# hm.stats.contextualize2D(map_set)
+hm.stats.contextualize2D(map_set)
