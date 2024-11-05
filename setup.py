@@ -12,7 +12,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="HippoMaps",
-    version="0.1.12",
+    version="0.1.13",
     packages=setuptools.find_packages(),
     include_package_data=True,  # This is key for including package data
     author="Jordan DeKraker",
