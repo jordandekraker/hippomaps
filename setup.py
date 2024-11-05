@@ -12,14 +12,17 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="HippoMaps",
-    version="0.1.7",
+    version="0.1.8",
     author="Jordan DeKraker",
     author_email="jordandekraker@gmail.com",
     description="A toolbox for viewing, manipulating, and additional actions on HippUnfold outputs",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/jordandekraker/hippomaps",
-    packages=setuptools.find_packages(where='resources'),
+    packages=setuptools.find_packages(),
+    package_data={
+        "resources": ["resources/*"],
+    }
     include_package_data=True,
     license="GPL-3.0 license",
     classifiers=[
