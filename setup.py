@@ -21,7 +21,7 @@ setuptools.setup(
     url="https://github.com/jordandekraker/hippomaps",
     packages=setuptools.find_packages(),
     package_data={
-        "resources": ["resources/*"],
+        '': ["resources/*"],
     },
     include_package_data=True,
     license="GPL-3.0 license",
