@@ -22,7 +22,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     package_data={
         "resources": ["resources/*"],
-    }
+    },
     include_package_data=True,
     license="GPL-3.0 license",
     classifiers=[
