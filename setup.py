@@ -5,14 +5,16 @@ See:
 https://packaging.python.org/guides/distributing-packages-using-setuptools/
 """
 
-import setuptools
+import setuptools, find_packages
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="HippoMaps",
-    version="0.1.10",
+    version="0.1.11",
+    packages=find_packages(),
+    include_package_data=True,  # This is key for including package data
     author="Jordan DeKraker",
     author_email="jordandekraker@gmail.com",
     description="A toolbox for viewing, manipulating, and additional actions on HippUnfold outputs",
@@ -23,7 +25,6 @@ setuptools.setup(
     package_data={
         '': ["resources/*"],
     },
-    include_package_data=True,
     license="GPL-3.0 license",
     classifiers=[
         "Intended Audience :: Science/Research",
