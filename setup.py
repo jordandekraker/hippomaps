@@ -5,7 +5,7 @@ See:
 https://packaging.python.org/guides/distributing-packages-using-setuptools/
 """
 
-import setuptools, find_packages
+import setuptools
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -13,7 +13,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="HippoMaps",
     version="0.1.11",
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
     include_package_data=True,  # This is key for including package data
     author="Jordan DeKraker",
     author_email="jordandekraker@gmail.com",
@@ -21,7 +21,6 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/jordandekraker/hippomaps",
-    packages=setuptools.find_packages(),
     package_data={
         '': ["resources/*"],
     },
