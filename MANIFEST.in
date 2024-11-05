@@ -1,1 +1,1 @@
-include resources/*
+recursiveinclude resources *

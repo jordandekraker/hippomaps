@@ -12,7 +12,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="HippoMaps",
-    version="0.1.4",
+    version="0.1.5",
     author="Jordan DeKraker",
     author_email="jordandekraker@gmail.com",
     description="A toolbox for viewing, manipulating, and additional actions on HippUnfold outputs",
@@ -24,6 +24,7 @@ setuptools.setup(
     package_data={
         "": ["resources/*"],
     },
+    include_package_data=True,
     classifiers=[
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
@@ -54,6 +55,5 @@ setuptools.setup(
 	"umap-learn>=0.5.5",
     ],
     extras_require={"dev": ["gitpython", "hcp-utils", "mypy", "plotly", "pytest"]},
-    include_package_data=True,
     zip_safe=False,
 )
