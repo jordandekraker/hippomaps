@@ -12,7 +12,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="HippoMaps",
-    version="0.1.9",
+    version="0.1.10",
     author="Jordan DeKraker",
     author_email="jordandekraker@gmail.com",
     description="A toolbox for viewing, manipulating, and additional actions on HippUnfold outputs",
