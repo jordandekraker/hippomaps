@@ -22,7 +22,7 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     url="https://github.com/jordandekraker/hippomaps",
     package_data={
-        'hippomaps_resources': ["resources/*"],
+        'hippomaps': ["resources/*"],
     },
     license="GPL-3.0 license",
     classifiers=[
