@@ -12,7 +12,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="HippoMaps",
-    version="0.1.11",
+    version="0.1.12",
     packages=setuptools.find_packages(),
     include_package_data=True,  # This is key for including package data
     author="Jordan DeKraker",
@@ -22,7 +22,7 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     url="https://github.com/jordandekraker/hippomaps",
     package_data={
-        '': ["resources/*"],
+        'hippomaps_resources': ["resources/*"],
     },
     license="GPL-3.0 license",
     classifiers=[
