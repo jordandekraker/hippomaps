@@ -22,7 +22,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     license="BSD 3-Clause License",
     package_data={
-        "resources": ["*"],
+        "": ["resources/*"],
     },
     classifiers=[
         "Intended Audience :: Science/Research",
