@@ -1,7 +1,7 @@
 import numpy as np
 import nibabel as nib
 from pathlib import Path
-resourcesdir = str(Path(__file__).parents[1]) + '/resources'
+resourcesdir = str(Path(__file__).parents[1]) + '/hippomaps/resources'
 
 labelNames = ['hipp','dentate']
 densityNames = ['2mm','1mm','0p5mm','unfoldiso']
