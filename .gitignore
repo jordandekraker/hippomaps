@@ -10,3 +10,4 @@ hippomaps/__pycache__
 snapshots
 generated
 dist/
+build/
