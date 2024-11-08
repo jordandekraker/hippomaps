@@ -12,7 +12,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="HippoMaps",
-    version="0.1.14",
+    version="0.1.17",
     packages=setuptools.find_packages(),
     include_package_data=True,  # This is key for including package data
     author="Jordan DeKraker",
@@ -48,7 +48,8 @@ setuptools.setup(
         "matplotlib>=2.0.0",
         "pygeodesic>=0.1.8",
         "wget>=3.2",
-        "eigenstrapping>=0.0.1.10",
+        "eigenstrapping>=0.1",
+        "adjusttext>=1.3.0",
 	"pathlib",
 	"parspin",
 	"tabulate",
