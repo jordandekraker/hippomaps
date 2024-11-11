@@ -12,18 +12,19 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="HippoMaps",
-    version="0.1.3",
+    version="0.1.17",
+    packages=setuptools.find_packages(),
+    include_package_data=True,  # This is key for including package data
     author="Jordan DeKraker",
     author_email="jordandekraker@gmail.com",
     description="A toolbox for viewing, manipulating, and additional actions on HippUnfold outputs",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/jordandekraker/hippomaps",
-    packages=setuptools.find_packages(),
-    license="BSD 3-Clause License",
     package_data={
-        "resources": ["*"],
+        'hippomaps': ["resources/*"],
     },
+    license="GPL-3.0 license",
     classifiers=[
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
@@ -47,13 +48,13 @@ setuptools.setup(
         "matplotlib>=2.0.0",
         "pygeodesic>=0.1.8",
         "wget>=3.2",
-        "eigenstrapping @ git+https://github.com/SNG-Newy/eigenstrapping.git",
+        "eigenstrapping>=0.1",
+        "adjusttext>=1.3.0",
 	"pathlib",
 	"parspin",
 	"tabulate",
 	"umap-learn>=0.5.5",
     ],
     extras_require={"dev": ["gitpython", "hcp-utils", "mypy", "plotly", "pytest"]},
-    include_package_data=True,
     zip_safe=False,
 )

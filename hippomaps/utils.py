@@ -13,7 +13,7 @@ from scipy.interpolate import interpn
 from numpy.matlib import repmat
 import pygeodesic.geodesic as geodesic
 from pathlib import Path
-resourcesdir = str(Path(__file__).parents[1]) + '/resources'
+resourcesdir = str(Path(__file__).parents[1]) + '/hippomaps/resources'
 
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')

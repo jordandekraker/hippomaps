@@ -9,7 +9,7 @@ from brainspace.plotting import plot_hemispheres, plot_surf, build_plotter
 from brainspace.mesh import mesh_creation as mc
 from pathlib import Path
 
-resourcesdir = str(Path(__file__).parents[1]) + '/resources'
+resourcesdir = str(Path(__file__).parents[1]) + '/hippomaps/resources'
 import hippomaps.utils
 
 

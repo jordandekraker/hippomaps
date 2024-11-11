@@ -10,12 +10,14 @@ import warnings
 import hippomaps.utils
 import hippomaps.config
 import matplotlib.pyplot as plt
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+from adjustText import adjust_text
 from brainspace.mesh.mesh_io import read_surface
 from hippomaps.moran import MoranRandomization
 from brainspace.mesh import mesh_elements as me
 from eigenstrapping import SurfaceEigenstrapping
 from pathlib import Path
-resourcesdir=str(Path(__file__).parents[1]) + '/resources'
+resourcesdir=str(Path(__file__).parents[1]) + '/hippomaps/resources'
 
 
 def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm'):
@@ -194,8 +196,10 @@ def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp',
         imgperm = nib.load(imgperm).agg_data().flatten()
     
     # load reference surface and put in Eigenstrapping class
+    hippomaps.utils.blockPrint()
     eigen = SurfaceEigenstrapping(surface=f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-{label}_midthickness.surf.gii", 
         data=imgperm, num_modes=num_modes, permute=False, resample=False, **qwargs)
+    hippomaps.utils.enablePrint()
 
     # get observed correlation
     r_obs = eval(metric)(imgfix, imgperm)[0]
@@ -216,13 +220,14 @@ def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp',
 
     return metricnull, imgperm_rand, pval, r_obs
 
-def contextualize2D(taskMaps, n_topComparison=3, nperm=1000, plotTable=True, plot2D=True):
+def contextualize2D(taskMaps, taskNames='', n_topComparison=3, nperm=1000, plotTable=True, plot2D=True):
     """
        Compares the present maps to thoes in the inital HippoMaps release
 
        Parameters
        ----------
        taskMaps : a VxT matrix of intensities. T is the number of maps to examine
+       taskNames : list of T strings
        n_topComparison : int, optional
            Top N features for which to reurn comparisons (Pearson's R and p)
        plot2D : bool
@@ -242,6 +247,12 @@ def contextualize2D(taskMaps, n_topComparison=3, nperm=1000, plotTable=True, plo
 
     # load required data
     contextHM = np.load(f'{resourcesdir}/2Dcontextualize/initialHippoMaps.npz')
+
+    # make names (if needed)
+    if taskNames=='':
+        taskNames = []
+        for t in range(nT):
+            taskNames.append(f'inputMap{t}')
     
     # resample all input data to 0p5mm (if needed)
     nV,iV = hippomaps.config.get_nVertices(['hipp'],'0p5mm')
@@ -304,7 +315,7 @@ def contextualize2D(taskMaps, n_topComparison=3, nperm=1000, plotTable=True, plo
                 topP[t,c] = np.nanmean(np.abs(metricnull) >= np.abs(topR[t,c]))
 
     # generate dict of results
-    context2D = {"Input map": list(range(nT)), 
+    context2D = {"Input map": taskNames, 
         "Subfields (R)": SubsR, 
         "Subfields (p corrected)": Subsp, 
         "A-P gradinet (R)": APR,
@@ -323,10 +334,10 @@ def contextualize2D(taskMaps, n_topComparison=3, nperm=1000, plotTable=True, plo
         ax.scatter(contextHM['axiscorrAPPD'][0],contextHM['subfieldsmaxcorr'],c=contextHM['colors'],cmap='Set3',s=200)
         plt.ylabel("absolute subfield correlation (Spearmann's R)")
         plt.xlabel("absolute AP correlation (Pearson's R)")
-        for f,feature in enumerate(contextHM['features']):
-            ax.annotate(str(int(contextHM['feature_n'][f])), (contextHM['axiscorrAPPD'][0,f]-.008, contextHM['subfieldsmaxcorr'][f]-.007))
+        texts = [ax.text(contextHM['axiscorrAPPD'][0,f], contextHM['subfieldsmaxcorr'][f], feature, ha='left', va='center') for f,feature in enumerate(contextHM['features'])]
         ax.scatter(np.abs(APR),np.abs(SubsR),color='k',s=200);
         for t in range(nT):
-            ax.annotate(str(t), (np.abs(APR[t])-.008, np.abs(SubsR[t])-.007),color='w')
+            texts.append(ax.text(np.abs(APR[t]), np.abs(SubsR[t]), taskNames[t], ha='left', va='center'))
+        adjust_text(texts, expand=(1,2), arrowprops=dict(arrowstyle='->', color='gray'));
             
     return context2D, ax

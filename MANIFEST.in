@@ -1,1 +1,1 @@
-include resources/*
+recursive-include hippomaps/resources *
