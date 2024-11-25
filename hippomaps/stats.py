@@ -17,6 +17,7 @@ from hippomaps.moran import MoranRandomization
 from brainspace.mesh import mesh_elements as me
 from eigenstrapping import SurfaceEigenstrapping
 from pathlib import Path
+from joblib import Parallel, delayed
 resourcesdir=str(Path(__file__).parents[1]) + '/hippomaps/resources'
 
 
@@ -220,7 +221,7 @@ def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp',
 
     return metricnull, imgperm_rand, pval, r_obs
 
-def contextualize2D(taskMaps, taskNames='', n_topComparison=3, nperm=1000, plotTable=True, plot2D=True):
+def contextualize2D(taskMaps, taskNames='', numerbMaps=False, n_topComparison=3, nperm=1000, plotTable=True, plot2D=True):
     """
        Compares the present maps to thoes in the inital HippoMaps release
 
@@ -262,64 +263,59 @@ def contextualize2D(taskMaps, taskNames='', n_topComparison=3, nperm=1000, plotT
         taskMapsresamp = taskMaps
 
     # permute the input task maps (this is generally faster than permuting the reference features!)
-    permutedTasks = np.zeros((nV,nT,nperm))
-    metricnull = np.ones((nT,nperm))*np.nan
-    hippomaps.utils.blockPrint()
-    for t in range(nT):
-            eigen = SurfaceEigenstrapping(surface=f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-0p5mm_label-hipp_midthickness.surf.gii", 
-                data=taskMapsresamp[:,t])
-            permutedTasks[:,t,:] = eigen(nperm).T
-    hippomaps.utils.enablePrint()
-    # approx 9m to here
+    def generate_permutations(t):
+        hippomaps.utils.blockPrint()
+        eigen = SurfaceEigenstrapping(
+            surface=f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-0p5mm_label-hipp_midthickness.surf.gii",
+            data=taskMapsresamp[:, t])
+        hippomaps.utils.enablePrint()
+        return eigen(n=nperm).T  # Returns shape (nV, nperm)
+    permutedTasks_list = Parallel(n_jobs=-1)(
+        delayed(generate_permutations)(t) for t in range(nT)
+    )
+    # Shape (nV, nT, nperm)
+    permutedTasks = np.stack(permutedTasks_list, axis=1)
 
-    # compute correlations with AP and all subfield permutations
-    APR = np.ones((nT))*np.nan
-    APp = np.ones((nT))*np.nan
-    Subsp = np.ones((nT))*np.nan
-    SubsR = np.ones((nT))*np.nan
+    # compute correlations with AP 
+    APWithTask = np.concatenate((taskMapsresamp,contextHM['AP'].reshape([nV,1])),axis=1)
+    AP_R = np.corrcoef(APWithTask.T)[:nT,nT:].flatten()
+    AP_p = np.empty((nT))
     for t in range(nT):
-        APR[t] = pearsonr(taskMapsresamp[:,t],contextHM['AP'])[0]
-        SubsWithTask = pd.DataFrame(np.concatenate((taskMapsresamp[:,t].reshape([nV,1]),contextHM['subfields_permuted']),axis=1))
-        Subfscorr = SubsWithTask.corr('spearman').to_numpy()[0,1:]
-        Subfscorr_best = np.nanargmax(np.abs(Subfscorr))
-        SubsR[t] = Subfscorr[Subfscorr_best]
-        metricnull = np.zeros((nperm))
-        for d in range(nperm):
-            metricnull[d] = pearsonr(contextHM['AP'], permutedTasks[:,t,d])[0]
-        APp[t] = np.nanmean(np.abs(metricnull) >= np.abs(APR[t]))
-        metricnull = np.zeros((nperm))
-        for d in range(nperm):
-            metricnull[d] = spearmanr(contextHM['subfields_permuted'][:,Subfscorr_best], permutedTasks[:,t,d])[0]
-        Subsp[t] = np.nanmean(np.abs(metricnull) >= np.abs(SubsR[t]))
-    # 18m to here
+        APWithPerm = np.concatenate((contextHM['AP'].reshape([nV,1]),permutedTasks[:,t,:]),axis=1)
+        metricnull = np.corrcoef(APWithPerm.T)[:1,1:]
+        AP_p[t] = np.nanmean(np.abs(metricnull) >= np.abs(AP_R[t]))
+
+    # compute correlations with subfields
+    allSubs_R = spearmanr(taskMapsresamp, contextHM['subfields_permuted'])[0][:nT,nT:]
+    Subfscorr_best = np.nanargmax(np.abs(allSubs_R),axis=1)
+    Subs_R = [allSubs_R[t,Subfscorr_best[t]] for t in range(nT)]
+    Subs_p = np.empty((nT))
+    for t in range(nT):
+        metricnull = spearmanr(contextHM['subfields_permuted'][:,Subfscorr_best[t]], permutedTasks[:,t,:])[0][0,1:]
+        Subs_p[t] = np.nanmean(np.abs(metricnull) >= np.abs(Subs_R[t]))
 
     # compute correlations with extant features (but only the top 3 to save time)
-    topFeatures = np.ones((nT,n_topComparison), dtype='object')
-    topR = np.ones((nT,n_topComparison))*np.nan
-    topP = np.ones((nT,n_topComparison))*np.nan
+    topFeatures = np.empty((nT,n_topComparison), dtype='object')
+    topR = np.full((nT, n_topComparison), np.nan)
+    topP = np.full((nT, n_topComparison), np.nan)
     if n_topComparison >0:
-        p = np.zeros((nT,len(contextHM['features'])))
-        R = np.zeros((nT,len(contextHM['features'])))
         for t in range(nT):
-            for j in range(len(contextHM['features'])):
-                R[t,j],p[t,j] = pearsonr(taskMapsresamp[:,t],contextHM['featureData'][:,j])
-        # get ordering of the closest n_topComparison neighbours and then run spin test
-        for t in range(nT):
-            order = np.argsort(np.abs(R[t,:]))[::-1]
+            FeatWithTask = np.concatenate((taskMapsresamp[:,t].reshape([nV,1]),contextHM['featureData']),axis=1)
+            R = np.corrcoef(FeatWithTask.T)[0,1:]
+            order = np.argsort(np.abs(R))[::-1]
             for c in range(n_topComparison):
                 topFeatures[t,c] = contextHM['features'][order[c]]
-                topR[t,c] = R[t,order[c]]
-                metricnull = np.zeros((nperm))
-                for d in range(nperm):
-                    metricnull[d] = pearsonr(contextHM['featureData'][:,order[c]], permutedTasks[:,t,d])[0]
+                topR[t,c] = R[order[c]]
+                FeatWithPerm = np.concatenate((contextHM['featureData'][:,order[c]].reshape([nV,1]),permutedTasks[:,t,:]),axis=1)
+                metricnull = np.corrcoef(APWithPerm.T)[:1,1:]
                 topP[t,c] = np.nanmean(np.abs(metricnull) >= np.abs(topR[t,c]))
 
     # generate dict of results
     context2D = {"Input map": taskNames, 
-        "Subfields (R)": SubsR, 
-        "Subfields (p corrected)": Subsp, 
-        "A-P gradinet (R)": APR,
-        "A-P gradinet (p corrected)": APp}
+        "Subfields (R)": Subs_R, 
+        "Subfields (p corrected)": Subs_p, 
+        "A-P gradinet (R)": AP_R,
+        "A-P gradinet (p corrected)": AP_p}
     for c in range(n_topComparison):
         context2D[str(c) +"th most correlated"] = topFeatures[:,c]
         context2D[str(c) +"th (R)"] = topR[:,c]
@@ -334,10 +330,15 @@ def contextualize2D(taskMaps, taskNames='', n_topComparison=3, nperm=1000, plotT
         ax.scatter(contextHM['axiscorrAPPD'][0],contextHM['subfieldsmaxcorr'],c=contextHM['colors'],cmap='Set3',s=200)
         plt.ylabel("absolute subfield correlation (Spearmann's R)")
         plt.xlabel("absolute AP correlation (Pearson's R)")
-        texts = [ax.text(contextHM['axiscorrAPPD'][0,f], contextHM['subfieldsmaxcorr'][f], feature, ha='left', va='center') for f,feature in enumerate(contextHM['features'])]
-        ax.scatter(np.abs(APR),np.abs(SubsR),color='k',s=200);
-        for t in range(nT):
-            texts.append(ax.text(np.abs(APR[t]), np.abs(SubsR[t]), taskNames[t], ha='left', va='center'))
-        adjust_text(texts, expand=(1,2), arrowprops=dict(arrowstyle='->', color='gray'));
+        ax.scatter(np.abs(AP_R),np.abs(Subs_R),color='gray',s=200);
+        if numerbMaps:
+            texts = [ax.text(contextHM['axiscorrAPPD'][0,f], contextHM['subfieldsmaxcorr'][f], str(int(feature)), ha='center', va='center') for f,feature in enumerate(contextHM['feature_n'])]
+            for t in range(nT):
+                texts.append(ax.text(np.abs(AP_R[t]), np.abs(Subs_R[t]), taskNames[t], ha='center', va='center'))
+        else:
+            texts = [ax.text(contextHM['axiscorrAPPD'][0,f], contextHM['subfieldsmaxcorr'][f], feature, ha='center', va='center') for f,feature in enumerate(contextHM['features'])]
+            for t in range(nT):
+                texts.append(ax.text(np.abs(AP_R[t]), np.abs(Subs_R[t]), taskNames[t], ha='center', va='center'))
+            adjust_text(texts, expand=(1,2), arrowprops=dict(arrowstyle='->', color='gray'));
             
     return context2D, ax
