@@ -83,9 +83,12 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den=
         permutedimg[:, :, ii] = transrotimg  # this is our permuted image at unfoldiso density
 
     r_obs = pearsonr(imgfix.flatten(), imgperm.flatten())[0]  
-    for ii in range(nperm):
-        metricnull[ii] = eval(metric)(imgfix.flatten(), permutedimg[:,:,ii].flatten())[0]  
-    
+
+    if metric=='pearsonr':
+        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), permutedimg.reshape([254*126,nperm])),axis=1))[0,1:]
+    elif metric=='spearmanr':
+        metricnull = spearmanr(imgfix.reshape([-1,1]), permutedimg.reshape([254*126,nperm]))[0][0,1:]
+
     # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
     pval = np.mean(np.abs(metricnull) >= np.abs(r_obs))  
 
@@ -141,19 +144,17 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den
 
     # randomize
     imgperm_rand = msr.randomize(imgperm)
-    metricnull = np.ones((nperm))*np.nan
-    for d in range(nperm):
-        try:
-            metricnull[d] = eval(metric)(imgfix, imgperm_rand[d,:])[0]
-        except: 
-            warnings.warn(f"permuation {d} contains a NaN or Inf")
+    if metric=='pearsonr':
+        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand.T),axis=1))[0,1:]
+    elif metric=='spearmanr':
+        metricnull = spearmanr(imgfix, imgperm_rand.T )[0][0,1:]
 
     # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
     pval = np.nanmean(np.abs(metricnull) >= np.abs(r_obs))  
 
     return metricnull, imgperm_rand, pval, r_obs
 
-def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm', num_modes=200, permute=False, resample=False, **qwargs):
+def eigenstrapping(imgfix, imgperm, nperm=10000, metric='pearsonr', label='hipp', den='0p5mm', num_modes=200, permute=False, resample=False, **qwargs):
     """
         Awesome new tool at https://www.biorxiv.org/content/10.1101/2024.02.07.579070v1.abstract
         Generates null models of spatial maps by rotating geometric eigenmodes.
@@ -209,12 +210,10 @@ def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp',
     hippomaps.utils.blockPrint()
     imgperm_rand = eigen(n=nperm)
     hippomaps.utils.enablePrint()
-    metricnull = np.ones((nperm))*np.nan
-    for d in range(nperm):
-        try:
-            metricnull[d] = eval(metric)(imgfix, imgperm_rand[d,:])[0]
-        except: 
-            warnings.warn(f"permuation {d} contains a NaN or Inf")
+    if metric=='pearsonr':
+        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand.T),axis=1))[0,1:]
+    elif metric=='spearmanr':
+        metricnull = spearmanr(imgfix, imgperm_rand.T)[0][0,1:]
 
     # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
     pval = np.nanmean(np.abs(metricnull) >= np.abs(r_obs))  
