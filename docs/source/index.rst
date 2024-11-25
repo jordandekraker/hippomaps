@@ -45,11 +45,13 @@ Other relevant repositories🗂️
 
 `hippunfold <https://github.com/khanlab/hippunfold/>`_
 
-`hippunfold_toolbox <https://github.com/jordandekraker/hippunfold_toolbox/>`_
-
 `Hippo_Spin_Testing <hhttps://github.com/Bradley-Karat/Hippo_Spin_Testing/>`_
 
 `BrainSpace <https://github.com/MICA-MNI/BrainSpace/>`_
+
+`BrainStat <https://brainstat.readthedocs.io/en/master/>`_
+
+`NiLearn <https://nilearn.github.io/stable/index.html>`_`
 
 `micapipe <https://github.com/MICA-MNI/micapipe/>`_
 
@@ -68,4 +70,5 @@ Contents
    installation
    tutorials
    api
+   community
    acknowledgements

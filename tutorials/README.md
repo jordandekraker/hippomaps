@@ -10,3 +10,5 @@ Each tutorial is organized into the following sections:
 - `1)` First step of actual data analysis
 
 - `2)+` Additional steps to break down and explain the analyses being done. These are specific to each tutorial, and include things like postprocessing, plotting, stats, etc.
+
+Note also that the `DimReduct <https://hippomaps.readthedocs.io/en/latest/tutorials/DimReduct.html>`_ tutorial on running dimensionality reduction and other analyses between all maps should be run AFTER all other tutorials (since it requires their output maps!)
