@@ -1,8 +1,8 @@
-Tools Index
+Tools Index 🔨
 =====================================
 .. _py-genindex:
 
-Plotting
+Plotting 📈
 -------------------------------------
 
 .. currentmodule:: hippomaps.plotting
@@ -14,7 +14,7 @@ Plotting
     surfplot_sub_foldunfold
 
 
-Stats
+Stats 📊
 -------------------------------------
 
 .. currentmodule:: hippomaps.stats
@@ -28,7 +28,7 @@ Stats
     contextualize2D
 
 
-Fetcher
+Fetcher 🔍
 -------------------------------------
 
 .. currentmodule:: hippomaps.fetcher
@@ -40,7 +40,7 @@ Fetcher
     get_map
 
 
-Utils
+Utils ⚙️
 -------------------------------------
 
 .. currentmodule:: hippomaps.utils

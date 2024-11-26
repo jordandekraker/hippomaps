@@ -1,4 +1,4 @@
-References & Acknowledgements
+References & Acknowledgements 📜
 =====================================
 
 
@@ -7,7 +7,7 @@ Citing Hippomaps🔗
 
 Preprint available soon
 
-References📚
+References 📚
 -------------------------------------
 
 DeKraker, J., Haast, R. A., Yousif, M. D., Karat, B., Lau, J. C., Köhler, S., & Khan, A. R. (2022). Automated hippocampal unfolding for morphometry and subfield segmentation with HippUnfold. Elife, 11, e77945.
@@ -22,7 +22,7 @@ Koussis, N. C., Pang, J. C., Jeganathan, J., Paton, B., Fornito, A., Robinson, P
 
 Vos de Wael R, Benkarim O, Paquola C, Lariviere S, Royer J, Tavakol S, Xu T, Hong S, Langs G, Valk S, Misic B, Milham M, Margulies D, Smallwood J, Bernhardt B (2020). BrainSpace: a toolbox for the analysis of macroscale gradients in neuroimaging and connectomics datasets. Commun Biol 3, 103.
 
-Funding💰
+Funding 💰
 -------------------------------------
 This project is supported by:
 
@@ -34,7 +34,7 @@ This project is supported by:
 
 `National Science and Engineering Research Council of Canada (NSERC) <https://www.nserc-crsng.gc.ca/>`_
 
-Core developers👩🏻‍💻
+Core developers 👩🏻‍💻
 -------------------------------------
 
 - **Jordan DeKraker**, *MICA Lab - Montreal Neurological Institute*

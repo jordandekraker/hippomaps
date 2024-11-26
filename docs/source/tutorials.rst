@@ -1,4 +1,4 @@
-Tutorials
+Tutorials 📚
 ==================
 
 .. include:: tutorials/README.md

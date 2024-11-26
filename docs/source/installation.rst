@@ -1,8 +1,8 @@
-Installation Guide
+Installation 💻
 =====================================
 
 
-Setting Python environment
+Setting Python environment 🐍
 -------------------------------------
 
 To use HippoMaps, we recommend creating a separate python environment first:
@@ -12,7 +12,7 @@ To use HippoMaps, we recommend creating a separate python environment first:
    $ virtualenv -p python3.9 venv
    $ source venv/bin/activate
 
-Install
+Install 💾
 -------------------------------------
 
 To install HippoMaps, clone and `pip` the repository:
@@ -22,15 +22,18 @@ To install HippoMaps, clone and `pip` the repository:
    $ git clone https://github.com/HippAI/hippomaps.git
    $ pip install -e hippomaps
 
-Test
+Test 🧪
 -------------------------------------
 
 You should now be able to access HippUnfold from your python console. For example:
 
 >>> import hippomaps as hm
 
-Recommended Softwares
+Recommended Softwares 🖱️
 -------------------------------------
+
+These command line tools are also used in the Tutorials presented here.
+
 `ANTS <https://github.com/ANTsX/ANTs/>`_
 
 `workbench <https://www.humanconnectome.org/software/connectome-workbench/>`_
