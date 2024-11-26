@@ -18,9 +18,10 @@ Or email `jordand.dekraker@mail.mcgill.ca <mailto:jordand.dekraker@mail.mcgill.c
 
 Link Your Own Projects
 -----------------------
-If you are doing a hippocampal mapping project and would like to:  
-1. Show off your work to others, or  
-2. Check whether somebody is doing similar work already,  
+If you are doing a hippocampal mapping project and would like to:
+
+1. Show off your work to others, or
+2. Check whether somebody is doing similar work already,
 
 please share a bit about it on the `GitHub Discussions <https://github.com/MICA-MNI/hippomaps/discussions>`_ page.  
 
