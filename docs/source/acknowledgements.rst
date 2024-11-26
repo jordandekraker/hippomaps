@@ -5,7 +5,10 @@ References & Acknowledgements 📜
 Citing Hippomaps🔗
 -------------------------------------
 
-Preprint available soon
+DeKraker, J., Cabalo, D.G., Royer, J., Khan, A.R., Karat, B., Benkarim, O., Rodriguez-Cruces, R., Frauscher, B., Pana, R., Hansen, J.Y. and Misic, B., 2024. HippoMaps: Multiscale cartography of human hippocampal organization. bioRxiv, pp.2024-02.
+
+https://www.biorxiv.org/content/10.1101/2024.02.23.581734v2.abstract
+
 
 References 📚
 -------------------------------------
