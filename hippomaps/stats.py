@@ -306,7 +306,7 @@ def contextualize2D(taskMaps, taskNames='', numerbMaps=False, n_topComparison=3,
                 topFeatures[t,c] = contextHM['features'][order[c]]
                 topR[t,c] = R[order[c]]
                 FeatWithPerm = np.concatenate((contextHM['featureData'][:,order[c]].reshape([nV,1]),permutedTasks[:,t,:]),axis=1)
-                metricnull = np.corrcoef(APWithPerm.T)[:1,1:]
+                metricnull = np.corrcoef(FeatWithPerm.T)[:1,1:]
                 topP[t,c] = np.nanmean(np.abs(metricnull) >= np.abs(topR[t,c]))
 
     # generate dict of results
