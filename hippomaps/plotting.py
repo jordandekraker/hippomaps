@@ -333,7 +333,7 @@ def area_rescale(vertices, den, label, APaxis=1):
         nib.load(
             f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-{label}_surfarea.shape.gii').darrays[
             0].data
-    surfarea, _, _ = hippomaps.utils.density_interp(den, 'unfoldiso', surfarea.flatten(), label)
+    surfarea = hippomaps.utils.density_interp(den, 'unfoldiso', surfarea.flatten(), label)
     surfarea = np.reshape(surfarea, (w, 254))
     surfarea = gaussian_filter(surfarea, sigma=s)
 
@@ -344,7 +344,7 @@ def area_rescale(vertices, den, label, APaxis=1):
     rescalefactor = rescalefactor + 1 - np.linspace(0, 1, len(rescalefactor))
 
     rescalefactor = repmat(rescalefactor, w, 1)
-    rescalefactor, _, _ = hippomaps.utils.density_interp('unfoldiso', den, rescalefactor.flatten(), label)
+    rescalefactor = hippomaps.utils.density_interp('unfoldiso', den, rescalefactor.flatten(), label)
 
     Pnew = Pold * rescalefactor
     vertices[:, APaxis] = Pnew

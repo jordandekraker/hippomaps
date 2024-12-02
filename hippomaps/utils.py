@@ -200,7 +200,7 @@ def fillnanvertices(F, V):
     return Vnew
 
 
-def density_interp(indensity, outdensity, cdata, label, method='linear', resourcesdir=resourcesdir):
+def density_interp(indensity, outdensity, cdata, label, method='linear'):
     """
        Interpolates data from one surface density onto another via unfolded space.
 
@@ -243,7 +243,7 @@ def density_interp(indensity, outdensity, cdata, label, method='linear', resourc
     interp = griddata(vertices_start[:, :2], values=cdata, xi=vertices_target[:, :2], method=method)
     # fill any NaNs
     interp = fillnanvertices(faces, interp)
-    return interp, faces, vertices_target
+    return interp
 
 
 def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, space='*', label='hipp', save_out_name=None,
@@ -298,7 +298,7 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
     # resample surface data into APxPD shape
     surf_data[np.isnan(surf_data)] = -999
     if indensity != 'unfildiso':
-        surf_data_unfoldiso, _, _ = density_interp(indensity, 'unfoldiso', surf_data, label, method=method)
+        surf_data_unfoldiso = density_interp(indensity, 'unfoldiso', surf_data, label, method=method)
     surf_data_unfoldiso = surf_data_unfoldiso.reshape(126, 254).T
     surf_data_unfoldiso[surf_data_unfoldiso == -999] = np.nan
 

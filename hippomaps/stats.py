@@ -25,6 +25,8 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den=
     """
        Permutation testing of unfolded hippocampus maps.
 
+       NOTE that permuations testing will be done in den='unfoldiso' desnity!
+
        Original code by Bradley Karat at https://github.com/Bradley-Karat/Hippo_Spin_Testing
        Karat, B. G., DeKraker, J., Hussain, U., Köhler, S., & Khan, A. R. (2023).
        Mapping the macrostructure and microstructure of the in vivo human hippocampus using diffusion MRI.
@@ -60,8 +62,8 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den=
 
     # resmaple to space-unfoldiso
     if den != 'unfoldiso':
-        imgperm = hippomaps.utils.density_interp(den, 'unfoldiso', imgperm, label=label, method='nearest')[0]
-        imgfix = hippomaps.utils.density_interp(den, 'unfoldiso', imgfix, label=label, method='nearest')[0]  
+        imgperm = hippomaps.utils.density_interp(den, 'unfoldiso', imgperm, label=label, method='nearest')
+        imgfix = hippomaps.utils.density_interp(den, 'unfoldiso', imgfix, label=label, method='nearest')
     if label == 'hipp':
         imgperm = np.reshape(imgperm, (126, 254))  # get maps to 126x254
         imgfix = np.reshape(imgfix, (126, 254))  # get maps to 126x254
@@ -92,7 +94,7 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den=
     # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
     pval = np.mean(np.abs(metricnull) >= np.abs(r_obs))  
 
-    return metricnull, permutedimg, pval, r_obs
+    return metricnull, permutedimg.reshape([254*126,nperm]), pval, r_obs
 
 
 def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm'):
@@ -143,11 +145,11 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den
     r_obs = eval(metric)(imgfix, imgperm)[0]
 
     # randomize
-    imgperm_rand = msr.randomize(imgperm)
+    imgperm_rand = msr.randomize(imgperm).T
     if metric=='pearsonr':
-        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand.T),axis=1))[0,1:]
+        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand),axis=1))[0,1:]
     elif metric=='spearmanr':
-        metricnull = spearmanr(imgfix, imgperm_rand.T )[0][0,1:]
+        metricnull = spearmanr(imgfix, imgperm_rand )[0][0,1:]
 
     # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
     pval = np.nanmean(np.abs(metricnull) >= np.abs(r_obs))  
@@ -208,12 +210,12 @@ def eigenstrapping(imgfix, imgperm, nperm=10000, metric='pearsonr', label='hipp'
 
     # randomize
     hippomaps.utils.blockPrint()
-    imgperm_rand = eigen(n=nperm)
+    imgperm_rand = eigen(n=nperm).T
     hippomaps.utils.enablePrint()
     if metric=='pearsonr':
-        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand.T),axis=1))[0,1:]
+        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand),axis=1))[0,1:]
     elif metric=='spearmanr':
-        metricnull = spearmanr(imgfix, imgperm_rand.T)[0][0,1:]
+        metricnull = spearmanr(imgfix, imgperm_rand)[0][0,1:]
 
     # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
     pval = np.nanmean(np.abs(metricnull) >= np.abs(r_obs))  
@@ -257,7 +259,7 @@ def contextualize2D(taskMaps, taskNames='', numerbMaps=False, n_topComparison=3,
     # resample all input data to 0p5mm (if needed)
     nV,iV = hippomaps.config.get_nVertices(['hipp'],'0p5mm')
     if taskMaps.shape[0] != nV:
-        taskMapsresamp,_,_ = hippomaps.utils.density_interp(hippomaps.config.get_label_from_nV(taskMaps.shape[0])[1],'0p5mm',taskMaps, label='hipp')
+        taskMapsresamp = hippomaps.utils.density_interp(hippomaps.config.get_label_from_nV(taskMaps.shape[0])[1],'0p5mm',taskMaps, label='hipp')
     else:
         taskMapsresamp = taskMaps
 
