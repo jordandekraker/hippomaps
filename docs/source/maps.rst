@@ -1,7 +1,7 @@
 Map Library 🗺
 ===================================
 
-All map data is being hosted on the `Open Science Framework <https://osf.io/92p34/>`
+All map data is being hosted on the `Open Science Framework <https://osf.io/92p34/>`_
 
 Initialization Maps
 --------------------
@@ -23,11 +23,11 @@ Note also that tutorials can be easily outfitted to run on new, locally-stored d
 Share your data
 -----------------------
 If you have mapped interesting data to hippocampal surfaces, consider sharing it as well! Several projects have already been shared:
-- 7T perfusion imaging `paper <https://www.pnas.org/doi/abs/10.1073/pnas.2310044121>`
-- 3D Polarized Light Imaging deep extracted features `paper <https://arxiv.org/abs/2402.17744>`
+- 7T perfusion imaging `paper <https://www.pnas.org/doi/abs/10.1073/pnas.2310044121>`_
+- 3D Polarized Light Imaging deep extracted features `paper <https://arxiv.org/abs/2402.17744>`_
 
-The best way to share your data is to message the `Community <https://hippomaps.readthedocs.io/en/latest/community.html>`
+The best way to share your data is to message the `Community <https://hippomaps.readthedocs.io/en/latest/community.html>`_
 
 Can I share volumetric data?
 
-Yes! in most cases, it is straightforward to map volumetric data to surfaces by running `HippUnfold <https://hippunfold.readthedocs.io/en/latest/>`. In some cases, you even be able to skip this by mapping directly to pre-generated surfaces in space-MNI152, which can be found `here <https://github.com/khanlab/hippunfold-templateflow>`
+Yes! in most cases, it is straightforward to map volumetric data to surfaces by running `HippUnfold <https://hippunfold.readthedocs.io/en/latest/>`_. In some cases, you even be able to skip this by mapping directly to pre-generated surfaces in space-MNI152, which can be found `here <https://github.com/khanlab/hippunfold-templateflow>`
