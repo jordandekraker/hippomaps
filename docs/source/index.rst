@@ -70,5 +70,6 @@ Contents
    installation
    tutorials
    api
+   maps
    community
    acknowledgements
