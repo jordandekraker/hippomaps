@@ -13,13 +13,17 @@ from scipy.interpolate import interpn
 from numpy.matlib import repmat
 import pygeodesic.geodesic as geodesic
 from pathlib import Path
-resourcesdir = str(Path(__file__).parents[1]) + '/hippomaps/resources'
+
+resourcesdir = str(Path(__file__).parents[1]) + "/hippomaps/resources"
+
 
 def blockPrint():
-    sys.stdout = open(os.devnull, 'w')
+    sys.stdout = open(os.devnull, "w")
+
 
 def enablePrint():
     sys.stdout = sys.__stdout__
+
 
 def avg_neighbours(F, cdat, n):
     """
@@ -40,66 +44,68 @@ def avg_neighbours(F, cdat, n):
     cdat = np.reshape(cdat, (len(cdat), -1))
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        out = np.nanmean(cdat[v,:], 0)
+        out = np.nanmean(cdat[v, :], 0)
     return out
 
 
 def surfdat_smooth(F, cdata, iters=1, cores=1):
     """
-       Smooths surface data across neighboring vertices.
-       TODO: convert to mm vis calibration curves in https://github.com/MELDProject/meld_classifier/blob/9d3d364de86dc207d3a1e5ec11dcab3ef012ebcb/meld_classifier/mesh_tools.py#L17'''
-       This function assumes that vertices are evenly spaced and evenly connected.
+    Smooths surface data across neighboring vertices.
+    TODO: convert to mm vis calibration curves in https://github.com/MELDProject/meld_classifier/blob/9d3d364de86dc207d3a1e5ec11dcab3ef012ebcb/meld_classifier/mesh_tools.py#L17'''
+    This function assumes that vertices are evenly spaced and evenly connected.
 
-       Parameters
-       ----------
-       F : numpy.ndarray
-       cdata : numpy.ndarray
-       iters : int, optional
-       cores : int, optional
-       Returns
-       -------
-       numpy.ndarray
-           Smoothed surface data across neighboring vertices.
-       """
+    Parameters
+    ----------
+    F : numpy.ndarray
+    cdata : numpy.ndarray
+    iters : int, optional
+    cores : int, optional
+    Returns
+    -------
+    numpy.ndarray
+        Smoothed surface data across neighboring vertices.
+    """
     sz = cdata.shape
     cdata = cdata.reshape(cdata.shape[0], -1)
     cdata_smooth = copy.deepcopy(cdata)
     for i in range(iters):
-        if cores>1:
-            c = Parallel(n_jobs=cores, backend='multiprocessing')(delayed(avg_neighbours)(F, cdata, n) for n in range(len(cdata)))
+        if cores > 1:
+            c = Parallel(n_jobs=cores, backend="multiprocessing")(
+                delayed(avg_neighbours)(F, cdata, n) for n in range(len(cdata))
+            )
             cdata_smooth = np.array(c)
         else:
             for n in range(len(cdata)):
-                cdata_smooth[n,:] = avg_neighbours(F, cdata, n)
+                cdata_smooth[n, :] = avg_neighbours(F, cdata, n)
         cdata = copy.deepcopy(cdata_smooth)
     return cdata_smooth.reshape(sz)
 
 
-def profile_align(P, patchdist=None, V=[],F=[], maxroll=5):
+def profile_align(P, patchdist=None, V=[], F=[], maxroll=5):
     """
-       Aligns microstructural profiles in the depth direction across a set of surfaces.
+    Aligns microstructural profiles in the depth direction across a set of surfaces.
 
-       Parameters
-       ----------
-       P : A VxD matrix of intensities (vertices x depths).
-       V : The midthickness surface vertices.
-       F : The midthickness surface faces.
-       patchdist : Radius (in mm) of geodesic distance to compute the average profile.
-           If None, then all profiles are used. Default is None.
-       maxroll : int
-           Maximum shift.
-       Returns
-       -------
-       A matrix the same size as P, pads profiles by maxroll, then rolls them by +/- maxroll until maximum overlap
-           with the patch average is achieved.
+    Parameters
+    ----------
+    P : A VxD matrix of intensities (vertices x depths).
+    V : The midthickness surface vertices.
+    F : The midthickness surface faces.
+    patchdist : Radius (in mm) of geodesic distance to compute the average profile.
+        If None, then all profiles are used. Default is None.
+    maxroll : int
+        Maximum shift.
+    Returns
+    -------
+    A matrix the same size as P, pads profiles by maxroll, then rolls them by +/- maxroll until maximum overlap
+        with the patch average is achieved.
 
-       Notes
-       -----
-       - If patchdist is None, the function aligns profiles based on the mean profile across all vertices.
-       - If patchdist is specified, the function aligns profiles based on the mean profile within a geodesic patch around each vertex.
-       - The alignment is performed by rolling the profiles to achieve maximum correlation with the reference profile.
-       """
-    P = np.pad(P, ((0, 0), (maxroll, maxroll)), mode='edge')
+    Notes
+    -----
+    - If patchdist is None, the function aligns profiles based on the mean profile across all vertices.
+    - If patchdist is specified, the function aligns profiles based on the mean profile within a geodesic patch around each vertex.
+    - The alignment is performed by rolling the profiles to achieve maximum correlation with the reference profile.
+    """
+    P = np.pad(P, ((0, 0), (maxroll, maxroll)), mode="edge")
     Paligned = np.ones(P.shape) * np.nan
 
     if patchdist == None:
@@ -132,23 +138,23 @@ def profile_align(P, patchdist=None, V=[],F=[], maxroll=5):
 
 def laplace_solver(faces, init, maxiters=1e4, conv=1e-6, cores=8):
     """
-        Solves the Laplace equation along vertices of a surface.
+    Solves the Laplace equation along vertices of a surface.
 
-        Parameters
-        ----------
-        faces : Faces of a surface mesh.
-        init : Initial vertex-wise values. Source(s) should have a value of 0, Sink(s) should have a value of 1. NaN values will be masked. Time required scales with the number of unmasked vertices.
-        maxiters : int, optional
-            Maximum iterations to run. Default is 1e4.
-        conv : float, optional
-            Convergence criterion. Default is 1e-6.
-        cores : int, optional
-            Number of CPU cores to use (per iteration). Default is 8.
-        Returns
-        -------
-        LP : Laplace solution (vertex-wise).
-        change : sum of absolute changes per iteration (should converge towards 0)
-        """
+    Parameters
+    ----------
+    faces : Faces of a surface mesh.
+    init : Initial vertex-wise values. Source(s) should have a value of 0, Sink(s) should have a value of 1. NaN values will be masked. Time required scales with the number of unmasked vertices.
+    maxiters : int, optional
+        Maximum iterations to run. Default is 1e4.
+    conv : float, optional
+        Convergence criterion. Default is 1e-6.
+    cores : int, optional
+        Number of CPU cores to use (per iteration). Default is 8.
+    Returns
+    -------
+    LP : Laplace solution (vertex-wise).
+    change : sum of absolute changes per iteration (should converge towards 0)
+    """
     ind_start = np.where(init == 0)[0]
     ind_end = np.where(init == 1)[0]
     mask = np.where(np.isnan(init))[0]
@@ -171,18 +177,18 @@ def laplace_solver(faces, init, maxiters=1e4, conv=1e-6, cores=8):
 
 def fillnanvertices(F, V):
     """
-       Fills NaNs by iteratively computing the nanmean of nearest neighbors until no NaNs remain.
-       Can be used to fill missing vertices OR missing vertex cdata.
+    Fills NaNs by iteratively computing the nanmean of nearest neighbors until no NaNs remain.
+    Can be used to fill missing vertices OR missing vertex cdata.
 
-       Parameters
-       ----------
-       F : Faces of a surface mesh.
-       V : Vertex coordinates or vertex-wise data with potential NaN values.
+    Parameters
+    ----------
+    F : Faces of a surface mesh.
+    V : Vertex coordinates or vertex-wise data with potential NaN values.
 
-       Returns
-       -------
-       The array with NaN values filled by the nanmean of nearest neighbors.
-       """
+    Returns
+    -------
+    The array with NaN values filled by the nanmean of nearest neighbors.
+    """
     Vold = copy.deepcopy(V)
     Vnew = copy.deepcopy(V)
     while np.isnan(np.sum(Vnew)):
@@ -200,31 +206,31 @@ def fillnanvertices(F, V):
     return Vnew
 
 
-def density_interp(indensity, outdensity, cdata, label, method='linear'):
+def density_interp(indensity, outdensity, cdata, label, method="linear"):
     """
-       Interpolates data from one surface density onto another via unfolded space.
+    Interpolates data from one surface density onto another via unfolded space.
 
-       Parameters
-       ----------
-       indensity : str
-           One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
-       outdensity : str
-           One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
-       cdata : numpy.ndarray (true)
-           Data to be interpolated (same number of vertices, N, as indensity).
-       label : str
-           'hipp' or 'dentate'.
-       method : str, optional
-           Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'linear'. (true?)
-       resourcesdir : str, optional
-           Path to the hippunfold resources folder.
+    Parameters
+    ----------
+    indensity : str
+        One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+    outdensity : str
+        One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+    cdata : numpy.ndarray (true)
+        Data to be interpolated (same number of vertices, N, as indensity).
+    label : str
+        'hipp' or 'dentate'.
+    method : str, optional
+        Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'linear'. (true?)
+    resourcesdir : str, optional
+        Path to the hippunfold resources folder.
 
-       Returns
-       -------
-       interp : interpolated data
-       faces: face connectivity from new surface density
+    Returns
+    -------
+    interp : interpolated data
+    faces: face connectivity from new surface density
     """
-    VALID_STATUS = {'0p5mm', '1mm', '2mm', 'unfoldiso'}
+    VALID_STATUS = {"0p5mm", "1mm", "2mm", "unfoldiso"}
     if indensity not in VALID_STATUS:
         raise ValueError("results: indensity must be one of %r." % VALID_STATUS)
     if outdensity not in VALID_STATUS:
@@ -232,81 +238,178 @@ def density_interp(indensity, outdensity, cdata, label, method='linear'):
 
     # load unfolded surfaces for topological matching
     startsurf = nib.load(
-        f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{indensity}_label-{label}_midthickness.surf.gii')
-    vertices_start = startsurf.get_arrays_from_intent('NIFTI_INTENT_POINTSET')[0].data
+        f"{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{indensity}_label-{label}_midthickness.surf.gii"
+    )
+    vertices_start = startsurf.get_arrays_from_intent("NIFTI_INTENT_POINTSET")[0].data
     targetsurf = nib.load(
-        f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii')
-    vertices_target = targetsurf.get_arrays_from_intent('NIFTI_INTENT_POINTSET')[0].data
-    faces = targetsurf.get_arrays_from_intent('NIFTI_INTENT_TRIANGLE')[0].data
+        f"{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii"
+    )
+    vertices_target = targetsurf.get_arrays_from_intent("NIFTI_INTENT_POINTSET")[0].data
+    faces = targetsurf.get_arrays_from_intent("NIFTI_INTENT_TRIANGLE")[0].data
 
     # interpolate
-    interp = griddata(vertices_start[:, :2], values=cdata, xi=vertices_target[:, :2], method=method)
+    interp = griddata(
+        vertices_start[:, :2], values=cdata, xi=vertices_target[:, :2], method=method
+    )
     # fill any NaNs
     interp = fillnanvertices(faces, interp)
     return interp
 
 
-def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, space='*', label='hipp', save_out_name=None,
-                      method='nearest'):
+def version_converstion(
+    inversion,
+    indensity,
+    outversion,
+    outdensity,
+    cdata,
+    label,
+    method="linear",
+    resourcesdir=None,
+):
     """
-       Labels voxels using data on a folded/unfolded surface and native space coordinates images.
-        from https://github.com/khanlab/hippunfold/blob/master/hippunfold/workflow/scripts/label_subfields_from_vol_coords.py
-        this function labels voxels using data on a folded/unfolded surface (midthickness or any), and native space coords (ap, pd) images
-        TODO: consider trying to simplify inputs specifying the coords paths?
+    Convert data from one hippunfold version onto another via unfolded space.
 
-       Parameters
-       ----------
-       surf_data : Data on the folded/unfolded surface (midthickness or any).
-       indensity : str
-           Density of the unfolded space. One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
-       hippunfold_dir : str
-           Directory path to the HippUnfold output.
-       sub : str
-           Subject identifier.
-       ses : str
-           Session identifier.
-       hemi : str
-           Hemisphere. Either 'L' or 'R'.
-       space : str, optional
-            Default is '*'.
-       label : str, optional
-            Default is 'hipp'.
-       save_out_name : str, optional
-           Output file name to save the label image. Default is None.
-       method : str, optional
-           Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'nearest'.
-       Returns
-       -------
-       numpy.ndarray
-           Labeled voxel data.
-       """
+    Parameters
+    ----------
+    inversion : str
+        One of 'v1' or 'v2'.
+    indensity : str
+        'v1': one of '0p5mm', '1mm', '2mm'.
+        'v2': one of '18k', '8k', '2k'
+    inversion : str
+        One of 'v1' or 'v2'.
+    outdensity : str
+        'v1': one of '0p5mm', '1mm', '2mm'.
+        'v2': one of '18k', '8k', '2k'
+    cdata : numpy.ndarray (true)
+        Data to be interpolated (same number of vertices, N, as indensity).
+    label : str
+        'hipp' or 'dentate'.
+    method : str, optional
+        Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'linear'. (true?)
+    resourcesdir : str, optional
+        Path to the hippunfold resources folder.
+
+    Returns
+    -------
+    interp : interpolated data
+    faces: face connectivity from new surface density
+    """
+    VALID_STATUS = {"v1": {"0p5mm", "1mm", "2mm"}, "v2": {"18k", "8k", "2k"}}
+    if inversion not in VALID_STATUS:
+        raise ValueError(
+            "results: inversion must be one of %r." % set(VALID_STATUS.keys())
+        )
+    if indensity not in VALID_STATUS[inversion]:
+        raise ValueError(
+            "results: indensity must be one of %r." % set(VALID_STATUS.get(inversion))
+        )
+    if outversion not in VALID_STATUS:
+        raise ValueError(
+            "results: outversion must be one of %r." % set(VALID_STATUS.keys())
+        )
+    if outdensity not in VALID_STATUS[outversion]:
+        raise ValueError(
+            "results: outdensity must be one of %r." % set(VALID_STATUS.get(outversion))
+        )
+
+    # load unfolded surfaces for topological matching
+    startsurf = nib.load(
+        f"{resourcesdir}/canonical_surfs/{inversion}/tpl-avg_space-unfold_den-{indensity}_label-{label}_midthickness.surf.gii"
+    )
+    vertices_start = startsurf.get_arrays_from_intent("NIFTI_INTENT_POINTSET")[0].data
+    targetsurf = nib.load(
+        f"{resourcesdir}/canonical_surfs/{outversion}/tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii"
+    )
+    vertices_target = targetsurf.get_arrays_from_intent("NIFTI_INTENT_POINTSET")[0].data
+    faces = targetsurf.get_arrays_from_intent("NIFTI_INTENT_TRIANGLE")[0].data
+
+    # interpolate
+    interp = griddata(
+        vertices_start[:, :2], values=cdata, xi=vertices_target[:, :2], method=method
+    )
+    # fill any NaNs
+    interp = fillnanvertices(faces, interp)
+    return interp
+
+
+def surface_to_volume(
+    surf_data,
+    indensity,
+    hippunfold_dir,
+    sub,
+    ses,
+    hemi,
+    space="*",
+    label="hipp",
+    save_out_name=None,
+    method="nearest",
+):
+    """
+    Labels voxels using data on a folded/unfolded surface and native space coordinates images.
+     from https://github.com/khanlab/hippunfold/blob/master/hippunfold/workflow/scripts/label_subfields_from_vol_coords.py
+     this function labels voxels using data on a folded/unfolded surface (midthickness or any), and native space coords (ap, pd) images
+     TODO: consider trying to simplify inputs specifying the coords paths?
+
+    Parameters
+    ----------
+    surf_data : Data on the folded/unfolded surface (midthickness or any).
+    indensity : str
+        Density of the unfolded space. One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+    hippunfold_dir : str
+        Directory path to the HippUnfold output.
+    sub : str
+        Subject identifier.
+    ses : str
+        Session identifier.
+    hemi : str
+        Hemisphere. Either 'L' or 'R'.
+    space : str, optional
+         Default is '*'.
+    label : str, optional
+         Default is 'hipp'.
+    save_out_name : str, optional
+        Output file name to save the label image. Default is None.
+    method : str, optional
+        Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'nearest'.
+    Returns
+    -------
+    numpy.ndarray
+        Labeled voxel data.
+    """
     if len(ses) > 0:
-        ses = 'ses-' + ses
-        uses = '_' + ses
+        ses = "ses-" + ses
+        uses = "_" + ses
     else:
-        uses = ''
+        uses = ""
 
     nii_ap = glob.glob(
-        f'{hippunfold_dir}/sub-{sub}/{ses}/coords/sub-{sub}{uses}_dir-AP_hemi-{hemi}_space-{space}_label-{label}_desc-laplace_coords.nii.gz')[
-        0]
+        f"{hippunfold_dir}/sub-{sub}/{ses}/coords/sub-{sub}{uses}_dir-AP_hemi-{hemi}_space-{space}_label-{label}_desc-laplace_coords.nii.gz"
+    )[0]
     nii_pd = glob.glob(
-        f'{hippunfold_dir}/sub-{sub}/{ses}/coords/sub-{sub}{uses}_dir-PD_hemi-{hemi}_space-{space}_label-{label}_desc-laplace_coords.nii.gz')[
-        0]
-    nii_mask = \
-        glob.glob(f'{hippunfold_dir}/sub-{sub}/{ses}/anat/sub-{sub}{uses}_hemi-{hemi}_space-{space}_*_dseg.nii.gz')[0]
+        f"{hippunfold_dir}/sub-{sub}/{ses}/coords/sub-{sub}{uses}_dir-PD_hemi-{hemi}_space-{space}_label-{label}_desc-laplace_coords.nii.gz"
+    )[0]
+    nii_mask = glob.glob(
+        f"{hippunfold_dir}/sub-{sub}/{ses}/anat/sub-{sub}{uses}_hemi-{hemi}_space-{space}_*_dseg.nii.gz"
+    )[0]
 
     # resample surface data into APxPD shape
     surf_data[np.isnan(surf_data)] = -999
-    if indensity != 'unfildiso':
-        surf_data_unfoldiso = density_interp(indensity, 'unfoldiso', surf_data, label, method=method)
+    if indensity != "unfildiso":
+        surf_data_unfoldiso = density_interp(
+            indensity, "unfoldiso", surf_data, label, method=method
+        )
     surf_data_unfoldiso = surf_data_unfoldiso.reshape(126, 254).T
     surf_data_unfoldiso[surf_data_unfoldiso == -999] = np.nan
 
     # undo unfolded space warp
     warp = glob.glob(
-        f'{hippunfold_dir}/../work/sub-{sub}/{ses}/warps/sub-{sub}{uses}_hemi-{hemi}_space-unfold_desc-SyN_from-*_to-subject_type-itk_xfm.nii.gz')
-    if not warp: raise Warning(
-        "No unfolded space warp found. It may be that your HippUnfold output work dir is tarred, or you ran hippunfold without unfolded space registration. Proceeding without unfolded space registration")
+        f"{hippunfold_dir}/../work/sub-{sub}/{ses}/warps/sub-{sub}{uses}_hemi-{hemi}_space-unfold_desc-SyN_from-*_to-subject_type-itk_xfm.nii.gz"
+    )
+    if not warp:
+        raise Warning(
+            "No unfolded space warp found. It may be that your HippUnfold output work dir is tarred, or you ran hippunfold without unfolded space registration. Proceeding without unfolded space registration"
+        )
     try:
         t = nib.load(warp[0])
         tmp_nib = nib.Nifti1Image(surf_data_unfoldiso, t.affine)
@@ -315,8 +418,11 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
             meth = "NearestNeighbor"
         elif method == "linear":
             meth = "Linear"
-        t = os.system(f"antsApplyTransforms -i tmp.nii.gz -r tmp.nii.gz -o tmpWarped.nii.gz -t {warp[0]} -n {meth}")
-        if t != 0: raise Exception("ANTs not found or returning error")
+        t = os.system(
+            f"antsApplyTransforms -i tmp.nii.gz -r tmp.nii.gz -o tmpWarped.nii.gz -t {warp[0]} -n {meth}"
+        )
+        if t != 0:
+            raise Exception("ANTs not found or returning error")
         surf_data_unfoldiso = nib.load("tmpWarped.nii.gz").get_fdata()[:, :, 0]
         os.system("rm tmp.nii.gz tmpWarped.nii.gz")
     except:
@@ -336,9 +442,9 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
     # get mask of coords
     mask_nib = nib.load(nii_mask)
     mask_img = mask_nib.get_fdata()
-    if label == 'hipp':
+    if label == "hipp":
         mask = np.logical_and(mask_img > 0, mask_img < 6)
-    elif label == 'dentate':
+    elif label == "dentate":
         mask = mask_img == 6
     else:
         mask = mask_img > 0
@@ -356,4 +462,3 @@ def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, spac
         label_nib = nib.Nifti1Image(label_img, ap_nib.affine, ap_nib.header)
         nib.save(label_nib, save_out_name)
     return label_img
-
