@@ -277,7 +277,9 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L', 'R']
     if 'color_bar' in qwargs:
         new_size[0] = new_size[0] + 70
 
-    p = plot_surf(surfDict, surfList, array_name=arrName, size=new_size, cmap=cmaps, **new_qwargs)
+    p = plot_surf(
+        surfDict, surfList, array_name=arrName, size=new_size, cmap=cmaps, **new_qwargs
+    )
     return p
 
 
