@@ -31,6 +31,11 @@ In the [tutorials](https://github.com/jordandekraker/hippomaps/tree/master/tutor
 
 These tutorials provide clear examples of how the tools here can be used, but for shorter examples and usage notes, see also [demos](https://github.com/jordandekraker/hippomaps/tree/master/hippomaps/demos/).
 
+Updates🛠️
+-------------------------------------
+
+Surfaces from Hippunfold version 2 are now supported and can be interpolated between version 1 ('0p5mm', '1mm', '2mm', 'unfoldiso') and 2 ('2k', '8k', '18k') densities using the density_interp function
+
 Other relevant repositories🗂️
 -------------------------------------
 
