@@ -213,9 +213,9 @@ def density_interp(indensity, outdensity, cdata, label, method="linear"):
     Parameters
     ----------
     indensity : str
-        One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+        One of '0p5mm', '1mm', '2mm', 'unfoldiso', '2k', '8k', '18k'.
     outdensity : str
-        One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+        One of '0p5mm', '1mm', '2mm', 'unfoldiso', '2k', '8k', '18k'.
     cdata : numpy.ndarray (true)
         Data to be interpolated (same number of vertices, N, as indensity).
     label : str
@@ -230,19 +230,20 @@ def density_interp(indensity, outdensity, cdata, label, method="linear"):
     interp : interpolated data
     faces: face connectivity from new surface density
     """
-    VALID_STATUS = {"0p5mm", "1mm", "2mm", "unfoldiso"}
+    VALID_STATUS = {"0p5mm", "1mm", "2mm", "unfoldiso", "2k", "8k", "18k"}
     if indensity not in VALID_STATUS:
         raise ValueError("results: indensity must be one of %r." % VALID_STATUS)
     if outdensity not in VALID_STATUS:
         raise ValueError("results: outdensity must be one of %r." % VALID_STATUS)
+    version = "v1" if indensity in {"0p5mm", "1mm", "2mm", "unfoldiso"} else "v2"
 
     # load unfolded surfaces for topological matching
     startsurf = nib.load(
-        f"{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{indensity}_label-{label}_midthickness.surf.gii"
+        f"{resourcesdir}/canonical_surfs/{version}tpl-avg_space-unfold_den-{indensity}_label-{label}_midthickness.surf.gii"
     )
     vertices_start = startsurf.get_arrays_from_intent("NIFTI_INTENT_POINTSET")[0].data
     targetsurf = nib.load(
-        f"{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii"
+        f"{resourcesdir}/canonical_surfs/{version}tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii"
     )
     vertices_target = targetsurf.get_arrays_from_intent("NIFTI_INTENT_POINTSET")[0].data
     faces = targetsurf.get_arrays_from_intent("NIFTI_INTENT_TRIANGLE")[0].data
@@ -267,8 +268,8 @@ def version_conversion(
     inversion : str
         One of 'v1' or 'v2'.
     indensity : str
-        'v1': one of '0p5mm', '1mm', '2mm'.
-        'v2': one of '18k', '8k', '2k'
+        One of '0p5mm', '1mm', '2mm' for version 'v1'.
+        One of '18k', '8k', '2k' for version 'v2'
     inversion : str
         One of 'v1' or 'v2'.
     outdensity : str
