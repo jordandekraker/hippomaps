@@ -256,15 +256,8 @@ def density_interp(indensity, outdensity, cdata, label, method="linear"):
     return interp
 
 
-def version_converstion(
-    inversion,
-    indensity,
-    outversion,
-    outdensity,
-    cdata,
-    label,
-    method="linear",
-    resourcesdir=None,
+def version_conversion(
+    inversion, indensity, outversion, outdensity, cdata, label, method="linear"
 ):
     """
     Convert data from one hippunfold version onto another via unfolded space.
