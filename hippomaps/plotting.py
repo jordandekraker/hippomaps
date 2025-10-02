@@ -2,6 +2,7 @@ import numpy as np
 import nibabel as nib
 import copy
 import glob
+import warnings
 from scipy.ndimage.filters import gaussian_filter
 from numpy.matlib import repmat
 from brainspace.mesh.mesh_io import read_surface
@@ -56,6 +57,11 @@ def surfplot_canonical_foldunfold(cdata, hemis=['L', 'R'], labels=['hipp', 'dent
         f'{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-{den}_label-hipp_midthickness.surf.gii')
     ru = read_surface(f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{den}_label-hipp_midthickness.surf.gii')
     ru.Points = ru.Points[:, [1, 0, 2]]  # reorient unfolded
+
+    if den in {"18k", "8k", "2k"} and unfoldAPrescale:
+        warnings.warn("Hippunfold v2 outputs do not require unfoldAPrescale")
+        unfoldAPrescale = False	
+
     if unfoldAPrescale: ru.Points = area_rescale(ru.Points, den, 'hipp', APaxis=1)
     if len(labels) == 2:
         ud = read_surface(
@@ -172,6 +178,10 @@ def surfplot_sub_foldunfold(hippunfold_dir, sub, ses, features, hemis=['L', 'R']
         uses = '_' + ses
     else:
         uses = ''
+    
+    if den in {"18k", "8k", "2k"} and unfoldAPrescale:
+        warnings.warn("Hippunfold v2 outputs do not require unfoldAPrescale")
+        unfoldAPrescale = False	
 
     # load surfaces
     surf = []

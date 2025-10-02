@@ -207,9 +207,9 @@ def density_interp(indensity, outdensity, cdata, label, method='linear'):
        Parameters
        ----------
        indensity : str
-           One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+           One of '0p5mm', '1mm', '2mm', '18k', '8k', '2k' or 'unfoldiso'.
        outdensity : str
-           One of '0p5mm', '1mm', '2mm', or 'unfoldiso'.
+           One of '0p5mm', '1mm', '2mm', '18k', '8k', '2k' or 'unfoldiso'.
        cdata : numpy.ndarray (true)
            Data to be interpolated (same number of vertices, N, as indensity).
        label : str
@@ -224,7 +224,7 @@ def density_interp(indensity, outdensity, cdata, label, method='linear'):
        interp : interpolated data
        faces: face connectivity from new surface density
     """
-    VALID_STATUS = {'0p5mm', '1mm', '2mm', 'unfoldiso'}
+    VALID_STATUS = {'0p5mm', '1mm', '2mm', '18k', '8k', '2k', 'unfoldiso'}
     if indensity not in VALID_STATUS:
         raise ValueError("results: indensity must be one of %r." % VALID_STATUS)
     if outdensity not in VALID_STATUS:
