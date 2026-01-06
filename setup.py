@@ -49,6 +49,7 @@ setuptools.setup(
         "pygeodesic>=0.1.8",
         "wget>=3.2",
         "eigenstrapping>=0.1",
+        "netneurotools==0.2.5",
         "adjusttext>=1.3.0",
 	"pathlib",
 	"parspin",
