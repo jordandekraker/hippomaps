@@ -21,7 +21,7 @@ def blockPrint():
 def enablePrint():
     sys.stdout = sys.__stdout__
 
-    def _gii_array(gii: nib.gifti.GiftiImage, intent: str):
+def _gii_array(gii: nib.gifti.GiftiImage, intent: str):
     arrs = gii.get_arrays_from_intent(intent)
     if not arrs:
         raise ValueError(f"No GIFTI arrays with intent {intent}")
@@ -262,7 +262,6 @@ def density_interp(indensity, outdensity, cdata, label, method='linear'):
        Returns
        -------
        interp : interpolated data
-       faces: face connectivity from new surface density
     """
     VALID_STATUS = {'0p5mm', '1mm', '2mm', '18k', '8k', '2k', 'unfoldiso'}
     if indensity not in VALID_STATUS:
