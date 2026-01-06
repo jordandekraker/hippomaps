@@ -21,6 +21,46 @@ def blockPrint():
 def enablePrint():
     sys.stdout = sys.__stdout__
 
+    def _gii_array(gii: nib.gifti.GiftiImage, intent: str):
+    arrs = gii.get_arrays_from_intent(intent)
+    if not arrs:
+        raise ValueError(f"No GIFTI arrays with intent {intent}")
+    a = np.asarray(arrs[0].data)  # force materialization (avoids proxy oddities)
+    a = np.squeeze(a)             # drop accidental singleton dims
+    return a
+
+def _as_vertices(a: np.ndarray) -> np.ndarray:
+    a = np.asarray(a)
+    # Common cases: (N,3), (3,N), (1,N,3), flat (3N,)
+    if a.ndim == 2 and a.shape[0] == 3 and a.shape[1] != 3:
+        a = a.T
+    elif a.ndim == 1:
+        if a.size % 3 != 0:
+            raise ValueError(f"Pointset size not divisible by 3 (size={a.size})")
+        a = a.reshape((-1, 3))
+    elif a.ndim != 2 or a.shape[1] != 3:
+        # last-ditch: if it's something like (..., 3), flatten leading dims
+        if a.ndim >= 2 and a.shape[-1] == 3:
+            a = a.reshape((-1, 3))
+        else:
+            raise ValueError(f"Unexpected pointset shape {a.shape}")
+    return a.astype(np.float32, copy=False)
+
+def _as_faces(a: np.ndarray) -> np.ndarray:
+    a = np.asarray(a)
+    a = np.squeeze(a)
+    if a.ndim == 2 and a.shape[1] == 3:
+        pass
+    elif a.ndim == 2 and a.shape[0] == 3 and a.shape[1] != 3:
+        a = a.T
+    elif a.ndim == 1:
+        if a.size % 3 != 0:
+            raise ValueError(f"Triangle index size not divisible by 3 (size={a.size})")
+        a = a.reshape((-1, 3))
+    else:
+        raise ValueError(f"Unexpected triangle shape {a.shape}")
+    return a.astype(np.int32, copy=False)
+    
 def avg_neighbours(F, cdat, n):
     """
     Averages vertex-wise data at vertex n with its neighboring vertices.
@@ -232,12 +272,15 @@ def density_interp(indensity, outdensity, cdata, label, method='linear'):
 
     # load unfolded surfaces for topological matching
     startsurf = nib.load(
-        f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{indensity}_label-{label}_midthickness.surf.gii')
-    vertices_start = startsurf.get_arrays_from_intent('NIFTI_INTENT_POINTSET')[0].data
+        f"{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{indensity}_label-{label}_midthickness.surf.gii"
+    )
     targetsurf = nib.load(
-        f'{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii')
-    vertices_target = targetsurf.get_arrays_from_intent('NIFTI_INTENT_POINTSET')[0].data
-    faces = targetsurf.get_arrays_from_intent('NIFTI_INTENT_TRIANGLE')[0].data
+        f"{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii"
+    )
+    
+    vertices_start  = _as_vertices(_gii_array(startsurf,  "NIFTI_INTENT_POINTSET"))
+    vertices_target = _as_vertices(_gii_array(targetsurf, "NIFTI_INTENT_POINTSET"))
+    faces           = _as_faces(_gii_array(targetsurf, "NIFTI_INTENT_TRIANGLE"))
 
     # interpolate
     interp = griddata(vertices_start[:, :2], values=cdata, xi=vertices_target[:, :2], method=method)
