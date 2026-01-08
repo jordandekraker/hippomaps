@@ -233,7 +233,7 @@ def fillnanvertices(F, V):
             frows = np.where(F == n)[0]
             neighbours = np.unique(F[frows, :])
             Vnew[n] = np.nanmean(Vnew[neighbours], 0)
-        if sum(np.isnan(Vold)) == sum(np.isnan(Vnew)):  # stop if no changes
+        if np.sum(np.isnan(Vold)) == np.sum(np.isnan(Vnew)):  # stop if no changes
             break
         else:
             Vold = Vnew
