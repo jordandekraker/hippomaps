@@ -261,7 +261,7 @@ def density_interp(indensity, outdensity, cdata, label, method='linear'):
 
        Returns
        -------
-       interp : interpolated data
+       interp : interpolated data. Any NaN values will be interpolated.
     """
     VALID_STATUS = {'0p5mm', '1mm', '2mm', '18k', '8k', '2k', 'unfoldiso'}
     if indensity not in VALID_STATUS:
