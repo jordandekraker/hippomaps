@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GIFTI xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://brainvis.wustl.edu/caret6/xml_schemas/GIFTI_Caret.xsd"
+       Version="1"
+       NumberOfDataArrays="2">
+   <MetaData>
+      <MD>
+         <Name><![CDATA[ProgramProvenance]]></Name>
+         <Value><![CDATA[Connectome Workbench
+Type: Command Line Application
+Version: 2.0.1
+Qt Compiled Version: 5.15.2
+Qt Runtime Version: 5.15.2
+Commit: unknown
+Commit Date: unknown
+Compiler: x86_64-conda-linux-gnu-c++ (/root/miniconda3/envs/conda-recipe/conda-bld/dev-connectome-workbench-split_1738013200648/_build_env/bin)
+Compiler Version: 14.2.0
+Compiled Debug: NO
+Operating System: Linux
+Compiled with OpenMP: YES
+]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[Provenance]]></Name>
+         <Value><![CDATA[wb_command -surface-flip-normals tpl-multihist7/tpl-multihist7_hemi-R_space-unfold_label-dentate_resample-12.5_midthickness.surf.gii /nfs/khan/data/hippunfold_cache/hippunfold-atlases/tpl-multihist7/tpl-multihist7_hemi-R_space-unfold_den-512_label-dentate_midthickness.surf.gii]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[WorkingDirectory]]></Name>
+         <Value><![CDATA[/tmp/atlasgen_multihist7]]></Value>
+      </MD>
+   </MetaData>
+   <LabelTable>
+      <Label Key="0" Red="1" Green="1" Blue="1" Alpha="0"><![CDATA[???]]></Label>
+   </LabelTable>
+<DataArray Intent="NIFTI_INTENT_POINTSET"
+           DataType="NIFTI_TYPE_FLOAT32"
+           ArrayIndexingOrder="RowMajorOrder"
+           Dimensionality="2"
+           Dim0="128"
+           Dim1="3"
+           Encoding="GZipBase64Binary"
+           Endian="LittleEndian"
+           ExternalFileName=""
+           ExternalFileOffset="0">
+   <MetaData>
+      <MD>
+         <Name><![CDATA[AnatomicalStructurePrimary]]></Name>
+         <Value><![CDATA[HippocampusDentateRight]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[AnatomicalStructureSecondary]]></Name>
+         <Value><![CDATA[MidThickness]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[GeometricType]]></Name>
+         <Value><![CDATA[Flat]]></Value>
+      </MD>
+      <MD>
+         <Name><![CDATA[Name]]></Name>
+         <Value><![CDATA[#1]]></Value>
+      </MD>
+   </MetaData>
+   <CoordinateSystemTransformMatrix>
+      <DataSpace><![CDATA[NIFTI_XFORM_TALAIRACH]]></DataSpace>
+      <TransformedSpace><![CDATA[NIFTI_XFORM_TALAIRACH]]></TransformedSpace>
+      <MatrixData>
+         1 0 0 0 
+         0 1 0 0 
+         0 0 1 0 
+         0 0 0 1 
+      </MatrixData>
+   </CoordinateSystemTransformMatrix>
+   <Data>eJxN0C1uhUAAhVGCwWAwmJouAt+KtmERLIIlNGg0ejT66dc/g34ajUajmgyTcK466oovy9q/LC68ZNHh6/Lz9+UeB7zgHZc//OAGt7jDPR7wiCcc8Ixv+I4X/MAr3vCOD5z/Xi5wiStc46fT3x9X/+jUPzr1j+5xwAvecep//uAGt7jDPR7wiCcc8Ixv+I4X/MAr3vCOD5zTsMAlrnCNU//P96t/dOofnfpH9zjgBe849T9/cINb3OEeD3jEEw54xjd8xwt+4BVveMcHzmlY4BJXuMap/+vb1T869Y9O/aN7HPCCd5z6nz+4wS3ucI8HPOIJBzzjG77jBT/wije84wPnNCxwiStc47P/P7/FvUw=</Data>
+</DataArray>
+<DataArray Intent="NIFTI_INTENT_TRIANGLE"
+           DataType="NIFTI_TYPE_INT32"
+           ArrayIndexingOrder="RowMajorOrder"
+           Dimensionality="2"
+           Dim0="186"
+           Dim1="3"
+           Encoding="GZipBase64Binary"
+           Endian="LittleEndian"
+           ExternalFileName=""
+           ExternalFileOffset="0">
+   <MetaData>
+      <MD>
+         <Name><![CDATA[Name]]></Name>
+         <Value><![CDATA[#2]]></Value>
+      </MD>
+   </MetaData>
+   <Data>eJxNlYs3VFEYxQ8JKUIpJcUgM/JsmJGRkkdThjJeg5mEkEpek4oe/3rfXud3V9dae+3f/s5375l7zrlXuXOuwtRpemgqh8vJHabLZPGw6bapEVdOmm6RE3gSHjI1wA30JRhfhpfJK6bnpk3Te1x5HH5h2sI3qZeYWpz/a4VLuK6FnhbGxG9MR6ZDXPmtqR/uw/upi3up95LnTNdM1aYeUzdZ3M56dcBl5DLyJSRuM9Uyl+5/ndyH15kGGK+F602PGauDVX9mum96gCuPmZrJT/Ex+A5714grP8FH4BHyXVjeBMtTpj+mDdNfXPkd828w3wY18TrXp3DlNfyX6QJXznO/AtcXyL9DeQwVeK4C1+fxAv2lpojzZ0PeGuJS9iSCt8E6Z+P0RmDt2wQ9E+RJOBK6doLrdWZq2NMa9lhcTe7Be+GXzr93nfA0WfzRtIcrp01VppjpCq7c5fx5fGS6iit3w1XUq8hdrPc5e3FOvmCPVp0/D6vkNVh9P/FV6qOseR4fZV/W4TyunIKb6RHfIzeRU9RGqW2ztpOw/ANrrbzF+DY1rdMu67hL3mNNp5x/T6fhoNbu/r+/U8yxCwe9yjvwDr9hkiyOMlewj1H2qxKuQFF60vArPBbiytD+RuGvzn+LDnFlfZdmnT9Lc7hyD66eA3yWnpzph+k7LNd3OEkWD8NJenPse459D1h9wTnJwWfOf99XuPcZrG/avPPf2HnyAHwUqh+TB53//zEE3yQvmIqmU1x5kXmWmHuJ/A3WPRKhsQRe5NoiOegfDM27RM++8+9hGk6zX3qfXjv/Ts3AQS1GPUZW/yf4Mz4T4n169snq1fc+y1plWaMB1iNuusHvjIdq9dTjXF8PD/IsC+RFPBuaJ854xvnvR3CWMnCG5+uGZ8gZ+nTevpAPGM/wjBnGxCfMcwpnyfPkY2on1P4BkCaKag==</Data>
+</DataArray>
+</GIFTI>

@@ -240,34 +240,55 @@ def fillnanvertices(F, V):
     return Vnew
 
 
-def density_interp(indensity, outdensity, cdata, label, method='linear'):
-    """
-       Interpolates data from one surface density onto another via unfolded space.
+_V2_DENS = {"512", "2k", "8k", "18k"}
+_VALID_DENS = {"0p5mm", "1mm", "2mm", "18k", "8k", "2k", "unfoldiso"}
 
-       Parameters
-       ----------
-       indensity : str
-           One of '0p5mm', '1mm', '2mm', '18k', '8k', '2k' or 'unfoldiso'.
-       outdensity : str
-           One of '0p5mm', '1mm', '2mm', '18k', '8k', '2k' or 'unfoldiso'.
-       cdata : numpy.ndarray (true)
-           Data to be interpolated (same number of vertices, N, as indensity).
-       label : str
-           'hipp' or 'dentate'.
-       method : str, optional
-           Interpolation method. Options are 'nearest', 'linear', or 'cubic'. Default is 'linear'. (true?)
-       resourcesdir : str, optional
-           Path to the hippunfold resources folder.
-
-       Returns
-       -------
-       interp : interpolated data. Any NaN values will be interpolated.
+def density_interp(indensity, outdensity, cdata, label, method="linear",
+                   unfoldiso_is_v2=False):
     """
-    VALID_STATUS = {'0p5mm', '1mm', '2mm', '18k', '8k', '2k', 'unfoldiso'}
-    if indensity not in VALID_STATUS:
-        raise ValueError("results: indensity must be one of %r." % VALID_STATUS)
-    if outdensity not in VALID_STATUS:
-        raise ValueError("results: outdensity must be one of %r." % VALID_STATUS)
+    Interpolates data from one surface density onto another via unfolded space,
+    handling the v1 vs v2 space-unfold XY convention change.
+
+    Parameters
+    ----------
+    indensity, outdensity : str
+        One of {'0p5mm','1mm','2mm','18k','8k','2k','unfoldiso'}.
+    cdata : array-like, shape (N,)
+        Data on the indensity surface (N vertices).
+    label : {'hipp','dentate'}
+    method : {'nearest','linear','cubic'}
+    unfoldiso_is_v2 : bool
+        If True, treat 'unfoldiso' as having the new v2 unfold XY convention.
+        (Default False: treat unfoldiso like v1.)
+    """
+
+    if indensity not in _VALID_DENS:
+        raise ValueError(f"indensity must be one of {_VALID_DENS!r}.")
+    if outdensity not in _VALID_DENS:
+        raise ValueError(f"outdensity must be one of {_VALID_DENS!r}.")
+    if label not in {"hipp", "dentate"}:
+        raise ValueError("label must be 'hipp' or 'dentate'.")
+
+    cdata = np.asarray(cdata).ravel()
+
+    def is_v2_den(den: str) -> bool:
+        if den == "unfoldiso":
+            return bool(unfoldiso_is_v2)
+        return den in _V2_DENS
+
+    def to_common_unfold_xy(vertices: np.ndarray, den: str) -> np.ndarray:
+        """
+        Put unfolded vertices into the same XY convention:
+        - v1: swap x/y to match the historical (plotted) unfold view
+        - v2: already swapped → no-op
+        """
+        v = np.asarray(vertices)
+        if v.shape[1] < 2:
+            raise ValueError("vertices must be (N,3) or (N,>=2).")
+        if not is_v2_den(den):
+            v = v.copy()
+            v[:, [0, 1]] = v[:, [1, 0]]  # x/y swap
+        return v
 
     # load unfolded surfaces for topological matching
     startsurf = nib.load(
@@ -276,14 +297,24 @@ def density_interp(indensity, outdensity, cdata, label, method='linear'):
     targetsurf = nib.load(
         f"{resourcesdir}/canonical_surfs/tpl-avg_space-unfold_den-{outdensity}_label-{label}_midthickness.surf.gii"
     )
-    
+
     vertices_start  = _as_vertices(_gii_array(startsurf,  "NIFTI_INTENT_POINTSET"))
     vertices_target = _as_vertices(_gii_array(targetsurf, "NIFTI_INTENT_POINTSET"))
     faces           = _as_faces(_gii_array(targetsurf, "NIFTI_INTENT_TRIANGLE"))
 
-    # interpolate
-    interp = griddata(vertices_start[:, :2], values=cdata, xi=vertices_target[:, :2], method=method)
-    # fill any NaNs
+    if vertices_start.shape[0] != cdata.shape[0]:
+        raise ValueError(
+            f"cdata length ({cdata.shape[0]}) != indensity vertices ({vertices_start.shape[0]})"
+        )
+
+    # --- normalize both to a shared unfold XY convention ---
+    v0 = to_common_unfold_xy(vertices_start,  indensity)
+    v1 = to_common_unfold_xy(vertices_target, outdensity)
+
+    # interpolate in unfolded XY
+    interp = griddata(v0[:, :2], values=cdata, xi=v1[:, :2], method=method)
+
+    # fill any NaNs (holes at edges etc.)
     interp = fillnanvertices(faces, interp)
     return interp
 
