@@ -240,7 +240,7 @@ def fillnanvertices(F, V):
     return Vnew
 
 
-_V2_DENS = {"2k", "8k", "18k"}
+_V2_DENS = {"512", "2k", "8k", "18k"}
 _VALID_DENS = {"0p5mm", "1mm", "2mm", "18k", "8k", "2k", "unfoldiso"}
 
 def density_interp(indensity, outdensity, cdata, label, method="linear",
