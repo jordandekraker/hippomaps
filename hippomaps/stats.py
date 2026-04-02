@@ -147,7 +147,7 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den
     # randomize
     imgperm_rand = msr.randomize(imgperm).T
     if metric=='pearsonr':
-        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand),axis=1))[0,1:]
+        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand),axis=1).T)[0,1:]
     elif metric=='spearmanr':
         metricnull = spearmanr(imgfix, imgperm_rand )[0][0,1:]
 
