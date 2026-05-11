@@ -244,7 +244,7 @@ _V2_DENS = {"512", "2k", "8k", "18k"}
 _VALID_DENS = {"0p5mm", "1mm", "2mm", "18k", "8k", "2k", "unfoldiso"}
 
 def density_interp(indensity, outdensity, cdata, label, method="linear",
-                   unfoldiso_is_v2=False):
+                   unfoldiso_is_v2=False, return_faces=False):
     """
     Interpolates data from one surface density onto another via unfolded space,
     handling the v1 vs v2 space-unfold XY convention change.
@@ -316,7 +316,10 @@ def density_interp(indensity, outdensity, cdata, label, method="linear",
 
     # fill any NaNs (holes at edges etc.)
     interp = fillnanvertices(faces, interp)
-    return interp
+    if return_faces:
+        return interp,faces
+    else:
+        return interp
 
 
 def surface_to_volume(surf_data, indensity, hippunfold_dir, sub, ses, hemi, space='*', label='hipp', save_out_name=None,
