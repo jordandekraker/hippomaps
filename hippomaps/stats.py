@@ -21,6 +21,39 @@ from joblib import Parallel, delayed
 resourcesdir=str(Path(__file__).parents[1]) + '/hippomaps/resources'
 
 
+def _orient_null(imgperm_rand, nVertices):
+    """Orient a surrogate/null array to (nperm, nVertices).
+
+    Surrogate generators (eigenstrapping ``SurfaceEigenstrapping.__call__``,
+    Moran spectral randomization) return the permuted maps as either
+    (nperm, nVertices) or (nVertices, nperm) depending on their version. The
+    stats functions assume a single fixed layout (they call ``.T`` on the
+    result to build a (nVertices, nperm) array), so a version mismatch makes
+    the null distribution collapse onto the vertex axis (e.g. length 7261
+    instead of nperm). Use the reference map's vertex count -- which is
+    unambiguous -- as ground truth to always return (nperm, nVertices).
+
+    Parameters
+    ----------
+    imgperm_rand : np.ndarray
+        Permutation array, either (nperm, nVertices) or (nVertices, nperm).
+    nVertices : int
+        Number of vertices in the reference map (i.e. len(imgfix)).
+
+    Returns
+    -------
+    np.ndarray of shape (nperm, nVertices)
+    """
+    imgperm_rand = np.asarray(imgperm_rand)
+    if imgperm_rand.ndim == 1:
+        # a single permutation was returned squeezed to 1D
+        return imgperm_rand[np.newaxis, :]
+    # if the vertex axis is axis 0, transpose so it becomes axis 1
+    if imgperm_rand.shape[1] != nVertices and imgperm_rand.shape[0] == nVertices:
+        imgperm_rand = imgperm_rand.T
+    return imgperm_rand
+
+
 def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm'):
     """
        Permutation testing of unfolded hippocampus maps.
@@ -87,7 +120,9 @@ def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den=
     r_obs = pearsonr(imgfix.flatten(), imgperm.flatten())[0]  
 
     if metric=='pearsonr':
-        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), permutedimg.reshape([254*126,nperm])),axis=1))[0,1:]
+        # transpose so corrcoef treats each map as a variable (else the null
+        # collapses onto the vertex axis, giving a length-nVertices null).
+        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), permutedimg.reshape([254*126,nperm])),axis=1).T)[0,1:]
     elif metric=='spearmanr':
         metricnull = spearmanr(imgfix.reshape([-1,1]), permutedimg.reshape([254*126,nperm]))[0][0,1:]
 
@@ -145,9 +180,12 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den
     r_obs = eval(metric)(imgfix, imgperm)[0]
 
     # randomize
-    imgperm_rand = msr.randomize(imgperm).T
+    # _orient_null normalizes to (nperm, nVertices) across versions; .T -> (nVertices, nperm)
+    imgperm_rand = _orient_null(msr.randomize(imgperm), imgfix.shape[0]).T
     if metric=='pearsonr':
-        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand),axis=1))[0,1:]
+        # imgperm_rand is (nVertices, nperm); transpose so corrcoef treats each
+        # map as a variable (else the null collapses onto the vertex axis).
+        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand),axis=1).T)[0,1:]
     elif metric=='spearmanr':
         metricnull = spearmanr(imgfix, imgperm_rand )[0][0,1:]
 
@@ -210,10 +248,13 @@ def eigenstrapping(imgfix, imgperm, nperm=10000, metric='pearsonr', label='hipp'
 
     # randomize
     hippomaps.utils.blockPrint()
-    imgperm_rand = eigen(n=nperm).T
+    # _orient_null normalizes to (nperm, nVertices) across eigenstrapping versions; .T -> (nVertices, nperm)
+    imgperm_rand = _orient_null(eigen(n=nperm), imgfix.shape[0]).T
     hippomaps.utils.enablePrint()
     if metric=='pearsonr':
-        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand),axis=1))[0,1:]
+        # imgperm_rand is (nVertices, nperm); transpose so corrcoef treats each
+        # map as a variable (else the null collapses onto the vertex axis).
+        metricnull = np.corrcoef(np.concatenate((imgfix.reshape([-1,1]), imgperm_rand),axis=1).T)[0,1:]
     elif metric=='spearmanr':
         metricnull = spearmanr(imgfix, imgperm_rand)[0][0,1:]
 
@@ -270,7 +311,8 @@ def contextualize2D(taskMaps, taskNames='', numerbMaps=False, n_topComparison=3,
             surface=f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-0p5mm_label-hipp_midthickness.surf.gii",
             data=taskMapsresamp[:, t])
         hippomaps.utils.enablePrint()
-        return eigen(n=nperm).T  # Returns shape (nV, nperm)
+        # _orient_null normalizes to (nperm, nV) across eigenstrapping versions; .T -> (nV, nperm)
+        return _orient_null(eigen(n=nperm), nV).T  # Returns shape (nV, nperm)
     permutedTasks_list = Parallel(n_jobs=-1)(
         delayed(generate_permutations)(t) for t in range(nT)
     )
