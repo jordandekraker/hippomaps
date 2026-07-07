@@ -20,6 +20,39 @@ from pathlib import Path
 resourcesdir=str(Path(__file__).parents[1]) + '/hippomaps/resources'
 
 
+def _orient_null(imgperm_rand, nVertices, nperm):
+    """Return a permutation array oriented as (nperm, nVertices).
+
+    Surrogate/null generators (e.g. eigenstrapping, Moran spectral
+    randomization) return the permuted maps as either (nperm, nVertices) or
+    (nVertices, nperm) depending on their version. Downstream code iterates
+    ``imgperm_rand[d, :]`` over ``range(nperm)`` and expects each row to be a
+    single surrogate map, so orient the array using the (unambiguous) vertex
+    count as ground truth.
+
+    Parameters
+    ----------
+    imgperm_rand : np.ndarray
+        Permutation array, either (nperm, nVertices) or (nVertices, nperm).
+    nVertices : int
+        Number of vertices in the reference map (i.e. len(imgfix)).
+    nperm : int
+        Number of permutations requested.
+
+    Returns
+    -------
+    np.ndarray of shape (nperm, nVertices)
+    """
+    imgperm_rand = np.asarray(imgperm_rand)
+    if imgperm_rand.ndim == 1:
+        # a single permutation was returned squeezed to 1D
+        return imgperm_rand[np.newaxis, :]
+    # if the vertex axis is axis 0, transpose so it becomes axis 1
+    if imgperm_rand.shape[1] != nVertices and imgperm_rand.shape[0] == nVertices:
+        imgperm_rand = imgperm_rand.T
+    return imgperm_rand
+
+
 def spin_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den='0p5mm'):
     """
        Permutation testing of unfolded hippocampus maps.
@@ -139,12 +172,14 @@ def moran_test(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp', den
     r_obs = eval(metric)(imgfix, imgperm)[0]
 
     # randomize
-    imgperm_rand = msr.randomize(imgperm)
+    imgperm_rand = np.asarray(msr.randomize(imgperm))
+    # Orient to (nperm, nVertices) so imgperm_rand[d,:] is a single surrogate map.
+    imgperm_rand = _orient_null(imgperm_rand, nVertices=imgfix.shape[0], nperm=nperm)
     metricnull = np.ones((nperm))*np.nan
     for d in range(nperm):
         try:
             metricnull[d] = eval(metric)(imgfix, imgperm_rand[d,:])[0]
-        except: 
+        except:
             warnings.warn(f"permuation {d} contains a NaN or Inf")
 
     # p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
@@ -206,8 +241,12 @@ def eigenstrapping(imgfix, imgperm, nperm=1000, metric='pearsonr', label='hipp',
 
     # randomize
     hippomaps.utils.blockPrint()
-    imgperm_rand = eigen(n=nperm)
+    imgperm_rand = np.asarray(eigen(n=nperm))
     hippomaps.utils.enablePrint()
+    # Different eigenstrapping versions return the surrogates as either
+    # (nperm, nVertices) or (nVertices, nperm). Orient to (nperm, nVertices)
+    # so that imgperm_rand[d,:] is always a single surrogate map.
+    imgperm_rand = _orient_null(imgperm_rand, nVertices=imgfix.shape[0], nperm=nperm)
     metricnull = np.ones((nperm))*np.nan
     for d in range(nperm):
         try:
@@ -266,9 +305,11 @@ def contextualize2D(taskMaps, taskNames='', n_topComparison=3, nperm=1000, plotT
     metricnull = np.ones((nT,nperm))*np.nan
     hippomaps.utils.blockPrint()
     for t in range(nT):
-            eigen = SurfaceEigenstrapping(surface=f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-0p5mm_label-hipp_midthickness.surf.gii", 
+            eigen = SurfaceEigenstrapping(surface=f"{resourcesdir}/canonical_surfs/tpl-avg_space-canonical_den-0p5mm_label-hipp_midthickness.surf.gii",
                 data=taskMapsresamp[:,t])
-            permutedTasks[:,t,:] = eigen(nperm).T
+            # _orient_null returns (nperm, nV) regardless of eigenstrapping version;
+            # transpose to (nV, nperm) to fill permutedTasks[:,t,:].
+            permutedTasks[:,t,:] = _orient_null(eigen(nperm), nVertices=nV, nperm=nperm).T
     hippomaps.utils.enablePrint()
     # approx 9m to here
 
